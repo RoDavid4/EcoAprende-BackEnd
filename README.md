@@ -1,5 +1,5 @@
 # EcoAprende Backend
-
+- Hola es solo un test
 Este repositorio contiene la API REST de EcoAprende, desarrollada con NestJS y TypeScript. 
 
 ## Requisitos previos
