@@ -26,6 +26,19 @@ El codigo fuente reside en el directorio `src/modules/`. Cada modulo es responsa
 
 La capa de persistencia se apoya en PostgreSQL como motor de base de datos relacional. Se utiliza Sequelize ORM (`@nestjs/sequelize` + `sequelize-typescript`) para el mapeo objeto-relacional, la definicion de entidades y la gestion de migraciones.
 
+### Modelo de Datos / Entidades
+
+Actualmente, el sistema define las siguientes entidades principales:
+
+#### `User` (Modulo `users`)
+- `id` (UUIDV4, Primary Key)
+- `fullName` (String, Not Null)
+- `email` (String, Unique, Not Null, Format Email)
+- `password` (String, Not Null)
+- `role` (Enum: STUDENT, TEACHER, ADMIN - Default: STUDENT)
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 ## Despliegue y Orquestacion
 
 La aplicacion esta contenida mediante Docker.
