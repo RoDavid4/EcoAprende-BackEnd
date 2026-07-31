@@ -11,6 +11,7 @@ El codigo fuente reside en el directorio `src/modules/`. Cada modulo es responsa
 - `auth`: Gestiona la autenticacion de usuarios y la emision de tokens JWT.
 - `users`: Administra la informacion y los perfiles de los usuarios del sistema.
 - `courses`: Orquesta la logica de negocio relacionada con la creacion y lectura de cursos.
+- `classrooms`: Gestiona la creacion de aulas virtuales, generacion de codigos de acceso y administracion de alumnos.
 - `gamification`: Implementa el sistema de puntos, niveles y recompensas.
 - `missions`: Define las misiones o retos asignados a los usuarios.
 - `analytics`: Recopila y expone metricas de uso y progreso del sistema.
@@ -23,7 +24,7 @@ El codigo fuente reside en el directorio `src/modules/`. Cada modulo es responsa
 
 ## Acceso a Datos
 
-La capa de persistencia se apoya en PostgreSQL como motor de base de datos relacional. El proyecto debe integrarse progresivamente con un ORM para un manejo eficiente de las migraciones y el mapeo de entidades.
+La capa de persistencia se apoya en PostgreSQL como motor de base de datos relacional. Se utiliza Sequelize ORM (`@nestjs/sequelize` + `sequelize-typescript`) para el mapeo objeto-relacional, la definicion de entidades y la gestion de migraciones.
 
 ## Despliegue y Orquestacion
 

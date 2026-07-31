@@ -30,5 +30,9 @@ Si se opera fuera de Docker, los comandos principales definidos en `package.json
 
 El sistema utiliza las siguientes variables para su configuracion basica (se proveen valores por defecto a nivel de `docker-compose.yml` para desarrollo):
 
-- `DATABASE_URL`: Cadena de conexion a PostgreSQL.
+- `DB_HOST`: Host de la base de datos (`database` en entorno Docker).
+- `DB_PORT`: Puerto de PostgreSQL (por defecto `5432`).
+- `DB_USER`: Usuario de la base de datos.
+- `DB_PASSWORD`: Contrasena de la base de datos.
+- `DB_NAME`: Nombre de la base de datos (`ecoaprende_db`).
 - `NODE_ENV`: Entorno de ejecucion (ej. `development` o `production`).
