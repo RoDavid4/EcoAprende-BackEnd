@@ -39,6 +39,29 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+## Autenticacion y Seguridad
+
+El sistema implementa una capa robusta de seguridad gestionada por el modulo `auth` (AuthModule).
+
+### Estrategia de Seguridad
+- **Hashing**: Las contraseñas de los usuarios se encriptan utilizando `bcrypt` con un salt de 10 rondas antes de persistirse en la base de datos.
+- **JSON Web Tokens (JWT)**: La autenticacion se mantiene mediante tokens JWT firmados de forma asincrona, con un payload que incluye identificadores inofensivos (`id`, `email`, `role`).
+- **Validacion Estricta**: La aplicacion activa un `ValidationPipe` global en la etapa de bootstrap (`main.ts`). Esta tuberia depura los payloads (whitelist), rechaza campos no autorizados (forbidNonWhitelisted) y transforma los datos automaticamente basandose en los Data Transfer Objects (DTOs) definidos mediante `class-validator`.
+
+### Endpoints (Auth)
+
+- **Registro (`POST /auth/register`)**
+  - **DTO (`RegisterDto`)**: Requiere `fullName` (String), `email` (String, formato email valido), y `password` (String, minimo 6 caracteres).
+  - **Respuesta Esperada**: Retorna la entidad del usuario creado, omitiendo por diseño la contraseña hasheada.
+
+- **Login (`POST /auth/login`)**
+  - **DTO (`LoginDto`)**: Requiere `email` y `password`.
+  - **Respuesta Esperada**: Valida credenciales y retorna un `access_token` (JWT) firmado junto con un resumen basico del perfil del usuario logueado.
+
+## Herramientas de Pruebas
+
+El repositorio incluye una coleccion exportada en el directorio `docs/insomnia/` con la configuracion pre-armada de los endpoints de la API, lista para importarse y facilitar las pruebas manuales (ej. registro y generacion de tokens).
+
 ## Despliegue y Orquestacion
 
 La aplicacion esta contenida mediante Docker.
