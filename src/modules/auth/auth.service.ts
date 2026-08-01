@@ -3,14 +3,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
+import { Role } from '../roles/role.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User)
-    private userModel: typeof User,
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Role) private roleModel: typeof Role,
     private jwtService: JwtService,
   ) {}
 
@@ -21,10 +22,13 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const defaultRole = await this.roleModel.findOne({ where: { name: 'STUDENT' } });
+
     const user = await this.userModel.create({
       fullName: registerDto.fullName,
       email: registerDto.email,
       password: hashedPassword,
+      roleId: defaultRole?.id,
     });
 
     const userJson = user.toJSON();
@@ -33,7 +37,10 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userModel.findOne({ where: { email: loginDto.email } });
+    const user = await this.userModel.findOne({ 
+      where: { email: loginDto.email },
+      include: [Role]
+    });
     
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Credenciales invalidas');
@@ -44,7 +51,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales invalidas');
     }
 
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const payload = { id: user.id, email: user.email, role: user.role?.name };
     
     return {
       access_token: this.jwtService.sign(payload),
@@ -52,7 +59,7 @@ export class AuthService {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: user.role?.name,
       }
     };
   }

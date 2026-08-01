@@ -35,9 +35,29 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `fullName` (String, Not Null)
 - `email` (String, Unique, Not Null, Format Email)
 - `password` (String, Not Null)
-- `role` (Enum: STUDENT, TEACHER, ADMIN - Default: STUDENT)
+- `roleId` (Integer, Foreign Key, asocia con la entidad `Role`)
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `Role` (Modulo `roles`)
+- `id` (Integer, Primary Key, Auto Increment)
+- `name` (String, Unique, Not Null)
+- `description` (String)
+
+#### `Permission` (Modulo `roles`)
+- `id` (Integer, Primary Key, Auto Increment)
+- `name` (String, Unique, Not Null)
+- `description` (String)
+
+#### `RolePermission` (Modulo `roles` - Tabla intermedia)
+- `roleId` (Integer, Foreign Key)
+- `permissionId` (Integer, Foreign Key)
+
+## Autoconfiguracion y Siembra de Datos (Zero-Config)
+
+Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
+
+Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema RBAC este inmediatamente operativo tras ejecutar `docker compose up`.
 
 ## Autenticacion y Seguridad
 
@@ -60,7 +80,7 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en el directorio `docs/insomnia/` con la configuracion pre-armada de los endpoints de la API, lista para importarse y facilitar las pruebas manuales (ej. registro y generacion de tokens).
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles y permite facilitar pruebas manuales inmediatas (ej. flujo de registro y login con emision de tokens).
 
 ## Despliegue y Orquestacion
 
