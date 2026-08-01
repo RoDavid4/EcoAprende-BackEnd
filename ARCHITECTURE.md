@@ -65,7 +65,8 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 
 ### Estrategia de Seguridad
 - **Hashing**: Las contraseñas de los usuarios se encriptan utilizando `bcrypt` con un salt de 10 rondas antes de persistirse en la base de datos.
-- **JSON Web Tokens (JWT)**: La autenticacion se mantiene mediante tokens JWT firmados de forma asincrona, con un payload que incluye identificadores inofensivos (`id`, `email`, `role`).
+- **Autenticacion (JWT)**: Se implementa mediante `JwtStrategy` y `JwtAuthGuard` (basado en `passport-jwt`). La autenticacion se mantiene emitiendo tokens firmados de forma asincrona, con un payload que incluye identificadores inofensivos (`id`, `email`, `role`).
+- **Autorizacion Basada en Roles (RBAC)**: Se utiliza un decorador personalizado `@Roles()` acoplado a un `RolesGuard`. Este guard emplea `Reflector` para contrastar los roles requeridos por el endpoint contra el rol mapeado en el token del usuario.
 - **Validacion Estricta**: La aplicacion activa un `ValidationPipe` global en la etapa de bootstrap (`main.ts`). Esta tuberia depura los payloads (whitelist), rechaza campos no autorizados (forbidNonWhitelisted) y transforma los datos automaticamente basandose en los Data Transfer Objects (DTOs) definidos mediante `class-validator`.
 
 ### Endpoints (Auth)
@@ -77,6 +78,13 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 - **Login (`POST /auth/login`)**
   - **DTO (`LoginDto`)**: Requiere `email` y `password`.
   - **Respuesta Esperada**: Valida credenciales y retorna un `access_token` (JWT) firmado junto con un resumen basico del perfil del usuario logueado.
+
+- **Prueba de Autorizacion (`GET /auth/admin-test`)**
+  - **Proteccion**: Requiere token valido (`JwtAuthGuard`) y privilegios de administrador (`@Roles('ADMIN')` y `RolesGuard`).
+  - **Respuesta Esperada**:
+    - `200 OK`: Acceso concedido (Usuario = ADMIN).
+    - `401 Unauthorized`: No se adjunta token en los headers o este es invalido.
+    - `403 Forbidden`: El token es valido pero el usuario carece de permisos suficientes (ej. STUDENT o TEACHER).
 
 ## Herramientas de Pruebas
 
