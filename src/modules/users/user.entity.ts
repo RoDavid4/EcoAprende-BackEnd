@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Role } from '../roles/role.entity';
 
 @Table({
   tableName: 'users',
@@ -32,12 +33,15 @@ export class User extends Model {
   })
   declare password: string;
 
-  @Default('STUDENT')
+  @ForeignKey(() => Role)
   @Column({
-    type: DataType.ENUM('STUDENT', 'TEACHER', 'ADMIN'),
-    allowNull: false,
+    type: DataType.INTEGER,
+    allowNull: true,
   })
-  declare role: string;
+  declare roleId: number;
+
+  @BelongsTo(() => Role)
+  declare role: Role;
 
   @Default(true)
   @Column({

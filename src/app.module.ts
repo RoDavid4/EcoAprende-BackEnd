@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth';
+import { RolesModule } from './modules/roles';
+import { SeederModule } from './modules/seeder';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { AuthModule } from './modules/auth';
     }),
     UsersModule,
     AuthModule,
+    RolesModule,
+    SeederModule,
   ],
   controllers: [AppController],
   providers: [AppService],
