@@ -49,4 +49,16 @@ export class User extends Model {
     allowNull: false,
   })
   declare isActive: boolean;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare resetPasswordToken: string | null;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  declare resetPasswordExpires: Date | null;
 }
