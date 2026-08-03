@@ -37,6 +37,8 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `password` (String, Not Null)
 - `roleId` (Integer, Foreign Key, asocia con la entidad `Role`)
 - `isActive` (Boolean - Default: true)
+- `resetPasswordToken` (String, Nullable)
+- `resetPasswordExpires` (Date, Nullable)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
 #### `Role` (Modulo `roles`)
@@ -77,7 +79,15 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 
 - **Login (`POST /auth/login`)**
   - **DTO (`LoginDto`)**: Requiere `email` y `password`.
-  - **Respuesta Esperada**: Valida credenciales y retorna un `access_token` (JWT) firmado junto con un resumen basico del perfil del usuario logueado.
+  - **Respuesta Esperada**: Valida credenciales y retorna un `access_token` (JWT) firmado junto con un resumen basico del perfil del usuario logueado. Retorna HTTP `200 OK` en lugar del `201 Created` por defecto (`@HttpCode(HttpStatus.OK)`).
+
+- **Solicitud de Reseteo (`POST /auth/forgot-password`)**
+  - **DTO (`ForgotPasswordDto`)**: Requiere el `email` del usuario.
+  - **Comportamiento**: Genera de forma segura e idempotente un token temporal expirables (1 hora de vigencia). Por diseño, la respuesta es siempre exitosa para evitar enumeracion de usuarios validos.
+
+- **Reseteo de Contraseña (`POST /auth/reset-password`)**
+  - **DTO (`ResetPasswordDto`)**: Requiere `token` y `newPassword`.
+  - **Comportamiento**: Valida la vigencia del token. Si el token es invalido, expirado o fue reutilizado, el sistema responde con `401 Unauthorized`. Si la validacion es correcta, ejecuta el re-hashing usando `bcrypt`, actualiza la contrasena y luego invalida (nullea) el token de la base de datos.
 
 - **Prueba de Autorizacion (`GET /auth/admin-test`)**
   - **Proteccion**: Requiere token valido (`JwtAuthGuard`) y privilegios de administrador (`@Roles('ADMIN')` y `RolesGuard`).
@@ -88,7 +98,7 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles y permite facilitar pruebas manuales inmediatas (ej. flujo de registro y login con emision de tokens).
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, asi como las nuevas llamadas para recuperacion de contraseña, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

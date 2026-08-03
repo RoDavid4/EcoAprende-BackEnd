@@ -50,7 +50,7 @@ collection:
         meta:
           id: req_73218e0dc619464bad9e0ccaa1ab35d3
           created: 1785538258656
-          modified: 1785540782294
+          modified: 1785789302717
           isPrivate: false
           description: ""
           sortKey: -1785538410502
@@ -60,7 +60,7 @@ collection:
           text: |-
             {
               "email": "messi@ecoaprende.com",
-              "password": "PasswordIncorrecta"
+              "password": "NuevaPasswordSegura123!"
             }
         headers:
           - name: Content-Type
@@ -184,6 +184,116 @@ collection:
               "fullName": "Messi Juan",
               "email": "messi.corto@ecoaprende.com",
               "password": "asd"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/admin-test"
+        name: GET /admin-test token alumno Acceso Denegado (403 Forbidden)
+        meta:
+          id: req_2a04548881534440838873acca81dd9e
+          created: 1785555924075
+          modified: 1785557392370
+          isPrivate: false
+          description: ""
+          sortKey: -1785538410702
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRhMjNlYjZjLWViZTQtNDIyNS04ZGVjLWNhMzkzOTQyYzhiOCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODU1NTczNzAsImV4cCI6MTc4NTY0Mzc3MH0.OArpjVpiFY9jrto2iPTiAgMTZJtDyPWkolKVIgQ2XwU
+          prefix: Bearer
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/admin-test"
+        name: GET /admin-test no token Acceso Denegado (401 Unauthorized)
+        meta:
+          id: req_b8da227cc4f14c0891376078054a9d4b
+          created: 1785556777983
+          modified: 1785556807624
+          isPrivate: false
+          description: ""
+          sortKey: -1785538410802
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRhMjNlYjZjLWViZTQtNDIyNS04ZGVjLWNhMzkzOTQyYzhiOCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NTU1NjEyNCwiZXhwIjoxNzg1NjQyNTI0fQ.d-FMCB2WoOh67ahNWOgkFhy1-qhIAxxNEyORfk2uf2s
+          prefix: Bearer
+          disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/forgot-password"
+        name: POST /auth/forgot-password (Solicitud de Reseteo de Contraseña)
+        meta:
+          id: req_e0d775efdf3e40cb86f321ffca2616bd
+          created: 1785788409973
+          modified: 1785789043482
+          isPrivate: false
+          description: ""
+          sortKey: -1785788409973
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "messi@ecoaprende.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/reset-password"
+        name: POST /auth/reset-password (Cambio de contraseña)
+        meta:
+          id: req_8c9cb44d318647d4b3e766b6a3020d8c
+          created: 1785788981813
+          modified: 1785789384671
+          isPrivate: false
+          description: ""
+          sortKey: -1785788410073
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "token": "9bfb62234babbee8cb99c93e3548a4e9e19b28644fbe9afbb43d542fbfd8a6f9",
+              "newPassword": "NuevaPasswordSegura123!"
             }
         headers:
           - name: Content-Type
