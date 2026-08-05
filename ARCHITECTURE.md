@@ -96,9 +96,29 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
     - `401 Unauthorized`: No se adjunta token en los headers o este es invalido.
     - `403 Forbidden`: El token es valido pero el usuario carece de permisos suficientes (ej. STUDENT o TEACHER).
 
+### Endpoints (Users)
+
+Estos endpoints son gestionados por el módulo `users` y están protegidos globalmente por `JwtAuthGuard`, requiriendo un Bearer Token válido en los headers.
+
+- **Consulta de Perfil (`GET /users/profile`)**
+  - **Comportamiento**: Extrae la identidad del token JWT y consulta la información del usuario autenticado junto con su rol. 
+  - **Seguridad**: Excluye explícitamente datos sensibles como la contraseña (`password`), `resetPasswordToken` y `resetPasswordExpires`.
+  - **Excepciones**: `401 Unauthorized` ante la falta de token o token inválido.
+
+- **Edición de Perfil (`PATCH /users/profile`)**
+  - **DTO (`UpdateProfileDto`)**: Permite la actualización de campos no sensibles, como `fullName`.
+  - **Comportamiento**: Actualiza la información del usuario en la base de datos y retorna la entidad actualizada sin información sensible.
+  - **Excepciones**: `401 Unauthorized` ante la falta de token.
+
+- **Cambio de Contraseña (`POST /users/change-password`)**
+  - **DTO (`ChangePasswordDto`)**: Requiere `currentPassword` y `newPassword`.
+  - **Comportamiento**: Valida la identidad comprobando la `currentPassword` mediante `bcrypt.compare`. Si coincide, se aplica un hash a la `newPassword` y se actualiza en la base de datos.
+  - **Respuesta Esperada**: Retorna HTTP `200 OK` (mediante `@HttpCode(HttpStatus.OK)`) indicando éxito en la actualización.
+  - **Excepciones**: `401 Unauthorized` ante la falta de token o si la contraseña actual ingresada es incorrecta.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, asi como las nuevas llamadas para recuperacion de contraseña, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario y el cambio de contraseña autenticado, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
