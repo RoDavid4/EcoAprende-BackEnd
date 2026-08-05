@@ -10,8 +10,8 @@ collection:
     meta:
       id: fld_fb5ba8e7eac24d67849706d89b6200c8
       created: 1785538402395
-      modified: 1785540466375
-      sortKey: -1785538402395
+      modified: 1785965641516
+      sortKey: -1785965637124
       description: ""
     children:
       - url: "{{ _.base_url }}/auth/register"
@@ -300,6 +300,103 @@ collection:
             value: application/json
           - name: User-Agent
             value: insomnia/11.3.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_89ae22e96ca944208ca2b46b32ac3d09
+      created: 1785965637024
+      modified: 1785965637024
+      sortKey: -1785965637024
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/users/profile"
+        name: GET /users/profile (Consultar Perfil)
+        meta:
+          id: req_6c1a08445ac94ae3b64dacbb7d13288b
+          created: 1785965670454
+          modified: 1785966786065
+          isPrivate: false
+          description: ""
+          sortKey: -1785965682749
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NTk2NjA3NiwiZXhwIjoxNzg2MDUyNDc2fQ.osdOAGjCJJpTl6lBFWIEeA9hgajWKScZPrUvmuTGcMA
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/profile"
+        name: PATCH /users/profile (Editar Datos)
+        meta:
+          id: req_7dac106b6f6f43b19b5eb3bc58ccbb39
+          created: 1785966902837
+          modified: 1785967043483
+          isPrivate: false
+          description: ""
+          sortKey: -1785965682649
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fullName": "Lionel Andrés Messi"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NTk2NjA3NiwiZXhwIjoxNzg2MDUyNDc2fQ.osdOAGjCJJpTl6lBFWIEeA9hgajWKScZPrUvmuTGcMA
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/users/change-password"
+        name: POST /users/change-password (Cambiar Contraseña Logueado)
+        meta:
+          id: req_f5aab9d178a14ba3af69873b6fd5e026
+          created: 1785967063035
+          modified: 1785967135017
+          isPrivate: false
+          description: ""
+          sortKey: -1785877046361
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "currentPassword": "NuevaPasswordSegura123!",
+              "newPassword": "Password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NTk2NjA3NiwiZXhwIjoxNzg2MDUyNDc2fQ.osdOAGjCJJpTl6lBFWIEeA9hgajWKScZPrUvmuTGcMA
         settings:
           renderRequestBody: true
           encodeUrl: true
