@@ -41,6 +41,15 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `resetPasswordExpires` (Date, Nullable)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `Classroom` (Modulo `classrooms`)
+- `id` (UUIDV4, Primary Key)
+- `name` (String, Not Null)
+- `description` (Text, Nullable)
+- `code` (String(6), Unique, Not Null): Código alfanumérico en mayúsculas generado aleatoriamente. El sistema verifica su unicidad en la BD antes de persistirlo.
+- `teacherId` (UUID, Foreign Key, asocia con `User`)
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -59,7 +68,7 @@ Actualmente, el sistema define las siguientes entidades principales:
 
 Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
 
-Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema RBAC este inmediatamente operativo tras ejecutar `docker compose up`.
+Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Adicionalmente, el seeder genera automáticamente dos usuarios de prueba predeterminados para facilitar las pruebas locales: un administrador (`admin@ecoaprende.com` / `Admin123!`) y un profesor (`profe@ecoaprende.com` / `Profe123!`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema RBAC esté inmediatamente operativo tras ejecutar `docker compose up`.
 
 ## Autenticacion y Seguridad
 
@@ -116,9 +125,25 @@ Estos endpoints son gestionados por el módulo `users` y están protegidos globa
   - **Respuesta Esperada**: Retorna HTTP `200 OK` (mediante `@HttpCode(HttpStatus.OK)`) indicando éxito en la actualización.
   - **Excepciones**: `401 Unauthorized` ante la falta de token o si la contraseña actual ingresada es incorrecta.
 
+### Endpoints (Classrooms)
+
+Estos endpoints son gestionados por el módulo `classrooms` y permiten a los profesores y administradores la gestión de las aulas virtuales.
+
+- **Creación de Aula (`POST /classrooms`)**
+  - **Autorización**: Requiere token JWT y roles `TEACHER` o `ADMIN` (`RolesGuard`).
+  - **Comportamiento**: Genera automáticamente un código de 6 caracteres alfanuméricos verificando su unicidad, y asigna al usuario autenticado como el profesor (`teacherId`).
+
+- **Listado de Aulas (`GET /classrooms`)**
+  - **Comportamiento**: Retorna el listado de aulas. Soporta el query param `?includeInactive=true`. Por defecto, filtra y retorna únicamente las aulas con `isActive: true`. Si el usuario es `TEACHER`, solo ve sus propias aulas; si es `ADMIN`, ve todas.
+
+- **Gestión Individual (`GET /classrooms/:id`, `PATCH /classrooms/:id`, `DELETE /classrooms/:id`)**
+  - **Seguridad**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula.
+  - **Edición y Reactivación (`PATCH`)**: Se permite actualizar nombre, descripción y el estado `isActive` (útil para reactivar aulas previamente desactivadas sin requerir un endpoint específico). Las consultas buscan por `id` de forma agnóstica al estado.
+  - **Desactivación Lógica (`DELETE`)**: Establece `isActive: false` manteniendo el registro histórico en base de datos.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario y el cambio de contraseña autenticado, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, y el CRUD completo para la gestión de Aulas (Classrooms), permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
