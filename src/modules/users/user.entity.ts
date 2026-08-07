@@ -1,5 +1,6 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Role } from '../roles/role.entity';
+import { Classroom } from '../classrooms/classroom.entity';
 
 @Table({
   tableName: 'users',
@@ -61,4 +62,7 @@ export class User extends Model {
     allowNull: true,
   })
   declare resetPasswordExpires: Date | null;
+
+  @HasMany(() => Classroom)
+  declare classrooms: Classroom[];
 }
