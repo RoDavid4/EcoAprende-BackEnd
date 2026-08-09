@@ -1,6 +1,7 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { Role } from '../roles/role.entity';
 import { Classroom } from '../classrooms/classroom.entity';
+import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 
 @Table({
   tableName: 'users',
@@ -65,4 +66,7 @@ export class User extends Model {
 
   @HasMany(() => Classroom)
   declare classrooms: Classroom[];
+
+  @BelongsToMany(() => Classroom, () => ClassroomStudent)
+  declare joinedClassrooms: Classroom[];
 }

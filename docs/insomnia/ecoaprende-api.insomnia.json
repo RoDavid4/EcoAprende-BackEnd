@@ -473,200 +473,304 @@ collection:
       sortKey: -1785965637074
       description: ""
     children:
-      - url: "{{ _.base_url }}/classrooms"
-        name: POST /classrooms (Crear Aula)
+      - name: Teacher
         meta:
-          id: req_cf8881fbf4f344d6a5a79bbcd5a140cc
-          created: 1786143228250
-          modified: 1786143634920
-          isPrivate: false
+          id: fld_6fb5e6c723114273aae67978459cb15b
+          created: 1786246514579
+          modified: 1786246518626
+          sortKey: -1786143234477
           description: ""
+        children:
+          - url: "{{ _.base_url }}/classrooms"
+            name: POST /classrooms (Crear Aula)
+            meta:
+              id: req_cf8881fbf4f344d6a5a79bbcd5a140cc
+              created: 1786143228250
+              modified: 1786246530963
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530904
+            method: POST
+            body:
+              mimeType: application/json
+              text: >-
+                {
+                  "name": "Educación Ambiental 6to A",
+                  "description": "Curso matutino sobre reciclaje y sustentabilidad"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms"
+            name: GET /classrooms (Listar Aulas)
+            meta:
+              id: req_a58fe50e586443978e57b302042ac611
+              created: 1786143736071
+              modified: 1786246780846
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530879
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
+            name: GET /classrooms/:id (Obtener por ID)
+            meta:
+              id: req_8127bcebd6914e019ecb6bf9ae3b9555
+              created: 1786143842406
+              modified: 1786248020089
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530829
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
+            name: PATCH /classrooms/:id (Editar Aula)
+            meta:
+              id: req_3d09da218f5a4ad1b968b77ac1715aef
+              created: 1786144077057
+              modified: 1786246554464
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530816.5
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Educación Ambiental 6to A - Nivel Avanzado"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
+            name: DELETE /classrooms/:id (Eliminar/Desactivar Aula)
+            meta:
+              id: req_0a6eaa97a4474ee183dc45b898fb8833
+              created: 1786144232093
+              modified: 1786246558464
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530807.125
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms?includeInactive=true"
+            name: GET /classrooms?includeInactive=true (Listar Incluyendo Inactivas /
+              Archivadas)
+            meta:
+              id: req_73822452a6bc47f49ed102c540fea320
+              created: 1786145097539
+              modified: 1786246548397
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530854
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
+            name: PATCH /classrooms/:id (Reactivar Aula / Editar)
+            meta:
+              id: req_ade5bbda4ffa496ca893acc14cc39b24
+              created: 1786145148101
+              modified: 1786246556268
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530810.25
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "isActive": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Student
+        meta:
+          id: fld_bb858664cb0b4a94952b8dd2f37c241f
+          created: 1786246573846
+          modified: 1786246632541
           sortKey: -1786143234277
-        method: POST
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "name": "Educación Ambiental 6to A",
-              "description": "Curso matutino sobre reciclaje y sustentabilidad"
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms"
-        name: GET /classrooms (Listar Aulas)
-        meta:
-          id: req_a58fe50e586443978e57b302042ac611
-          created: 1786143736071
-          modified: 1786143760899
-          isPrivate: false
           description: ""
-          sortKey: -1786054458513
-        method: GET
-        headers:
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
-        name: GET /classrooms/:id (Obtener por ID)
-        meta:
-          id: req_8127bcebd6914e019ecb6bf9ae3b9555
-          created: 1786143842406
-          modified: 1786143981492
-          isPrivate: false
-          description: ""
-          sortKey: -1786010070631
-        method: GET
-        headers:
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
-        name: PATCH /classrooms/:id (Editar Aula)
-        meta:
-          id: req_3d09da218f5a4ad1b968b77ac1715aef
-          created: 1786144077057
-          modified: 1786144094098
-          isPrivate: false
-          description: ""
-          sortKey: -1785987876690
-        method: PATCH
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "name": "Educación Ambiental 6to A - Nivel Avanzado"
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
-        name: DELETE /classrooms/:id (Eliminar/Desactivar Aula)
-        meta:
-          id: req_0a6eaa97a4474ee183dc45b898fb8833
-          created: 1786144232093
-          modified: 1786144291987
-          isPrivate: false
-          description: ""
-          sortKey: -1785976779719.5
-        method: DELETE
-        headers:
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms?includeInactive=true"
-        name: GET /classrooms?includeInactive=true (Listar Incluyendo Inactivas /
-          Archivadas)
-        meta:
-          id: req_73822452a6bc47f49ed102c540fea320
-          created: 1786145097539
-          modified: 1786145110587
-          isPrivate: false
-          description: ""
-          sortKey: -1786032264572
-        method: GET
-        headers:
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee"
-        name: PATCH /classrooms/:id (Reactivar Aula / Editar)
-        meta:
-          id: req_ade5bbda4ffa496ca893acc14cc39b24
-          created: 1786145148101
-          modified: 1786145170550
-          isPrivate: false
-          description: ""
-          sortKey: -1785982328204.75
-        method: PATCH
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "isActive": true
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/11.3.0
-        authentication:
-          type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
+        children:
+          - url: "{{ _.base_url }}/classrooms/join"
+            name: POST /classrooms/join (Unirse por Código)
+            meta:
+              id: req_dea51fcb63b6412d94392867f38e16d3
+              created: 1786246481685
+              modified: 1786247111573
+              isPrivate: false
+              description: ""
+              sortKey: -1786246600314
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "code": "EQSJO5"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjI0NjYxMywiZXhwIjoxNzg2MzMzMDEzfQ.E_PK-gSP3u6Z0C1KBpkbDfp-Zi0pYSHgGUfYZFj16bA
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms"
+            name: GET /classrooms (Mis Aulas como Estudiante)
+            meta:
+              id: req_d60c042839af4678b3b1b0d8d71d0510
+              created: 1786246972962
+              modified: 1786246987925
+              isPrivate: false
+              description: ""
+              sortKey: -1786246565609
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjI0NjYxMywiZXhwIjoxNzg2MzMzMDEzfQ.E_PK-gSP3u6Z0C1KBpkbDfp-Zi0pYSHgGUfYZFj16bA
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/join"
+            name: POST /classrooms/join (Unirse por Código siendo PROFESOR (error 403))
+            meta:
+              id: req_64aefc3f7c4b4f238f81a5c3a861be30
+              created: 1786247840319
+              modified: 1786247928715
+              isPrivate: false
+              description: ""
+              sortKey: -1786246582961.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "code": "EQSJO5"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
