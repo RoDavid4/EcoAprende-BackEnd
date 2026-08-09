@@ -1,14 +1,17 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Classroom } from './classroom.entity';
+import { ClassroomStudent } from './classroom-student.entity';
 import { User } from '../users/user.entity';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
+import { JoinClassroomDto } from './dto/join-classroom.dto';
 
 @Injectable()
 export class ClassroomsService {
   constructor(
     @InjectModel(Classroom) private classroomModel: typeof Classroom,
+    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
   ) {}
 
   private async generateUniqueCode(): Promise<string> {
@@ -40,6 +43,33 @@ export class ClassroomsService {
     });
   }
 
+  async joinClassroom(joinDto: JoinClassroomDto, studentId: string) {
+    const code = joinDto.code.toUpperCase();
+    
+    const classroom = await this.classroomModel.findOne({
+      where: { code, isActive: true },
+    });
+
+    if (!classroom) {
+      throw new NotFoundException('El código de aula ingresado no es válido o el aula está inactiva');
+    }
+
+    const existingEnrollment = await this.classroomStudentModel.findOne({
+      where: { classroomId: classroom.id, studentId },
+    });
+
+    if (existingEnrollment) {
+      throw new ConflictException('Ya estás inscrito en esta aula');
+    }
+
+    await this.classroomStudentModel.create({
+      classroomId: classroom.id,
+      studentId,
+    });
+
+    return classroom;
+  }
+
   async findAll(user: any, includeInactive?: string) {
     const whereClause: any = {};
     
@@ -51,14 +81,27 @@ export class ClassroomsService {
       whereClause.teacherId = user.id;
     }
 
+    const includeOptions: any[] = [
+      {
+        model: User,
+        as: 'teacher',
+        attributes: ['id', 'fullName', 'email'],
+      }
+    ];
+
+    if (user.role === 'STUDENT') {
+      includeOptions.push({
+        model: User,
+        as: 'students',
+        where: { id: user.id },
+        attributes: [],
+        through: { attributes: [] },
+      });
+    }
+
     return this.classroomModel.findAll({
       where: whereClause,
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'fullName', 'email'],
-        }
-      ]
+      include: includeOptions,
     });
   }
 
@@ -67,7 +110,14 @@ export class ClassroomsService {
       include: [
         {
           model: User,
+          as: 'teacher',
           attributes: ['id', 'fullName', 'email'],
+        },
+        {
+          model: User,
+          as: 'students',
+          attributes: ['id', 'fullName', 'email'],
+          through: { attributes: ['joinedAt'] },
         }
       ]
     });

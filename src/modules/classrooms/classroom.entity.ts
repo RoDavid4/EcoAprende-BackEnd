@@ -1,5 +1,6 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, BelongsToMany } from 'sequelize-typescript';
 import { User } from '../users/user.entity';
+import { ClassroomStudent } from './classroom-student.entity';
 
 @Table({
   tableName: 'classrooms',
@@ -48,4 +49,7 @@ export class Classroom extends Model {
     allowNull: false,
   })
   declare isActive: boolean;
+
+  @BelongsToMany(() => User, () => ClassroomStudent)
+  declare students: User[];
 }

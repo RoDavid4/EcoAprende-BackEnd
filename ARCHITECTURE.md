@@ -50,6 +50,12 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `ClassroomStudent` (Modulo `classrooms` - Tabla Intermedia)
+- `id` (UUIDV4, Primary Key)
+- `classroomId` (UUID, Foreign Key)
+- `studentId` (UUID, Foreign Key)
+- `joinedAt` (Date, Default: NOW): Fecha de inscripción del alumno al aula. Modela la relación N:M entre `User` y `Classroom`.
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -133,17 +139,22 @@ Estos endpoints son gestionados por el módulo `classrooms` y permiten a los pro
   - **Autorización**: Requiere token JWT y roles `TEACHER` o `ADMIN` (`RolesGuard`).
   - **Comportamiento**: Genera automáticamente un código de 6 caracteres alfanuméricos verificando su unicidad, y asigna al usuario autenticado como el profesor (`teacherId`).
 
+- **Inscripción a Aula (`POST /classrooms/join`)**
+  - **Autorización**: Requiere token JWT y roles `STUDENT` o `ADMIN`.
+  - **Comportamiento**: Recibe un código de 6 caracteres. Verifica que exista un aula activa con ese código y que el alumno no esté previamente inscrito. Registra la relación en la tabla intermedia `ClassroomStudent` y retorna los detalles del aula. Lanza `404` si no existe/está inactiva, y `409 Conflict` si ya está inscrito.
+
 - **Listado de Aulas (`GET /classrooms`)**
-  - **Comportamiento**: Retorna el listado de aulas. Soporta el query param `?includeInactive=true`. Por defecto, filtra y retorna únicamente las aulas con `isActive: true`. Si el usuario es `TEACHER`, solo ve sus propias aulas; si es `ADMIN`, ve todas.
+  - **Comportamiento**: Retorna el listado de aulas. Soporta el query param `?includeInactive=true`. Por defecto, filtra y retorna únicamente las aulas con `isActive: true`. Si el usuario es `TEACHER`, solo ve las aulas que dicta; si es `STUDENT`, cruza con `ClassroomStudent` para ver únicamente las aulas a las que se ha unido; si es `ADMIN`, ve todas.
 
 - **Gestión Individual (`GET /classrooms/:id`, `PATCH /classrooms/:id`, `DELETE /classrooms/:id`)**
-  - **Seguridad**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula.
-  - **Edición y Reactivación (`PATCH`)**: Se permite actualizar nombre, descripción y el estado `isActive` (útil para reactivar aulas previamente desactivadas sin requerir un endpoint específico). Las consultas buscan por `id` de forma agnóstica al estado.
+  - **Consulta (`GET`)**: Retorna el detalle del aula. La consulta anida al profesor creador y el listado completo de estudiantes (`students`) inscritos, incluyendo la fecha de inscripción `joinedAt` proveniente de la tabla pivot.
+  - **Seguridad (`PATCH` / `DELETE`)**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula.
+  - **Edición y Reactivación (`PATCH`)**: Se permite actualizar nombre, descripción y el estado `isActive` (útil para reactivar aulas previamente desactivadas). Las consultas buscan por `id` de forma agnóstica al estado.
   - **Desactivación Lógica (`DELETE`)**: Establece `isActive: false` manteniendo el registro histórico en base de datos.
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, y el CRUD completo para la gestión de Aulas (Classrooms), permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), y el mecanismo de inscripción de estudiantes a las aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
