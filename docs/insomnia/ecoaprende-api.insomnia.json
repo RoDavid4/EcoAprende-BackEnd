@@ -519,7 +519,7 @@ collection:
             meta:
               id: req_a58fe50e586443978e57b302042ac611
               created: 1786143736071
-              modified: 1786246780846
+              modified: 1786340447763
               isPrivate: false
               description: ""
               sortKey: -1786246530879
@@ -529,7 +529,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -543,7 +543,7 @@ collection:
             meta:
               id: req_8127bcebd6914e019ecb6bf9ae3b9555
               created: 1786143842406
-              modified: 1786248020089
+              modified: 1786340491546
               isPrivate: false
               description: ""
               sortKey: -1786246530829
@@ -553,7 +553,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -599,7 +599,7 @@ collection:
             meta:
               id: req_0a6eaa97a4474ee183dc45b898fb8833
               created: 1786144232093
-              modified: 1786246558464
+              modified: 1786340564370
               isPrivate: false
               description: ""
               sortKey: -1786246530807.125
@@ -675,6 +675,56 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee/students"
+            name: GET /classrooms/:id/students (Listar Estudiantes del Aula)
+            meta:
+              id: req_34191adc9afb4e92a91ca89016e0adde
+              created: 1786340296176
+              modified: 1786340513908
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530707.125
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url
+              }}/classrooms/d9dcdee4-1dec-424d-ab13-fd254f9ce1ee/students/376b2\
+              cf4-f829-4adc-868c-8cec10107388"
+            name: DELETE /classrooms/:id/students/:studentId (Remover Estudiante del Aula)
+            meta:
+              id: req_ac180cd06d9d418e8664f15779c3ae8c
+              created: 1786340575046
+              modified: 1786340676130
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530607.125
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
       - name: Student
         meta:
           id: fld_bb858664cb0b4a94952b8dd2f37c241f
@@ -688,7 +738,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1786247111573
+              modified: 1786340802480
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -706,7 +756,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjI0NjYxMywiZXhwIjoxNzg2MzMzMDEzfQ.E_PK-gSP3u6Z0C1KBpkbDfp-Zi0pYSHgGUfYZFj16bA
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjM0MDcwMiwiZXhwIjoxNzg2NDI3MTAyfQ.EKrKw8Fe0RenuUI-yCcqVv7O94Vl1GxlwwnD3z7Rxk0
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -720,7 +770,7 @@ collection:
             meta:
               id: req_d60c042839af4678b3b1b0d8d71d0510
               created: 1786246972962
-              modified: 1786246987925
+              modified: 1786340757922
               isPrivate: false
               description: ""
               sortKey: -1786246565609
@@ -730,7 +780,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjI0NjYxMywiZXhwIjoxNzg2MzMzMDEzfQ.E_PK-gSP3u6Z0C1KBpkbDfp-Zi0pYSHgGUfYZFj16bA
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjM0MDcwMiwiZXhwIjoxNzg2NDI3MTAyfQ.EKrKw8Fe0RenuUI-yCcqVv7O94Vl1GxlwwnD3z7Rxk0
             settings:
               renderRequestBody: true
               encodeUrl: true

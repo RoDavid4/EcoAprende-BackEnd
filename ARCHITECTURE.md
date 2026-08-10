@@ -148,13 +148,18 @@ Estos endpoints son gestionados por el módulo `classrooms` y permiten a los pro
 
 - **Gestión Individual (`GET /classrooms/:id`, `PATCH /classrooms/:id`, `DELETE /classrooms/:id`)**
   - **Consulta (`GET`)**: Retorna el detalle del aula. La consulta anida al profesor creador y el listado completo de estudiantes (`students`) inscritos, incluyendo la fecha de inscripción `joinedAt` proveniente de la tabla pivot.
-  - **Seguridad (`PATCH` / `DELETE`)**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula.
+  - **Seguridad (`PATCH` / `DELETE`)**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula. Si un docente intenta modificar un aula ajena, se devuelve `403 Forbidden`.
   - **Edición y Reactivación (`PATCH`)**: Se permite actualizar nombre, descripción y el estado `isActive` (útil para reactivar aulas previamente desactivadas). Las consultas buscan por `id` de forma agnóstica al estado.
   - **Desactivación Lógica (`DELETE`)**: Establece `isActive: false` manteniendo el registro histórico en base de datos.
 
+- **Gestión de Nómina de Estudiantes (`GET /classrooms/:id/students`, `DELETE /classrooms/:id/students/:studentId`)**
+  - **Listado (`GET`)**: Retorna la lista de alumnos inscriptos en un aula específica, restringido al profesor creador de la misma o a un administrador.
+  - **Desvinculación (`DELETE`)**: Permite la desvinculación/remoción de un estudiante del aula mediante la eliminación de su registro en la tabla `ClassroomStudent`.
+  - **Validaciones de Seguridad**: Exige la misma validación de autoría o rol `ADMIN` (retornando `403 Forbidden` ante un intento de gestión ajeno) y verifica que el estudiante efectivamente esté inscrito antes de removerlo (retornando `404 Not Found` si no pertenece a dicha aula).
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), y el mecanismo de inscripción de estudiantes a las aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, y la administración de la nómina de alumnos (listado y remoción), permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
