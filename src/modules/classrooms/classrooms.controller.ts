@@ -48,4 +48,21 @@ export class ClassroomsController {
   remove(@Param('id') id: string, @Request() req: any) {
     return this.classroomsService.remove(id, req.user);
   }
+
+  @Get(':id/students')
+  @Roles('TEACHER', 'ADMIN')
+  getStudents(@Param('id') id: string, @Request() req: any) {
+    return this.classroomsService.getStudents(id, req.user);
+  }
+
+  @Delete(':id/students/:studentId')
+  @HttpCode(HttpStatus.OK)
+  @Roles('TEACHER', 'ADMIN')
+  removeStudent(
+    @Param('id') id: string, 
+    @Param('studentId') studentId: string, 
+    @Request() req: any
+  ) {
+    return this.classroomsService.removeStudent(id, studentId, req.user);
+  }
 }

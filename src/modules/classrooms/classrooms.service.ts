@@ -148,4 +148,33 @@ export class ClassroomsService {
 
     return classroom.update({ isActive: false });
   }
+
+  async getStudents(classroomId: string, user: any) {
+    const classroom = await this.findOne(classroomId);
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para ver los estudiantes de esta aula');
+    }
+
+    return classroom.students;
+  }
+
+  async removeStudent(classroomId: string, studentId: string, user: any) {
+    const classroom = await this.findOne(classroomId);
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para remover estudiantes de esta aula');
+    }
+
+    const enrollment = await this.classroomStudentModel.findOne({
+      where: { classroomId, studentId }
+    });
+
+    if (!enrollment) {
+      throw new NotFoundException('El estudiante no pertenece a esta aula');
+    }
+
+    await enrollment.destroy();
+    return { message: 'Estudiante removido del aula correctamente' };
+  }
 }
