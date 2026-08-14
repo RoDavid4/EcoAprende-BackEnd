@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, F
 import { Role } from '../roles/role.entity';
 import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
+import { Course } from '../courses/course.entity';
 
 @Table({
   tableName: 'users',
@@ -69,4 +70,7 @@ export class User extends Model {
 
   @BelongsToMany(() => Classroom, () => ClassroomStudent)
   declare joinedClassrooms: Classroom[];
+
+  @HasMany(() => Course, { as: 'createdCourses', foreignKey: 'createdById' })
+  declare createdCourses: Course[];
 }
