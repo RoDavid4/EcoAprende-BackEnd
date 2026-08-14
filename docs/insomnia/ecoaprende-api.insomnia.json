@@ -469,8 +469,8 @@ collection:
     meta:
       id: fld_1f707389f24d43a8ab416582e040b0db
       created: 1786143169478
-      modified: 1786143189784
-      sortKey: -1785965637074
+      modified: 1786738559695
+      sortKey: -1785965637092.75
       description: ""
     children:
       - name: Teacher
@@ -486,7 +486,7 @@ collection:
             meta:
               id: req_cf8881fbf4f344d6a5a79bbcd5a140cc
               created: 1786143228250
-              modified: 1786246530963
+              modified: 1786746420623
               isPrivate: false
               description: ""
               sortKey: -1786246530904
@@ -505,7 +505,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjE0MzU4OSwiZXhwIjoxNzg2MjI5OTg5fQ.sdFtVf7N5tnuv5vJMoZbpnD7FikcfoC88ClDt0GFvOU
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -519,7 +519,7 @@ collection:
             meta:
               id: req_a58fe50e586443978e57b302042ac611
               created: 1786143736071
-              modified: 1786340447763
+              modified: 1786746469567
               isPrivate: false
               description: ""
               sortKey: -1786246530879
@@ -529,7 +529,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -821,6 +821,473 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+  - name: Courses & Content
+    meta:
+      id: fld_8f9e76c2fa204574bf5278c411aca403
+      created: 1786738548415
+      modified: 1786738556291
+      sortKey: -1785965637086.5
+      description: ""
+    children:
+      - name: Courses
+        meta:
+          id: fld_3f45b6884f574c1cb8f083f2d39680e4
+          created: 1786738582745
+          modified: 1786738620515
+          sortKey: -1786738611492
+          description: ""
+        children:
+          - url: "{{ _.base_url }}/courses"
+            name: POST /courses (Crear Curso en Borrador)
+            meta:
+              id: req_2320599afee947689c903c5099d16884
+              created: 1786738670103
+              modified: 1786746509447
+              isPrivate: false
+              description: ""
+              sortKey: -1786738673562
+            method: POST
+            body:
+              mimeType: application/json
+              text: >-
+                {
+                  "title": "Cuidado del Agua y Recursos Hídricos",
+                  "description": "Aprenderemos la importancia de conservar las fuentes de agua dulce.",
+                  "imageUrl": "https://images.unsplash.com/photo-water-conservation",
+                  "status": "DRAFT"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/courses"
+            name: GET /courses (Listar Cursos - Teacher)
+            meta:
+              id: req_30e4614fb0864c75886480a6dd036c71
+              created: 1786739321419
+              modified: 1786739391434
+              isPrivate: false
+              description: ""
+              sortKey: -1786492636938
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/courses"
+            name: GET /courses (Listar Cursos - Student)
+            meta:
+              id: req_966de401177f47158ae65c4b41302f90
+              created: 1786739405008
+              modified: 1786739432393
+              isPrivate: false
+              description: ""
+              sortKey: -1786369618626
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjczOTQxMiwiZXhwIjoxNzg2ODI1ODEyfQ.0_iblTGOQ14K1VBG-_Cb26izNum6CQfURP816E4p2mY
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/courses/0ea555b4-1b76-4a5c-a461-6388af803330"
+            name: GET /courses/:id (Obtener Curso con Módulos Anidados)
+            meta:
+              id: req_7766eb39a34b44cea8857071487b012b
+              created: 1786739613979
+              modified: 1786746572631
+              isPrivate: false
+              description: ""
+              sortKey: -1786308109470
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/courses/c3bcaf9f-9a2f-455d-b59d-0f99c0417feb"
+            name: PATCH /courses/:id (Publicar Curso / Editar)
+            meta:
+              id: req_672e1c8bc4cb4393bc4a7498009c79d5
+              created: 1786740008288
+              modified: 1786740076003
+              isPrivate: false
+              description: ""
+              sortKey: -1786277354892
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "status": "PUBLISHED"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/courses/c3bcaf9f-9a2f-455d-b59d-0f99c0417feb"
+            name: DELETE /courses/:id (Desactivar Curso)
+            meta:
+              id: req_031451e62e104bab9b552d1adf3e6ecb
+              created: 1786741046859
+              modified: 1786741055261
+              isPrivate: false
+              description: ""
+              sortKey: -1786277354792
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Modules
+        meta:
+          id: fld_fbc1729dd34f4917b531d828f296805b
+          created: 1786738591805
+          modified: 1786738617943
+          sortKey: -1786738611392
+          description: ""
+        children:
+          - url: "{{ _.base_url }}/modules"
+            name: POST /modules (Crear Módulo asociado al Curso)
+            meta:
+              id: req_d4a07bb06f684d6b992161cffe4c31fa
+              created: 1786741155993
+              modified: 1786746683311
+              isPrivate: false
+              description: ""
+              sortKey: -1786741179116
+            method: POST
+            body:
+              mimeType: application/json
+              text: >-
+                {
+                  "courseId": "0ea555b4-1b76-4a5c-a461-6388af803330",
+                  "title": "Módulo 1: La Huella Hídrica",
+                  "description": "Comprendiendo el impacto del consumo cotidiano.",
+                  "order": 1,
+                  "status": "PUBLISHED"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modules/4ab48890-cca9-46f0-b8e1-3a377bd03126"
+            name: GET /modules/:id (Obtener Módulo con Lecciones Anidadas)
+            meta:
+              id: req_557f165310f8418eac48503b8d73c3de
+              created: 1786741480330
+              modified: 1786746898768
+              isPrivate: false
+              description: ""
+              sortKey: -1786739926339
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modules/6490e0d4-a435-421a-9e4b-0297b966f96b"
+            name: PATCH /modules/:id (Editar Módulo)
+            meta:
+              id: req_2b348d14dc864a3aa5a9439ecd4a6761
+              created: 1786742147719
+              modified: 1786742254162
+              isPrivate: false
+              description: ""
+              sortKey: -1786739299950.5
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "title": "Módulo 3: Huella Hídrica y Ciclo del Agua",
+                  "order": 4
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modules/9d722783-131d-44c1-ab0a-61b684ad73a2"
+            name: DELETE /modules/:id (Desactivar Módulo)
+            meta:
+              id: req_aed03ec2e4b8441280f0c4703d232d67
+              created: 1786742345874
+              modified: 1786742396163
+              isPrivate: false
+              description: ""
+              sortKey: -1786738986756.25
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Lessons
+        meta:
+          id: fld_b5476cb158d44f75990ffeabbecd2a64
+          created: 1786738601101
+          modified: 1786738611320
+          sortKey: -1786738611292
+          description: ""
+        children:
+          - url: "{{ _.base_url }}/lessons"
+            name: POST /lessons (Crear Lección de Texto)
+            meta:
+              id: req_34964b05e8354e0f8bb5363342bc885a
+              created: 1786742758974
+              modified: 1786746769740
+              isPrivate: false
+              description: ""
+              sortKey: -1786742767266
+            method: POST
+            body:
+              mimeType: application/json
+              text: >-
+                {
+                  "moduleId": "4ab48890-cca9-46f0-b8e1-3a377bd03126",
+                  "title": "Introducción a los Recursos Hídricos",
+                  "contentType": "TEXT",
+                  "content": "El 70% del planeta está cubierto de agua, pero solo el 2.5% es dulce...",
+                  "order": 1,
+                  "durationMinutes": 5
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/lessons/ff84597d-f61e-41d4-be9d-666efafe8dfb"
+            name: GET /lessons/:id (Obtener Detalle de Lección)
+            meta:
+              id: req_22467da88b044bf2b3729267a48fc635
+              created: 1786743106561
+              modified: 1786743156633
+              isPrivate: false
+              description: ""
+              sortKey: -1786741973191
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/lessons"
+            name: POST /lessons (Crear Lección de Video)
+            meta:
+              id: req_5073df0432084b2997bf289e9a2d19a2
+              created: 1786743193346
+              modified: 1786746754081
+              isPrivate: false
+              description: ""
+              sortKey: -1786742370228.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "moduleId": "4ab48890-cca9-46f0-b8e1-3a377bd03126",
+                  "title": "Video: Cómo medir tu huella hídrica",
+                  "contentType": "VIDEO",
+                  "content": "Breve documental explicativo.",
+                  "mediaUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  "order": 2,
+                  "durationMinutes": 8
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/lessons/ff84597d-f61e-41d4-be9d-666efafe8dfb"
+            name: PATCH /lessons/:id (Editar Lección)
+            meta:
+              id: req_e9326af183db4f0ea729107c6c3f8770
+              created: 1786743299203
+              modified: 1786743360702
+              isPrivate: false
+              description: ""
+              sortKey: -1786741576153.5
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "durationMinutes": 10
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/lessons/68ef4818-ec4e-42d4-a31c-92e1b2524c19"
+            name: DELETE /lessons/:id (Desactivar Lección)
+            meta:
+              id: req_b67321321b5e4c258c3644171666e30f
+              created: 1786743420773
+              modified: 1786743537999
+              isPrivate: false
+              description: ""
+              sortKey: -1786741377634.75
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -832,7 +1299,8 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1785540239852
+    modified: 1786746363236
     isPrivate: false
   data:
     base_url: http://localhost:3000
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFmNjJiYjFmLTcyYmEtNGZjZC05NTk4LWNmNjFlZTE4YTIyMCIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4Njc0NjE2OSwiZXhwIjoxNzg2ODMyNTY5fQ.EAAcxJZ692zoN5OElIj302_ExcxUqk30UFRf3pisL8o

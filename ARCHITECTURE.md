@@ -56,6 +56,38 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `studentId` (UUID, Foreign Key)
 - `joinedAt` (Date, Default: NOW): Fecha de inscripción del alumno al aula. Modela la relación N:M entre `User` y `Classroom`.
 
+#### `Course` (Modulo `courses`)
+- `id` (UUIDV4, Primary Key)
+- `title` (String, Not Null)
+- `description` (Text, Nullable)
+- `imageUrl` (String, Nullable)
+- `status` (Enum: 'DRAFT', 'PUBLISHED' - Default: 'DRAFT')
+- `createdById` (UUID, Foreign Key, asocia con `User`)
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `Module` (Modulo `courses`)
+- `id` (UUIDV4, Primary Key)
+- `courseId` (UUID, Foreign Key, asocia con `Course`)
+- `title` (String, Not Null)
+- `description` (Text, Nullable)
+- `order` (Integer, Not Null): Define el orden del módulo. Posee un índice único compuesto (`[courseId, order]`) para evitar colisiones. Si se omite en la creación, se auto-calcula el siguiente orden disponible.
+- `status` (Enum: 'DRAFT', 'PUBLISHED' - Default: 'DRAFT')
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `Lesson` (Modulo `courses`)
+- `id` (UUIDV4, Primary Key)
+- `moduleId` (UUID, Foreign Key, asocia con `Module`)
+- `title` (String, Not Null)
+- `contentType` (Enum: 'TEXT', 'VIDEO', 'MULTIMEDIA' - Not Null)
+- `content` (Text, Nullable)
+- `mediaUrl` (String, Nullable)
+- `order` (Integer, Not Null): Define el orden de la lección. Posee un índice único compuesto (`[moduleId, order]`). Auto-calculable en caso de omitirse.
+- `durationMinutes` (Integer, Nullable)
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -84,7 +116,12 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 - **Hashing**: Las contraseñas de los usuarios se encriptan utilizando `bcrypt` con un salt de 10 rondas antes de persistirse en la base de datos.
 - **Autenticacion (JWT)**: Se implementa mediante `JwtStrategy` y `JwtAuthGuard` (basado en `passport-jwt`). La autenticacion se mantiene emitiendo tokens firmados de forma asincrona, con un payload que incluye identificadores inofensivos (`id`, `email`, `role`).
 - **Autorizacion Basada en Roles (RBAC)**: Se utiliza un decorador personalizado `@Roles()` acoplado a un `RolesGuard`. Este guard emplea `Reflector` para contrastar los roles requeridos por el endpoint contra el rol mapeado en el token del usuario.
-- **Validacion Estricta**: La aplicacion activa un `ValidationPipe` global en la etapa de bootstrap (`main.ts`). Esta tuberia depura los payloads (whitelist), rechaza campos no autorizados (forbidNonWhitelisted) y transforma los datos automaticamente basandose en los Data Transfer Objects (DTOs) definidos mediante `class-validator`.
+- **Validacion Estricta**: La aplicacion activa un `ValidationPipe` global en la etapa de bootstrap (`main.ts`). Esta tuberia depura los payloads (whitelist), rechaza campos no autorizados (forbidNonWhitelisted) y transforma los datos automaticamente basandose en los Data Transfer Objects (DTOs) definidos mediante `class-validator`. Además, se utiliza `@nestjs/mapped-types` (`PartialType`) para inferir automáticamente los esquemas opcionales en los DTOs de actualización (`PATCH`).
+- **Resiliencia JWT**: En `JwtStrategy`, el payload no solo se decodifica, sino que se cruza con la base de datos (`UsersService.getProfile`) para garantizar que el usuario exista y siga activo (`isActive: true`), previniendo así el acceso con tokens huérfanos.
+
+### Manejo de Errores (Filtro Global)
+
+Para evitar respuestas genéricas de Error 500 ante excepciones no controladas de la base de datos, el backend registra un interceptor global (`SequelizeExceptionFilter`). Este filtro captura transgresiones referenciales de PostgreSQL a través de Sequelize (como `SequelizeForeignKeyConstraintError` o `SequelizeUniqueConstraintError`) y los muta a respuestas HTTP semánticas (`400 Bad Request` o `409 Conflict`), informando de forma amigable si una entidad referenciada no existe o si hubo colisiones en llaves únicas (ej. al repetir el valor `order` en módulos y lecciones).
 
 ### Endpoints (Auth)
 
@@ -157,9 +194,21 @@ Estos endpoints son gestionados por el módulo `classrooms` y permiten a los pro
   - **Desvinculación (`DELETE`)**: Permite la desvinculación/remoción de un estudiante del aula mediante la eliminación de su registro en la tabla `ClassroomStudent`.
   - **Validaciones de Seguridad**: Exige la misma validación de autoría o rol `ADMIN` (retornando `403 Forbidden` ante un intento de gestión ajeno) y verifica que el estudiante efectivamente esté inscrito antes de removerlo (retornando `404 Not Found` si no pertenece a dicha aula).
 
+### Endpoints (Content: Courses, Modules, Lessons)
+
+Estos endpoints son provistos por `CoursesModule` para gestionar la estructura jerárquica de contenidos del sistema educativo.
+
+- **Jerarquía de Lectura (`GET /courses`, `GET /modules`, `GET /lessons`)**
+  - **Accesibilidad Dinámica**: Los usuarios con rol `STUDENT` únicamente reciben contenidos con `isActive: true` y `status: 'PUBLISHED'`. Los roles `TEACHER` y `ADMIN` reciben la nómina completa incluyendo los borradores (`DRAFT`).
+  - **Anidación y Ordenamiento**: Al consultar un curso por ID, el endpoint anida automáticamente el árbol de módulos activos (y publicados, si el lector es alumno) ordenados de forma ascendente por su propiedad `order`. De igual manera, al consultar un módulo, se anexan sus lecciones respetando su respectivo `order ASC`.
+
+- **Mutación de Contenido (`POST`, `PATCH`, `DELETE`)**
+  - **Seguridad y Creación**: Acciones estrictamente limitadas a roles `TEACHER` y `ADMIN`. Al crear un curso, el sistema inyecta automáticamente el ID del creador (`createdById`) extraído del payload del JWT de forma segura.
+  - **Validaciones Anti-Colisiones**: La lógica de negocio (`ModulesService` y `LessonsService`) revisa preventivamente la posible colisión de índices de orden y puede auto-calcular de forma determinista el consecutivo libre (mediante `max() + 1`) garantizando consistencia en las listas de reproducción multimedia.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, y la administración de la nómina de alumnos (listado y remoción), permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), y la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
