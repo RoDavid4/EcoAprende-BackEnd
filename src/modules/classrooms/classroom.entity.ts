@@ -1,6 +1,8 @@
 import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, BelongsToMany } from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { ClassroomStudent } from './classroom-student.entity';
+import { ClassroomModule } from './classroom-module.entity';
+import { Module } from '../courses/module.entity';
 
 @Table({
   tableName: 'classrooms',
@@ -52,4 +54,7 @@ export class Classroom extends Model {
 
   @BelongsToMany(() => User, () => ClassroomStudent)
   declare students: User[];
+
+  @BelongsToMany(() => Module, () => ClassroomModule)
+  declare modules: Module[];
 }

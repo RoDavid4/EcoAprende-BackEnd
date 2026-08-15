@@ -56,6 +56,14 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `studentId` (UUID, Foreign Key)
 - `joinedAt` (Date, Default: NOW): Fecha de inscripción del alumno al aula. Modela la relación N:M entre `User` y `Classroom`.
 
+#### `ClassroomModule` (Modulo `classrooms` - Tabla Intermedia)
+- `id` (UUIDV4, Primary Key)
+- `classroomId` (UUID, Foreign Key, asocia con `Classroom`)
+- `moduleId` (UUID, Foreign Key, asocia con `Module`)
+- `assignedAt` (Date, Default: NOW)
+- `isVisible` (Boolean, Default: true): Controla la visibilidad del módulo para los alumnos inscritos en el aula.
+- Presenta un índice único compuesto en `['classroomId', 'moduleId']` para prevenir duplicaciones de asignación. Modela la relación N:M entre `Classroom` y `Module`.
+
 #### `Course` (Modulo `courses`)
 - `id` (UUIDV4, Primary Key)
 - `title` (String, Not Null)
@@ -194,6 +202,12 @@ Estos endpoints son gestionados por el módulo `classrooms` y permiten a los pro
   - **Desvinculación (`DELETE`)**: Permite la desvinculación/remoción de un estudiante del aula mediante la eliminación de su registro en la tabla `ClassroomStudent`.
   - **Validaciones de Seguridad**: Exige la misma validación de autoría o rol `ADMIN` (retornando `403 Forbidden` ante un intento de gestión ajeno) y verifica que el estudiante efectivamente esté inscrito antes de removerlo (retornando `404 Not Found` si no pertenece a dicha aula).
 
+- **Gestión de Módulos en Aulas (`POST /classrooms/:id/modules`, `GET`, `PATCH`, `DELETE`)**
+  - **Asignación (`POST`)**: Permite al docente (o ADMIN) vincular un módulo a su aula. Se valida la existencia del módulo y se protege contra duplicaciones de asignación mediante el control de colisión y el filtro de base de datos.
+  - **Listado (`GET`)**: Los usuarios `STUDENT` que están inscriptos en el aula consultada solo reciben los módulos asignados que se encuentren activos y tengan el flag `isVisible: true`. Los docentes y administradores visualizan la nómina completa.
+  - **Alternar Visibilidad (`PATCH`)**: Acepta el flag `isVisible` para ocultar o mostrar contenido temporalmente a los alumnos de un aula específica sin tener que desvincular el módulo entero.
+  - **Desvinculación (`DELETE`)**: Elimina el registro pivot en `ClassroomModule`, cortando la relación entre el aula y el módulo.
+
 ### Endpoints (Content: Courses, Modules, Lessons)
 
 Estos endpoints son provistos por `CoursesModule` para gestionar la estructura jerárquica de contenidos del sistema educativo.
@@ -208,7 +222,7 @@ Estos endpoints son provistos por `CoursesModule` para gestionar la estructura j
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), y la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), y finalmente la interconexión mediante la gestión de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

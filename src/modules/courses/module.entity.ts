@@ -1,6 +1,8 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { Course } from './course.entity';
 import { Lesson } from './lesson.entity';
+import { Classroom } from '../classrooms/classroom.entity';
+import { ClassroomModule } from '../classrooms/classroom-module.entity';
 
 @Table({
   tableName: 'modules',
@@ -64,4 +66,7 @@ export class Module extends Model {
 
   @HasMany(() => Lesson, { as: 'lessons', foreignKey: 'moduleId' })
   declare lessons: Lesson[];
+
+  @BelongsToMany(() => Classroom, () => ClassroomModule)
+  declare classrooms: Classroom[];
 }
