@@ -6,12 +6,18 @@ import { User } from '../users/user.entity';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { JoinClassroomDto } from './dto/join-classroom.dto';
+import { ClassroomModule as ClassroomModuleEntity } from './classroom-module.entity';
+import { Module as CourseModuleEntity } from '../courses/module.entity';
+import { AssignModuleDto } from './dto/assign-module.dto';
+import { UpdateClassroomModuleDto } from './dto/update-classroom-module.dto';
 
 @Injectable()
 export class ClassroomsService {
   constructor(
     @InjectModel(Classroom) private classroomModel: typeof Classroom,
     @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
+    @InjectModel(ClassroomModuleEntity) private classroomModuleModel: typeof ClassroomModuleEntity,
+    @InjectModel(CourseModuleEntity) private courseModuleModel: typeof CourseModuleEntity,
   ) {}
 
   private async generateUniqueCode(): Promise<string> {
@@ -176,5 +182,111 @@ export class ClassroomsService {
 
     await enrollment.destroy();
     return { message: 'Estudiante removido del aula correctamente' };
+  }
+
+  async assignModule(classroomId: string, assignDto: AssignModuleDto, user: any) {
+    const classroom = await this.findOne(classroomId);
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para asignar módulos a esta aula');
+    }
+
+    const moduleRecord = await this.courseModuleModel.findOne({ where: { id: assignDto.moduleId, isActive: true } });
+    if (!moduleRecord) {
+      throw new NotFoundException('Módulo no encontrado');
+    }
+
+    const existing = await this.classroomModuleModel.findOne({
+      where: { classroomId, moduleId: assignDto.moduleId }
+    });
+
+    if (existing) {
+      throw new ConflictException('El módulo ya está asignado a esta aula');
+    }
+
+    await this.classroomModuleModel.create({
+      classroomId,
+      moduleId: assignDto.moduleId,
+    });
+
+    return { message: 'Módulo asignado correctamente' };
+  }
+
+  async getAssignedModules(classroomId: string, user: any) {
+    const classroom = await this.classroomModel.findByPk(classroomId, {
+      include: [
+        {
+          model: CourseModuleEntity,
+          as: 'modules',
+          through: { attributes: ['assignedAt', 'isVisible'] }
+        },
+        {
+          model: User,
+          as: 'students',
+          attributes: ['id']
+        }
+      ]
+    });
+
+    if (!classroom) {
+      throw new NotFoundException('Aula no encontrada');
+    }
+
+    if (user.role === 'STUDENT') {
+      const isStudent = classroom.students.some(s => s.id === user.id);
+      if (!isStudent) {
+        throw new ForbiddenException('No perteneces a esta aula');
+      }
+
+      return classroom.modules.filter(m => m.isActive && (m as any).ClassroomModule.isVisible);
+    }
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para ver los módulos de esta aula');
+    }
+
+    return classroom.modules;
+  }
+
+  async updateModuleVisibility(classroomId: string, moduleId: string, updateDto: UpdateClassroomModuleDto, user: any) {
+    const classroom = await this.findOne(classroomId);
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para editar módulos en esta aula');
+    }
+
+    const assignment = await this.classroomModuleModel.findOne({
+      where: { classroomId, moduleId }
+    });
+
+    if (!assignment) {
+      throw new NotFoundException('El módulo no está asignado a esta aula');
+    }
+
+    if (updateDto.isVisible !== undefined) {
+      assignment.isVisible = updateDto.isVisible;
+      await assignment.save();
+    }
+
+    return assignment;
+  }
+
+  async removeModule(classroomId: string, moduleId: string, user: any) {
+    const classroom = await this.findOne(classroomId);
+
+    if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para remover módulos de esta aula');
+    }
+
+    const assignment = await this.classroomModuleModel.findOne({
+      where: { classroomId, moduleId }
+    });
+
+    if (!assignment) {
+      throw new NotFoundException('El módulo no está asignado a esta aula');
+    }
+
+    await assignment.destroy();
+    return { message: 'Módulo desvinculado correctamente' };
   }
 }

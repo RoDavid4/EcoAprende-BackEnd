@@ -3,6 +3,8 @@ import { ClassroomsService } from './classrooms.service';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { JoinClassroomDto } from './dto/join-classroom.dto';
+import { AssignModuleDto } from './dto/assign-module.dto';
+import { UpdateClassroomModuleDto } from './dto/update-classroom-module.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -64,5 +66,39 @@ export class ClassroomsController {
     @Request() req: any
   ) {
     return this.classroomsService.removeStudent(id, studentId, req.user);
+  }
+
+  @Post(':id/modules')
+  @Roles('TEACHER', 'ADMIN')
+  assignModule(@Param('id') id: string, @Body() assignDto: AssignModuleDto, @Request() req: any) {
+    return this.classroomsService.assignModule(id, assignDto, req.user);
+  }
+
+  @Get(':id/modules')
+  @Roles('TEACHER', 'ADMIN', 'STUDENT')
+  getAssignedModules(@Param('id') id: string, @Request() req: any) {
+    return this.classroomsService.getAssignedModules(id, req.user);
+  }
+
+  @Patch(':id/modules/:moduleId')
+  @Roles('TEACHER', 'ADMIN')
+  updateModuleVisibility(
+    @Param('id') id: string,
+    @Param('moduleId') moduleId: string,
+    @Body() updateDto: UpdateClassroomModuleDto,
+    @Request() req: any
+  ) {
+    return this.classroomsService.updateModuleVisibility(id, moduleId, updateDto, req.user);
+  }
+
+  @Delete(':id/modules/:moduleId')
+  @HttpCode(HttpStatus.OK)
+  @Roles('TEACHER', 'ADMIN')
+  removeModule(
+    @Param('id') id: string,
+    @Param('moduleId') moduleId: string,
+    @Request() req: any
+  ) {
+    return this.classroomsService.removeModule(id, moduleId, req.user);
   }
 }

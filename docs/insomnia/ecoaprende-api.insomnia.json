@@ -706,10 +706,10 @@ collection:
             meta:
               id: req_ac180cd06d9d418e8664f15779c3ae8c
               created: 1786340575046
-              modified: 1786340676130
+              modified: 1786750868527
               isPrivate: false
               description: ""
-              sortKey: -1786246530607.125
+              sortKey: -1786246530682.125
             method: DELETE
             headers:
               - name: User-Agent
@@ -717,6 +717,96 @@ collection:
             authentication:
               type: bearer
               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjM0MDM2NCwiZXhwIjoxNzg2NDI2NzY0fQ.vAjTK7GPLzZN1o4OsEiHZSlLnDUsxQYUgpQWwLyHxAk
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules"
+            name: POST /classrooms/:id/modules (Asignar Módulo a un Aula)
+            meta:
+              id: req_d49df4ae3b1f4237bf2c8b406cbea7eb
+              created: 1786750497161
+              modified: 1786751019670
+              isPrivate: false
+              description: ""
+              sortKey: -1786246530657.125
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "moduleId": "fc65483a-d70f-497b-9cf4-0c47e5ba01ee"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules"
+            name: GET /classrooms/:id/modules (Listar Módulos Asignados al Aula)
+            meta:
+              id: req_749f066ceb5d4886b9f846d345224ca0
+              created: 1786750882718
+              modified: 1786751164209
+              isPrivate: false
+              description: ""
+              sortKey: -1786106106703.0625
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url
+              }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules/fc6548\
+              3a-d70f-497b-9cf4-0c47e5ba01ee"
+            name: PATCH /classrooms/:id/modules/:moduleId (Cambiar Visibilidad del Módulo)
+            meta:
+              id: req_181124501d1f450585ecb9a555b2ab8d
+              created: 1786751784584
+              modified: 1786751932772
+              isPrivate: false
+              description: ""
+              sortKey: -1786035894726.0312
+            method: PATCH
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "isVisible": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -738,7 +828,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1786340802480
+              modified: 1786751256687
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -747,7 +837,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "code": "EQSJO5"
+                  "code": "PCB1TE"
                 }
             headers:
               - name: Content-Type
@@ -756,7 +846,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjM0MDcwMiwiZXhwIjoxNzg2NDI3MTAyfQ.EKrKw8Fe0RenuUI-yCcqVv7O94Vl1GxlwwnD3z7Rxk0
+              token: "{{ _.student_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -770,10 +860,10 @@ collection:
             meta:
               id: req_d60c042839af4678b3b1b0d8d71d0510
               created: 1786246972962
-              modified: 1786340757922
+              modified: 1786751193166
               isPrivate: false
               description: ""
-              sortKey: -1786246565609
+              sortKey: -1786246578623.375
             method: GET
             headers:
               - name: User-Agent
@@ -813,6 +903,30 @@ collection:
             authentication:
               type: bearer
               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjI0Njc1MywiZXhwIjoxNzg2MzMzMTUzfQ.8eYbuwDAW8npxHBVZ4BNPFnUysifbaEn9N5eg7Yjk40
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules"
+            name: GET /classrooms/:id/modules (Listar Módulos Asignados al Aula) Student
+            meta:
+              id: req_9f066fa606784daba1174f99cde244fc
+              created: 1786751172270
+              modified: 1786751206509
+              isPrivate: false
+              description: ""
+              sortKey: -1786246574285.25
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.student_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -877,7 +991,7 @@ collection:
             meta:
               id: req_30e4614fb0864c75886480a6dd036c71
               created: 1786739321419
-              modified: 1786739391434
+              modified: 1786750733748
               isPrivate: false
               description: ""
               sortKey: -1786492636938
@@ -887,7 +1001,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -920,12 +1034,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/0ea555b4-1b76-4a5c-a461-6388af803330"
+          - url: "{{ _.base_url }}/courses/c43cc7d0-4e74-4909-b26f-7e177c195daa"
             name: GET /courses/:id (Obtener Curso con Módulos Anidados)
             meta:
               id: req_7766eb39a34b44cea8857071487b012b
               created: 1786739613979
-              modified: 1786746572631
+              modified: 1786750763669
               isPrivate: false
               description: ""
               sortKey: -1786308109470
@@ -944,12 +1058,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/c3bcaf9f-9a2f-455d-b59d-0f99c0417feb"
+          - url: "{{ _.base_url }}/courses/c43cc7d0-4e74-4909-b26f-7e177c195daa"
             name: PATCH /courses/:id (Publicar Curso / Editar)
             meta:
               id: req_672e1c8bc4cb4393bc4a7498009c79d5
               created: 1786740008288
-              modified: 1786740076003
+              modified: 1786750680739
               isPrivate: false
               description: ""
               sortKey: -1786277354892
@@ -967,7 +1081,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1013,7 +1127,7 @@ collection:
             meta:
               id: req_d4a07bb06f684d6b992161cffe4c31fa
               created: 1786741155993
-              modified: 1786746683311
+              modified: 1786750978145
               isPrivate: false
               description: ""
               sortKey: -1786741179116
@@ -1022,7 +1136,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "courseId": "0ea555b4-1b76-4a5c-a461-6388af803330",
+                  "courseId": "c43cc7d0-4e74-4909-b26f-7e177c195daa",
                   "title": "Módulo 1: La Huella Hídrica",
                   "description": "Comprendiendo el impacto del consumo cotidiano.",
                   "order": 1,
@@ -1299,8 +1413,9 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1786746363236
+    modified: 1786751121160
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFmNjJiYjFmLTcyYmEtNGZjZC05NTk4LWNmNjFlZTE4YTIyMCIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4Njc0NjE2OSwiZXhwIjoxNzg2ODMyNTY5fQ.EAAcxJZ692zoN5OElIj302_ExcxUqk30UFRf3pisL8o
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4Njc1MDM0MywiZXhwIjoxNzg2ODM2NzQzfQ.7MB2XAIFtwgL8s_x5vhLNZCRBEoqsB7hIV_qw8yjvX8
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4Njc1MTA5NCwiZXhwIjoxNzg2ODM3NDk0fQ.Bx59JBlTa1UnAeT2L_qfMawU5cYKbvtKr3YsCWO6REM

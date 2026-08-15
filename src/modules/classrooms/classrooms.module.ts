@@ -4,9 +4,11 @@ import { ClassroomsService } from './classrooms.service';
 import { ClassroomsController } from './classrooms.controller';
 import { Classroom } from './classroom.entity';
 import { ClassroomStudent } from './classroom-student.entity';
+import { ClassroomModule as ClassroomModuleEntity } from './classroom-module.entity';
+import { Module as CourseModuleEntity } from '../courses/module.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Classroom, ClassroomStudent])],
+  imports: [SequelizeModule.forFeature([Classroom, ClassroomStudent, ClassroomModuleEntity, CourseModuleEntity])],
   controllers: [ClassroomsController],
   providers: [ClassroomsService],
   exports: [SequelizeModule, ClassroomsService],
