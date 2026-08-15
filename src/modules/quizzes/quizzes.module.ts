@@ -1,0 +1,16 @@
+import { Module } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { QuizzesService } from './quizzes.service';
+import { QuizzesController } from './quizzes.controller';
+import { Quiz } from './quiz.entity';
+import { Question } from './question.entity';
+import { Option } from './option.entity';
+import { Module as CourseModule } from '../courses/module.entity';
+
+@Module({
+  imports: [SequelizeModule.forFeature([Quiz, Question, Option, CourseModule])],
+  controllers: [QuizzesController],
+  providers: [QuizzesService],
+  exports: [SequelizeModule, QuizzesService],
+})
+export class QuizzesModule {}

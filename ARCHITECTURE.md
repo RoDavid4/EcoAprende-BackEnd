@@ -96,6 +96,35 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `Quiz` (Modulo `quizzes`)
+- `id` (UUIDV4, Primary Key)
+- `moduleId` (UUID, Foreign Key, asocia con `Module`)
+- `title` (String, Not Null)
+- `description` (Text, Nullable)
+- `passingScore` (Integer, Default: 70): Porcentaje mínimo para aprobar.
+- `maxAttempts` (Integer, Default: 3): Número máximo de intentos permitidos.
+- `timeLimitMinutes` (Integer, Nullable): Tiempo límite para completar la evaluación.
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `Question` (Modulo `quizzes`)
+- `id` (UUIDV4, Primary Key)
+- `quizId` (UUID, Foreign Key, asocia con `Quiz`)
+- `statement` (Text, Not Null): Enunciado de la pregunta.
+- `explanation` (Text, Nullable): Explicación pedagógica tras responder.
+- `order` (Integer, Not Null): Define la secuencia dentro de la evaluación.
+- `points` (Integer, Default: 10): Ponderación o valor de la pregunta.
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `Option` (Modulo `quizzes`)
+- `id` (UUIDV4, Primary Key)
+- `questionId` (UUID, Foreign Key, asocia con `Question`)
+- `text` (Text, Not Null): Texto de la opción de respuesta.
+- `isCorrect` (Boolean, Not Null): Define si esta opción es la respuesta correcta.
+- `order` (Integer, Nullable)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -208,9 +237,9 @@ Estos endpoints son gestionados por el módulo `classrooms` y permiten a los pro
   - **Alternar Visibilidad (`PATCH`)**: Acepta el flag `isVisible` para ocultar o mostrar contenido temporalmente a los alumnos de un aula específica sin tener que desvincular el módulo entero.
   - **Desvinculación (`DELETE`)**: Elimina el registro pivot en `ClassroomModule`, cortando la relación entre el aula y el módulo.
 
-### Endpoints (Content: Courses, Modules, Lessons)
+### Endpoints (Content: Courses, Modules, Lessons, Quizzes)
 
-Estos endpoints son provistos por `CoursesModule` para gestionar la estructura jerárquica de contenidos del sistema educativo.
+Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestionar la estructura jerárquica de contenidos del sistema educativo y sus evaluaciones correspondientes.
 
 - **Jerarquía de Lectura (`GET /courses`, `GET /modules`, `GET /lessons`)**
   - **Accesibilidad Dinámica**: Los usuarios con rol `STUDENT` únicamente reciben contenidos con `isActive: true` y `status: 'PUBLISHED'`. Los roles `TEACHER` y `ADMIN` reciben la nómina completa incluyendo los borradores (`DRAFT`).
@@ -220,9 +249,14 @@ Estos endpoints son provistos por `CoursesModule` para gestionar la estructura j
   - **Seguridad y Creación**: Acciones estrictamente limitadas a roles `TEACHER` y `ADMIN`. Al crear un curso, el sistema inyecta automáticamente el ID del creador (`createdById`) extraído del payload del JWT de forma segura.
   - **Validaciones Anti-Colisiones**: La lógica de negocio (`ModulesService` y `LessonsService`) revisa preventivamente la posible colisión de índices de orden y puede auto-calcular de forma determinista el consecutivo libre (mediante `max() + 1`) garantizando consistencia en las listas de reproducción multimedia.
 
+- **Gestión de Evaluaciones (`POST /quizzes`, `GET`, `PATCH`, `DELETE`)**
+  - **Creación Transaccional y Validaciones**: La creación de evaluaciones permite enviar payloads anidados (`Quiz` con array de `questions` y array de `options`). La capa de servicios envuelve la creación en una transacción (`sequelize.transaction`). Adicionalmente, validaciones DTO y reglas de negocio garantizan que cada pregunta disponga de al menos 2 opciones y obligatoriamente contenga al menos una opción correcta (`isCorrect: true`).
+  - **Consultas con Prevención de Trampas (`GET /quizzes/:id`)**: Si el usuario que efectúa la consulta posee el rol `STUDENT`, el backend aplica una política de seguridad que excluye dinámicamente el atributo `isCorrect` de todas las opciones en la respuesta. Esto imposibilita el fraude mediante inspección de tráfico de red.
+  - **Restricciones RBAC**: La mutación de evaluaciones (creación, edición, eliminación) es un privilegio exclusivo para usuarios con roles `TEACHER` o `ADMIN`.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), y finalmente la interconexión mediante la gestión de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

@@ -939,8 +939,8 @@ collection:
     meta:
       id: fld_8f9e76c2fa204574bf5278c411aca403
       created: 1786738548415
-      modified: 1786738556291
-      sortKey: -1785965637086.5
+      modified: 1786817862143
+      sortKey: -1785965637091.1875
       description: ""
     children:
       - name: Courses
@@ -1015,7 +1015,7 @@ collection:
             meta:
               id: req_966de401177f47158ae65c4b41302f90
               created: 1786739405008
-              modified: 1786739432393
+              modified: 1786821097434
               isPrivate: false
               description: ""
               sortKey: -1786369618626
@@ -1025,7 +1025,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjczOTQxMiwiZXhwIjoxNzg2ODI1ODEyfQ.0_iblTGOQ14K1VBG-_Cb26izNum6CQfURP816E4p2mY
+              token: "{{ _.student_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1158,12 +1158,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/modules/4ab48890-cca9-46f0-b8e1-3a377bd03126"
+          - url: "{{ _.base_url }}/modules/24251f6c-0832-45ad-aa2f-4c23990e9074"
             name: GET /modules/:id (Obtener Módulo con Lecciones Anidadas)
             meta:
               id: req_557f165310f8418eac48503b8d73c3de
               created: 1786741480330
-              modified: 1786746898768
+              modified: 1786821153162
               isPrivate: false
               description: ""
               sortKey: -1786739926339
@@ -1402,6 +1402,182 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+  - name: Quizzes & Assessments
+    meta:
+      id: fld_f489ee293e224dd898d7ada85e57d377
+      created: 1786817821261
+      modified: 1786817858217
+      sortKey: -1785965637089.625
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/quizzes"
+        name: POST /quizzes (Crear Quiz anidado con Preguntas y Opciones)
+        meta:
+          id: req_f023a89f874540ec81b74e4b36d954e0
+          created: 1786817878204
+          modified: 1786821196540
+          isPrivate: false
+          description: ""
+          sortKey: -1786817891479
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "moduleId": "24251f6c-0832-45ad-aa2f-4c23990e9074",
+              "title": "Evaluación: Huella Hídrica y Conservación",
+              "description": "Comprueba lo aprendido sobre el uso responsable del agua.",
+              "passingScore": 70,
+              "maxAttempts": 3,
+              "timeLimitMinutes": 15,
+              "questions": [
+                {
+                  "statement": "¿Qué porcentaje aproximado del agua del planeta es agua dulce?",
+                  "explanation": "Solo alrededor del 2.5% es agua dulce, y la mayor parte está en glaciares.",
+                  "order": 1,
+                  "points": 10,
+                  "options": [
+                    { "text": "Aproximadamente el 2.5%", "isCorrect": true, "order": 1 },
+                    { "text": "Alrededor del 25%", "isCorrect": false, "order": 2 },
+                    { "text": "Casi el 50%", "isCorrect": false, "order": 3 }
+                  ]
+                },
+                {
+                  "statement": "¿Cuál de las siguientes acciones reduce directamente la huella hídrica doméstica?",
+                  "explanation": "Cerrar la canilla durante el cepillado ahorra decenas de litros diarios.",
+                  "order": 2,
+                  "points": 10,
+                  "options": [
+                    { "text": "Reparar fugas de agua y cerrar canillas mientras no se usen", "isCorrect": true, "order": 1 },
+                    { "text": "Dejar la manguera abierta para regar el asfalto", "isCorrect": false, "order": 2 }
+                  ]
+                }
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70"
+        name: GET /quizzes/:id (Auditoría Docente)
+        meta:
+          id: req_e171cec97714472f808000c4f6997f59
+          created: 1786821341229
+          modified: 1786821373005
+          isPrivate: false
+          description: ""
+          sortKey: -1786780329372.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70"
+        name: GET /quizzes/:id (Consulta Estudiante Anti-Trampa)
+        meta:
+          id: req_73a63f60ecc4480aac5cfdedf64b8aae
+          created: 1786821443426
+          modified: 1786821481098
+          isPrivate: false
+          description: ""
+          sortKey: -1786761548319.25
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/quizzes"
+        name: POST /quizzes (Crear Quiz anidado con Preguntas y Opciones todas falsas)
+        meta:
+          id: req_fcdb1df5a7dd4404849c1e49efb8424d
+          created: 1786821555870
+          modified: 1786821612587
+          isPrivate: false
+          description: ""
+          sortKey: -1786799110425.75
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "moduleId": "24251f6c-0832-45ad-aa2f-4c23990e9074",
+              "title": "Evaluación: Huella Hídrica y Conservación",
+              "description": "Comprueba lo aprendido sobre el uso responsable del agua.",
+              "passingScore": 70,
+              "maxAttempts": 3,
+              "timeLimitMinutes": 15,
+              "questions": [
+                {
+                  "statement": "¿Qué porcentaje aproximado del agua del planeta es agua dulce?",
+                  "explanation": "Solo alrededor del 2.5% es agua dulce, y la mayor parte está en glaciares.",
+                  "order": 1,
+                  "points": 10,
+                  "options": [
+                    { "text": "Aproximadamente el 2.5%", "isCorrect": false, "order": 1 },
+                    { "text": "Alrededor del 25%", "isCorrect": false, "order": 2 },
+                    { "text": "Casi el 50%", "isCorrect": false, "order": 3 }
+                  ]
+                },
+                {
+                  "statement": "¿Cuál de las siguientes acciones reduce directamente la huella hídrica doméstica?",
+                  "explanation": "Cerrar la canilla durante el cepillado ahorra decenas de litros diarios.",
+                  "order": 2,
+                  "points": 10,
+                  "options": [
+                    { "text": "Reparar fugas de agua y cerrar canillas mientras no se usen", "isCorrect": false, "order": 1 },
+                    { "text": "Dejar la manguera abierta para regar el asfalto", "isCorrect": false, "order": 2 }
+                  ]
+                }
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -1413,9 +1589,9 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1786751121160
+    modified: 1786821049309
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4Njc1MDM0MywiZXhwIjoxNzg2ODM2NzQzfQ.7MB2XAIFtwgL8s_x5vhLNZCRBEoqsB7hIV_qw8yjvX8
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4Njc1MTA5NCwiZXhwIjoxNzg2ODM3NDk0fQ.Bx59JBlTa1UnAeT2L_qfMawU5cYKbvtKr3YsCWO6REM
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjgyMDkzNiwiZXhwIjoxNzg2OTA3MzM2fQ.-lZ85S_41CTnIFDRPhv5JanI5rmnMfzyueIUl90bQSE
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjgyMTAyOCwiZXhwIjoxNzg2OTA3NDI4fQ.r3FXtOdl8lCK5hANo5cMsOeL8M1IGZ5aAbEO0pBpg78

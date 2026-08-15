@@ -8,6 +8,7 @@ import { RolesModule } from './modules/roles';
 import { SeederModule } from './modules/seeder';
 import { ClassroomsModule } from './modules/classrooms';
 import { CoursesModule } from './modules/courses/courses.module';
+import { QuizzesModule } from './modules/quizzes/quizzes.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CoursesModule } from './modules/courses/courses.module';
     SeederModule,
     ClassroomsModule,
     CoursesModule,
+    QuizzesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
