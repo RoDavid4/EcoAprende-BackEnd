@@ -307,6 +307,12 @@ Este módulo gestiona la creación de retos y misiones ambientales junto con su 
   - **Bandeja del Alumno (`GET /missions/submissions/my-submissions`)**: Restringido a `STUDENT`. Retorna el historial personal de misiones entregadas para consultar sus estados y el `feedback` recibido del docente.
   - **Mesa de Revisión (`GET /missions/:id/submissions`, `PATCH /missions/submissions/:submissionId/review`)**: Restringido a `TEACHER` y `ADMIN`. Permite visualizar la nómina completa de entregas de una misión específica. Al revisar (aprobar/rechazar) una entrega, el sistema sella de manera inmutable el `reviewedById` (ID del evaluador) y el timestamp `reviewedAt`, adjuntando las observaciones pedagógicas en el campo `feedback`.
 
+## Configuración y Entorno
+
+El backend está diseñado para ser configurable mediante variables de entorno (almacenadas en `.env` y documentadas en `.env.example`).
+
+- **CORS (Cross-Origin Resource Sharing)**: La aplicación habilita peticiones originadas desde clientes externos web (como Angular o React). En el archivo principal `src/main.ts`, la configuración extrae dinámicamente el origen permitido utilizando la variable de entorno `FRONTEND_URL`. Si esta variable no está definida, hace un *fallback* seguro a `http://localhost:4200` para entornos locales de desarrollo.
+
 ## Herramientas de Pruebas
 
 El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
