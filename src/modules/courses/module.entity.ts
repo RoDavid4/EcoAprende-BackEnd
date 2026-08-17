@@ -4,6 +4,7 @@ import { Lesson } from './lesson.entity';
 import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomModule } from '../classrooms/classroom-module.entity';
 import { Quiz } from '../quizzes/quiz.entity';
+import { Mission } from '../missions/mission.entity';
 
 @Table({
   tableName: 'modules',
@@ -70,6 +71,9 @@ export class Module extends Model {
 
   @HasMany(() => Quiz, { as: 'quizzes', foreignKey: 'moduleId' })
   declare quizzes: Quiz[];
+
+  @HasMany(() => Mission, { as: 'missions', foreignKey: 'moduleId' })
+  declare missions: Mission[];
 
   @BelongsToMany(() => Classroom, () => ClassroomModule)
   declare classrooms: Classroom[];

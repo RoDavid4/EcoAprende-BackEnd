@@ -1406,8 +1406,8 @@ collection:
     meta:
       id: fld_f489ee293e224dd898d7ada85e57d377
       created: 1786817821261
-      modified: 1786817858217
-      sortKey: -1785965637089.625
+      modified: 1786940495633
+      sortKey: -1785965637090.7969
       description: ""
     children:
       - url: "{{ _.base_url }}/quizzes"
@@ -1635,6 +1635,200 @@ collection:
         authentication:
           type: bearer
           token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Missions & Submissions
+    meta:
+      id: fld_9a39f7c1e7db455dbc83156ce2da43d9
+      created: 1786940082614
+      modified: 1786940476473
+      sortKey: -1785965637090.4062
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/missions"
+        name: POST /missions (Crear Misión Práctica)
+        meta:
+          id: req_1e5020e1c2984f22bb6ac5f87b396016
+          created: 1786940331955
+          modified: 1786940655851
+          isPrivate: false
+          description: ""
+          sortKey: -1786940426425
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "title": "Desafío de Compostaje Casero",
+              "description": "Iniciá un pequeño compost con restos orgánicos durante 5 días.",
+              "type": "PRACTICAL",
+              "pointsReward": 50,
+              "instructions": "Separá cáscaras de frutas y verduras. Tomá una foto del proceso.",
+              "imageUrl": "https://images.unsplash.com/photo-compost"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/missions"
+        name: GET /missions (Listar Misiones Activas)
+        meta:
+          id: req_563d7ff4860f4acca1e5ff571d6a8583
+          created: 1786940704820
+          modified: 1786940726854
+          isPrivate: false
+          description: ""
+          sortKey: -1786879158952
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/missions/02ca2ed8-ffc8-4e3c-b4b4-df8fc1b80f30/submit"
+        name: POST /missions/:id/submit (Entregar Evidencia)
+        meta:
+          id: req_6dff62e38ad94e3a99f7768bf1cf7981
+          created: 1786941115619
+          modified: 1786941592789
+          isPrivate: false
+          description: ""
+          sortKey: -1786848525215.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "evidenceText": "Armé el compost en un recipiente plástico con tierra y restos de manzana y lechuga.",
+              "evidenceUrl": "https://mis-fotos.com/compost-dia-1.jpg"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/missions/submissions/my-submissions"
+        name: GET /missions/submissions/my-submissions (Bandeja del Alumno)
+        meta:
+          id: req_32e7e3ea9ca34fae97348c15345a39e2
+          created: 1786941645758
+          modified: 1786941672993
+          isPrivate: false
+          description: ""
+          sortKey: -1786833208347.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "evidenceText": "Armé el compost en un recipiente plástico con tierra y restos de manzana y lechuga.",
+              "evidenceUrl": "https://mis-fotos.com/compost-dia-1.jpg"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/missions/02ca2ed8-ffc8-4e3c-b4b4-df8fc1b80f30/submissions"
+        name: GET /missions/:id/submissions (Bandeja Docente)
+        meta:
+          id: req_6bf70b8e90f944eaac3aaba6658c2b1a
+          created: 1786941746308
+          modified: 1786941796718
+          isPrivate: false
+          description: ""
+          sortKey: -1786833208247.25
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/missions/submissions/4e6b04dc-e0a0-43fc-a4c0-437f460ea959/review"
+        name: PATCH /missions/submissions/:id/review (Corregir y Aprobar)
+        meta:
+          id: req_68d33555003a46159a333304388d5584
+          created: 1786941837838
+          modified: 1786942193517
+          isPrivate: false
+          description: ""
+          sortKey: -1786825549863.125
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "status": "APPROVED",
+              "feedback": "Excelente trabajo armando las capas de materia seca y húmeda. ¡Aprobado!"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true

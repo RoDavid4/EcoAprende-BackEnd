@@ -9,6 +9,7 @@ import { SeederModule } from './modules/seeder';
 import { ClassroomsModule } from './modules/classrooms';
 import { CoursesModule } from './modules/courses/courses.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
+import { MissionsModule } from './modules/missions/missions.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { QuizzesModule } from './modules/quizzes/quizzes.module';
     ClassroomsModule,
     CoursesModule,
     QuizzesModule,
+    MissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
