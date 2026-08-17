@@ -137,6 +137,31 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `answers` (JSONB, Not Null): Registro inmutable y detallado de respuestas que incluye aciertos, errores, puntos otorgados y opciones seleccionadas.
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `Mission` (Modulo `missions`)
+- `id` (UUIDV4, Primary Key)
+- `title` (String, Not Null)
+- `description` (Text, Not Null): Consigna de la misión.
+- `type` (Enum: 'DIGITAL', 'PRACTICAL' - Not Null)
+- `pointsReward` (Integer, Default: 50): XP que otorgará al completarse.
+- `instructions` (Text, Nullable): Guía paso a paso.
+- `imageUrl` (String, Nullable)
+- `moduleId` (UUID, Foreign Key, asocia con `Module`, Nullable)
+- `createdById` (UUID, Foreign Key, asocia con `User`, Not Null)
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `MissionSubmission` (Modulo `missions`)
+- `id` (UUIDV4, Primary Key)
+- `missionId` (UUID, Foreign Key, asocia con `Mission`)
+- `userId` (UUID, Foreign Key, asocia con `User`): Estudiante que entrega.
+- `status` (Enum: 'PENDING', 'APPROVED', 'REJECTED' - Default: 'PENDING')
+- `evidenceText` (Text, Nullable)
+- `evidenceUrl` (String, Nullable)
+- `feedback` (Text, Nullable): Comentario del docente al corregir.
+- `reviewedById` (UUID, Foreign Key, asocia con `User`, Nullable): Docente que revisó.
+- `reviewedAt` (Date, Nullable)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -270,9 +295,21 @@ Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestion
   - **Calificación Automática en Servidor**: Al enviar el payload del examen (`SubmitQuizDto`), el backend ignora cualquier puntaje sugerido por el cliente. La evaluación se realiza recuperando desde la base de datos las opciones marcadas con `isCorrect: true`, comparándolas contra las seleccionadas por el alumno y sumando los puntajes de manera segura y determinista. Posteriormente se calcula el porcentaje sobre `100` y se establece el flag `isPassed` comparando con el `passingScore`.
   - **Control de Reintentos**: Antes de permitir la rendición, el servicio cuenta la cantidad de registros previos del usuario en `quiz_attempts` para esa evaluación. Si el número iguala o supera el `maxAttempts` definido por el docente, la operación es rechazada con `400 Bad Request`.
 
+### Endpoints (Missions)
+
+Este módulo gestiona la creación de retos y misiones ambientales junto con su respectivo circuito de corrección.
+
+- **Gestión de la Consigna (`POST /missions`, `PATCH /missions/:id`, `DELETE /missions/:id`)**
+  - **Seguridad**: Acceso exclusivo para roles `TEACHER` y `ADMIN`. El backend inyecta de forma segura el ID del creador (`createdById`) desde el token JWT en el momento de la creación.
+
+- **Circuito de Entregas y Revisión**
+  - **Envío de Evidencia (`POST /missions/:id/submit`)**: Restringido a `STUDENT`. El backend valida la existencia de la misión y aplica una política anti-duplicación: si el estudiante ya posee una entrega en estado `PENDING` o `APPROVED`, la operación es rechazada con un `409 Conflict`.
+  - **Bandeja del Alumno (`GET /missions/submissions/my-submissions`)**: Restringido a `STUDENT`. Retorna el historial personal de misiones entregadas para consultar sus estados y el `feedback` recibido del docente.
+  - **Mesa de Revisión (`GET /missions/:id/submissions`, `PATCH /missions/submissions/:submissionId/review`)**: Restringido a `TEACHER` y `ADMIN`. Permite visualizar la nómina completa de entregas de una misión específica. Al revisar (aprobar/rechazar) una entrega, el sistema sella de manera inmutable el `reviewedById` (ID del evaluador) y el timestamp `reviewedAt`, adjuntando las observaciones pedagógicas en el campo `feedback`.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

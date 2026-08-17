@@ -4,6 +4,8 @@ import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 import { Course } from '../courses/course.entity';
 import { QuizAttempt } from '../quizzes/quiz-attempt.entity';
+import { Mission } from '../missions/mission.entity';
+import { MissionSubmission } from '../missions/mission-submission.entity';
 
 @Table({
   tableName: 'users',
@@ -77,4 +79,13 @@ export class User extends Model {
 
   @HasMany(() => QuizAttempt, { as: 'quizAttempts', foreignKey: 'userId' })
   declare quizAttempts: QuizAttempt[];
+
+  @HasMany(() => Mission, { as: 'createdMissions', foreignKey: 'createdById' })
+  declare createdMissions: Mission[];
+
+  @HasMany(() => MissionSubmission, { as: 'missionSubmissions', foreignKey: 'userId' })
+  declare missionSubmissions: MissionSubmission[];
+
+  @HasMany(() => MissionSubmission, { as: 'reviewedSubmissions', foreignKey: 'reviewedById' })
+  declare reviewedSubmissions: MissionSubmission[];
 }
