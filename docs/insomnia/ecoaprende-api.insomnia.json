@@ -1578,6 +1578,71 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70/submit"
+        name: POST /quizzes/:id/submit (Rendir Quiz)
+        meta:
+          id: req_82a1ad24326f424187b36573d5e76762
+          created: 1786924606648
+          modified: 1786924868263
+          isPrivate: false
+          description: ""
+          sortKey: -1786752157792.625
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "answers": [
+                {
+                  "questionId": "8b0fe4f5-27b9-49f8-8a30-121587509f95",
+                  "selectedOptionId": "bc54c8c1-73a2-461b-8a72-c14f73a7924a"
+                },
+                {
+                  "questionId": "23d9ba11-6dbc-4f97-a45d-bc83b29c4889",
+                  "selectedOptionId": "d26b1868-86c6-4afc-a705-bf6ff26f35fb"
+                }
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70/my-attempts"
+        name: GET /quizzes/:id/my-attempts (Historial de Intentos)
+        meta:
+          id: req_3abff9d9ac1746fb87d2884092134602
+          created: 1786924908433
+          modified: 1786924941619
+          isPrivate: false
+          description: ""
+          sortKey: -1786747462529.3125
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -1589,9 +1654,9 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1786821049309
+    modified: 1786924534344
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjgyMDkzNiwiZXhwIjoxNzg2OTA3MzM2fQ.-lZ85S_41CTnIFDRPhv5JanI5rmnMfzyueIUl90bQSE
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjgyMTAyOCwiZXhwIjoxNzg2OTA3NDI4fQ.r3FXtOdl8lCK5hANo5cMsOeL8M1IGZ5aAbEO0pBpg78
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjkyNDQ5MSwiZXhwIjoxNzg3MDEwODkxfQ.1R54MQR2MfFmExI6YHEejWHK_rx084CmbHfQSgE0dZQ
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjkyNDUxOCwiZXhwIjoxNzg3MDEwOTE4fQ.FR3oelnZW4YdXwvQDC44w-ahnUwjXTbiiWFfVhfA1rQ

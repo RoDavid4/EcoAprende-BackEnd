@@ -125,6 +125,18 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `order` (Integer, Nullable)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `QuizAttempt` (Modulo `quizzes`)
+- `id` (UUIDV4, Primary Key)
+- `quizId` (UUID, Foreign Key, asocia con `Quiz`)
+- `userId` (UUID, Foreign Key, asocia con `User`)
+- `score` (Float, Not Null): Calificación obtenida en escala de 0 a 100.
+- `pointsObtained` (Integer, Not Null): Suma de puntos logrados por respuestas correctas.
+- `totalPoints` (Integer, Not Null): Suma total de puntos posibles de la evaluación.
+- `isPassed` (Boolean, Not Null): Determina si `score` >= `passingScore`.
+- `attemptNumber` (Integer, Not Null): Número cronológico de intento para el alumno en este quiz.
+- `answers` (JSONB, Not Null): Registro inmutable y detallado de respuestas que incluye aciertos, errores, puntos otorgados y opciones seleccionadas.
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -254,9 +266,13 @@ Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestion
   - **Consultas con Prevención de Trampas (`GET /quizzes/:id`)**: Si el usuario que efectúa la consulta posee el rol `STUDENT`, el backend aplica una política de seguridad que excluye dinámicamente el atributo `isCorrect` de todas las opciones en la respuesta. Esto imposibilita el fraude mediante inspección de tráfico de red.
   - **Restricciones RBAC**: La mutación de evaluaciones (creación, edición, eliminación) es un privilegio exclusivo para usuarios con roles `TEACHER` o `ADMIN`.
 
+- **Resolución de Evaluaciones (`POST /quizzes/:id/submit`, `GET /quizzes/:id/my-attempts`)**
+  - **Calificación Automática en Servidor**: Al enviar el payload del examen (`SubmitQuizDto`), el backend ignora cualquier puntaje sugerido por el cliente. La evaluación se realiza recuperando desde la base de datos las opciones marcadas con `isCorrect: true`, comparándolas contra las seleccionadas por el alumno y sumando los puntajes de manera segura y determinista. Posteriormente se calcula el porcentaje sobre `100` y se establece el flag `isPassed` comparando con el `passingScore`.
+  - **Control de Reintentos**: Antes de permitir la rendición, el servicio cuenta la cantidad de registros previos del usuario en `quiz_attempts` para esa evaluación. Si el número iguala o supera el `maxAttempts` definido por el docente, la operación es rechazada con `400 Bad Request`.
+
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

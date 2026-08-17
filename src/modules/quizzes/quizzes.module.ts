@@ -5,10 +5,11 @@ import { QuizzesController } from './quizzes.controller';
 import { Quiz } from './quiz.entity';
 import { Question } from './question.entity';
 import { Option } from './option.entity';
+import { QuizAttempt } from './quiz-attempt.entity';
 import { Module as CourseModule } from '../courses/module.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Quiz, Question, Option, CourseModule])],
+  imports: [SequelizeModule.forFeature([Quiz, Question, Option, QuizAttempt, CourseModule])],
   controllers: [QuizzesController],
   providers: [QuizzesService],
   exports: [SequelizeModule, QuizzesService],
