@@ -3,6 +3,7 @@ import { Role } from '../roles/role.entity';
 import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 import { Course } from '../courses/course.entity';
+import { QuizAttempt } from '../quizzes/quiz-attempt.entity';
 
 @Table({
   tableName: 'users',
@@ -73,4 +74,7 @@ export class User extends Model {
 
   @HasMany(() => Course, { as: 'createdCourses', foreignKey: 'createdById' })
   declare createdCourses: Course[];
+
+  @HasMany(() => QuizAttempt, { as: 'quizAttempts', foreignKey: 'userId' })
+  declare quizAttempts: QuizAttempt[];
 }

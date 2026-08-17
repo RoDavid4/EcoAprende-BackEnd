@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Module } from '../courses/module.entity';
 import { Question } from './question.entity';
+import { QuizAttempt } from './quiz-attempt.entity';
 
 @Table({
   tableName: 'quizzes',
@@ -60,4 +61,7 @@ export class Quiz extends Model {
 
   @HasMany(() => Question, { as: 'questions', foreignKey: 'quizId' })
   declare questions: Question[];
+
+  @HasMany(() => QuizAttempt, { as: 'attempts', foreignKey: 'quizId' })
+  declare attempts: QuizAttempt[];
 }

@@ -6,7 +6,9 @@ import { Question } from './question.entity';
 import { Option } from './option.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { Module } from '../courses/module.entity';
+import { QuizAttempt } from './quiz-attempt.entity';
 
 @Injectable()
 export class QuizzesService {
@@ -15,6 +17,7 @@ export class QuizzesService {
     @InjectModel(Question) private questionModel: typeof Question,
     @InjectModel(Option) private optionModel: typeof Option,
     @InjectModel(Module) private moduleModel: typeof Module,
+    @InjectModel(QuizAttempt) private quizAttemptModel: typeof QuizAttempt,
     private sequelize: Sequelize,
   ) {}
 
@@ -138,5 +141,94 @@ export class QuizzesService {
     }
 
     return quiz.update({ isActive: false });
+  }
+
+  async submitQuiz(quizId: string, userId: string, dto: SubmitQuizDto) {
+    const quiz = await this.quizModel.findByPk(quizId, {
+      include: [
+        {
+          model: Question,
+          as: 'questions',
+          include: [{ model: Option, as: 'options' }]
+        }
+      ]
+    });
+
+    if (!quiz || !quiz.isActive) {
+      throw new NotFoundException('Evaluación no encontrada o inactiva');
+    }
+
+    const previousAttemptsCount = await this.quizAttemptModel.count({
+      where: { quizId, userId }
+    });
+
+    if (quiz.maxAttempts !== null && previousAttemptsCount >= quiz.maxAttempts) {
+      throw new BadRequestException('Has alcanzado el límite máximo de intentos permitidos para esta evaluación');
+    }
+
+    let pointsObtained = 0;
+    let totalPoints = 0;
+    const processedAnswers: any[] = [];
+
+    const questionsMap = new Map<string, Question>();
+    for (const q of quiz.questions) {
+      questionsMap.set(q.id, q);
+      totalPoints += q.points;
+    }
+
+    for (const answer of dto.answers) {
+      const question = questionsMap.get(answer.questionId);
+      if (!question) continue;
+
+      const correctOption = question.options.find(opt => opt.isCorrect);
+      const selectedOption = question.options.find(opt => opt.id === answer.selectedOptionId);
+
+      const isCorrect = selectedOption ? selectedOption.isCorrect : false;
+      const pointsAwarded = isCorrect ? question.points : 0;
+      pointsObtained += pointsAwarded;
+
+      processedAnswers.push({
+        questionId: question.id,
+        statement: question.statement,
+        explanation: question.explanation,
+        selectedOptionId: answer.selectedOptionId,
+        correctOptionId: correctOption?.id,
+        isCorrect,
+        pointsAwarded,
+      });
+    }
+
+    const score = totalPoints > 0 ? (pointsObtained / totalPoints) * 100 : 0;
+    const isPassed = score >= quiz.passingScore;
+    const attemptNumber = previousAttemptsCount + 1;
+
+    const attempt = await this.quizAttemptModel.create({
+      quizId,
+      userId,
+      score,
+      pointsObtained,
+      totalPoints,
+      isPassed,
+      attemptNumber,
+      answers: processedAnswers,
+    });
+
+    return {
+      attemptId: attempt.id,
+      score,
+      isPassed,
+      attemptNumber,
+      pointsObtained,
+      totalPoints,
+      attemptsRemaining: quiz.maxAttempts !== null ? quiz.maxAttempts - attemptNumber : null,
+      answers: processedAnswers,
+    };
+  }
+
+  async getMyAttempts(quizId: string, userId: string) {
+    return this.quizAttemptModel.findAll({
+      where: { quizId, userId },
+      order: [['attemptNumber', 'ASC']],
+    });
   }
 }
