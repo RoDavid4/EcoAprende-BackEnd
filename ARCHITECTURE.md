@@ -36,6 +36,10 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `email` (String, Unique, Not Null, Format Email)
 - `password` (String, Not Null)
 - `roleId` (Integer, Foreign Key, asocia con la entidad `Role`)
+- `totalXp` (Integer, Default: 0): Puntos de experiencia globales.
+- `level` (Integer, Default: 1): Nivel calculado según el progreso.
+- `currentStreak` (Integer, Default: 0): Días consecutivos de actividad.
+- `lastActivityDate` (DateOnly, Nullable): Última vez que realizó una acción puntuable.
 - `isActive` (Boolean - Default: true)
 - `resetPasswordToken` (String, Nullable)
 - `resetPasswordExpires` (Date, Nullable)
@@ -162,6 +166,24 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `reviewedAt` (Date, Nullable)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
+#### `Badge` (Modulo `gamification`)
+- `id` (UUIDV4, Primary Key)
+- `code` (String, Unique, Not Null): Identificador inmutable (ej: 'WELCOME', 'STREAK_3').
+- `name` (String, Not Null)
+- `description` (Text, Not Null)
+- `iconUrl` (String, Not Null)
+- `xpValue` (Integer, Default: 50): Experiencia que otorga.
+- `category` (Enum: 'ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL' - Default: 'ACADEMIC')
+- `isActive` (Boolean - Default: true)
+- Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `UserBadge` (Modulo `gamification`)
+- `id` (UUIDV4, Primary Key)
+- `userId` (UUID, Foreign Key, asocia con `User`)
+- `badgeId` (UUID, Foreign Key, asocia con `Badge`)
+- `awardedAt` (Date, Default: NOW)
+- Presenta un índice único compuesto en `['userId', 'badgeId']` para evitar insignias duplicadas.
+
 #### `Role` (Modulo `roles`)
 - `id` (Integer, Primary Key, Auto Increment)
 - `name` (String, Unique, Not Null)
@@ -180,7 +202,7 @@ Actualmente, el sistema define las siguientes entidades principales:
 
 Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
 
-Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Adicionalmente, el seeder genera automáticamente dos usuarios de prueba predeterminados para facilitar las pruebas locales: un administrador (`admin@ecoaprende.com` / `Admin123!`) y un profesor (`profe@ecoaprende.com` / `Profe123!`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema RBAC esté inmediatamente operativo tras ejecutar `docker compose up`.
+Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Adicionalmente, el seeder inyecta 4 insignias fundacionales del motor de gamificación (`WELCOME`, `FIRST_LESSON`, `STREAK_3`, `ECO_HERO`) y genera automáticamente dos usuarios de prueba predeterminados para facilitar las pruebas locales: un administrador (`admin@ecoaprende.com` / `Admin123!`) y un profesor (`profe@ecoaprende.com` / `Profe123!`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema esté inmediatamente operativo tras ejecutar `docker compose up`.
 
 ## Autenticacion y Seguridad
 
@@ -307,6 +329,14 @@ Este módulo gestiona la creación de retos y misiones ambientales junto con su 
   - **Bandeja del Alumno (`GET /missions/submissions/my-submissions`)**: Restringido a `STUDENT`. Retorna el historial personal de misiones entregadas para consultar sus estados y el `feedback` recibido del docente.
   - **Mesa de Revisión (`GET /missions/:id/submissions`, `PATCH /missions/submissions/:submissionId/review`)**: Restringido a `TEACHER` y `ADMIN`. Permite visualizar la nómina completa de entregas de una misión específica. Al revisar (aprobar/rechazar) una entrega, el sistema sella de manera inmutable el `reviewedById` (ID del evaluador) y el timestamp `reviewedAt`, adjuntando las observaciones pedagógicas en el campo `feedback`.
 
+### Endpoints (Gamification)
+
+Este módulo expone la interfaz para la mecánica de retención de usuarios.
+- **`GET /gamification/profile`**: Retorna el progreso individual (`totalXp`, `level`, `currentStreak`) y la lista de insignias desbloqueadas.
+- **`GET /gamification/badges`**: Catálogo que contrasta todas las insignias disponibles y flaggea con un booleano dinámico (`isUnlocked`) cuáles posee el usuario consultante.
+- **`GET /gamification/leaderboard`**: Tabla de clasificación anónima. Ordena `totalXp DESC` limitando al top 20, filtrando intrínsecamente solo a cuentas con `role: 'STUDENT'` e `isActive: true`.
+- **`POST /gamification/badges`**: Exclusivo para rol `ADMIN`. Permite la inyección manual de nuevos coleccionables.
+
 ## Configuración y Entorno
 
 El backend está diseñado para ser configurable mediante variables de entorno (almacenadas en `.env` y documentadas en `.env.example`).
@@ -315,7 +345,7 @@ El backend está diseñado para ser configurable mediante variables de entorno (
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias, rachas y ranking estudiantil), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
