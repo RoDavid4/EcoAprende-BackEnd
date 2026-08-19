@@ -10,6 +10,7 @@ import { ClassroomsModule } from './modules/classrooms';
 import { CoursesModule } from './modules/courses/courses.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
 import { MissionsModule } from './modules/missions/missions.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MissionsModule } from './modules/missions/missions.module';
     CoursesModule,
     QuizzesModule,
     MissionsModule,
+    GamificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

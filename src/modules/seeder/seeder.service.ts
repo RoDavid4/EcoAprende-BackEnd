@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Role } from '../roles/role.entity';
 import { Permission } from '../roles/permission.entity';
 import { User } from '../users/user.entity';
+import { Badge } from '../gamification/badge.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class SeederService implements OnModuleInit {
     @InjectModel(Role) private roleModel: typeof Role,
     @InjectModel(Permission) private permissionModel: typeof Permission,
     @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Badge) private badgeModel: typeof Badge,
   ) {}
 
   async onModuleInit() {
@@ -56,6 +58,21 @@ export class SeederService implements OnModuleInit {
           password: teacherPassword,
           roleId: teacherRole.id,
         },
+      });
+    }
+
+    // Seed Badges
+    const defaultBadges = [
+      { code: 'WELCOME', name: 'Semilla Curiosa', description: 'Otorgada por unirte a EcoAprende.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/2922/2922037.png', xpValue: 20, category: 'SPECIAL' },
+      { code: 'FIRST_LESSON', name: 'Primeros Brotes', description: 'Otorgada por completar tu primera lección.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3233/3233483.png', xpValue: 50, category: 'ACADEMIC' },
+      { code: 'STREAK_3', name: 'Constancia Verde', description: 'Otorgada por ingresar 3 días seguidos.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/763/763365.png', xpValue: 100, category: 'STREAK' },
+      { code: 'ECO_HERO', name: 'Héroe Ambiental', description: 'Otorgada por completar tu primera misión práctica.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png', xpValue: 150, category: 'COMMUNITY' },
+    ];
+
+    for (const badge of defaultBadges) {
+      await this.badgeModel.findOrCreate({
+        where: { code: badge.code },
+        defaults: badge,
       });
     }
 

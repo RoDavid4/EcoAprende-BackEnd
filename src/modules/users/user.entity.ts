@@ -6,6 +6,8 @@ import { Course } from '../courses/course.entity';
 import { QuizAttempt } from '../quizzes/quiz-attempt.entity';
 import { Mission } from '../missions/mission.entity';
 import { MissionSubmission } from '../missions/mission-submission.entity';
+import { Badge } from '../gamification/badge.entity';
+import { UserBadge } from '../gamification/user-badge.entity';
 
 @Table({
   tableName: 'users',
@@ -68,6 +70,33 @@ export class User extends Model {
   })
   declare resetPasswordExpires: Date | null;
 
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare totalXp: number;
+
+  @Default(1)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare level: number;
+
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare currentStreak: number;
+
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: true,
+  })
+  declare lastActivityDate: Date | null;
+
   @HasMany(() => Classroom)
   declare classrooms: Classroom[];
 
@@ -88,4 +117,10 @@ export class User extends Model {
 
   @HasMany(() => MissionSubmission, { as: 'reviewedSubmissions', foreignKey: 'reviewedById' })
   declare reviewedSubmissions: MissionSubmission[];
+
+  @BelongsToMany(() => Badge, () => UserBadge)
+  declare badges: Badge[];
+
+  @HasMany(() => UserBadge, { as: 'userBadges', foreignKey: 'userId' })
+  declare userBadges: UserBadge[];
 }

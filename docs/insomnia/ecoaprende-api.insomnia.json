@@ -1647,8 +1647,8 @@ collection:
     meta:
       id: fld_9a39f7c1e7db455dbc83156ce2da43d9
       created: 1786940082614
-      modified: 1786940476473
-      sortKey: -1785965637090.4062
+      modified: 1787178801609
+      sortKey: -1785965637090.6992
       description: ""
     children:
       - url: "{{ _.base_url }}/missions"
@@ -1837,6 +1837,123 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Gamification
+    meta:
+      id: fld_b47f2b49087246c08ff728dbb52fb05d
+      created: 1787178795372
+      modified: 1787178799027
+      sortKey: -1785965637090.6016
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/gamification/profile"
+        name: GET /gamification/profile (Perfil Gamificado del Usuario)
+        meta:
+          id: req_9d02d633da9b44ae9f1064177c716ba9
+          created: 1787178820899
+          modified: 1787178886971
+          isPrivate: false
+          description: ""
+          sortKey: -1787178860841
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/gamification/badges"
+        name: GET /gamification/badges (Catálogo de Insignias con Estado)
+        meta:
+          id: req_349f8a5c42f949569ba127ece1a83595
+          created: 1787179304146
+          modified: 1787179315412
+          isPrivate: false
+          description: ""
+          sortKey: -1787059643633
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/gamification/leaderboard"
+        name: GET /gamification/leaderboard (Tabla de Clasificación Pública)
+        meta:
+          id: req_bbf4c7f39154490a92f4661517da8b7f
+          created: 1787179353160
+          modified: 1787179365129
+          isPrivate: false
+          description: ""
+          sortKey: -1787000035029
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/gamification/badges"
+        name: POST /gamification/badges (Crear Insignia - Rol ADMIN)
+        meta:
+          id: req_293326c658334d7f9f751897e300b44c
+          created: 1787179443583
+          modified: 1787179582724
+          isPrivate: false
+          description: ""
+          sortKey: -1787000034929
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "code": "WATER_GUARDIAN",
+              "name": "Guardián del Agua",
+              "description": "Completá el curso intensivo de Conservación de Recursos Hídricos.",
+              "iconUrl": "https://cdn.ecoaprende.com/badges/water-guardian.svg",
+              "xpValue": 75,
+              "category": "ACADEMIC"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -1848,9 +1965,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1786924534344
+    modified: 1787179764413
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5MmU2NjNjLTZkZDYtNDE3Ni1iNDkwLWZhNzc3MGY2Mzg5NSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjkyNDQ5MSwiZXhwIjoxNzg3MDEwODkxfQ.1R54MQR2MfFmExI6YHEejWHK_rx084CmbHfQSgE0dZQ
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4N2JhNzU4LTBiM2EtNGE2Mi1iY2YyLTQ4ZWEyMWY3MmFlYyIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NjkyNDUxOCwiZXhwIjoxNzg3MDEwOTE4fQ.FR3oelnZW4YdXwvQDC44w-ahnUwjXTbiiWFfVhfA1rQ
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZjNGFhNzU2LTI4MGEtNDJkNC1iMTQ3LWQ4NTQ2OTExZTcyYSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzE3OTYzOSwiZXhwIjoxNzg3MjY2MDM5fQ.7l2piwNcztGpRzCLHwJEnu36jQC9bxKLw9XdJJG7Ffc
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNmU3YmFhLTk4ZGUtNDE2MC1iZDVmLTkxOWFjOTkyZTljZCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzE3OTc0MywiZXhwIjoxNzg3MjY2MTQzfQ.ksZEPlQgBKu9cfgnHsaw93Tnifsxk_kQIO9KmIuwYDI
+    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJjNTJmYmVlLTYzMjEtNDU3Ni05NWQ4LTRjYWQzZDMzOWVkMSIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODcxNzk2NzUsImV4cCI6MTc4NzI2NjA3NX0.LTwaT8vvoDWt6czgBGDB15V9htSeJ2unbr5mGwUWaTY
