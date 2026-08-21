@@ -97,6 +97,27 @@ export class User extends Model {
   })
   declare lastActivityDate: Date | null;
 
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare lessonsCompleted: number;
+
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare quizzesPassed: number;
+
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare missionsApproved: number;
+
   @HasMany(() => Classroom)
   declare classrooms: Classroom[];
 

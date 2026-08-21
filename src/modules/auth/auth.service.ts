@@ -9,6 +9,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Role) private roleModel: typeof Role,
     private jwtService: JwtService,
+    private readonly gamificationService: GamificationService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -33,6 +35,10 @@ export class AuthService {
       password: hashedPassword,
       roleId: defaultRole?.id,
     });
+
+    if (defaultRole && defaultRole.name === 'STUDENT') {
+      await this.gamificationService.awardBadge(user.id, 'WELCOME');
+    }
 
     const userJson = user.toJSON();
     delete userJson.password;

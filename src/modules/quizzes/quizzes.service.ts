@@ -9,6 +9,7 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { Module } from '../courses/module.entity';
 import { QuizAttempt } from './quiz-attempt.entity';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class QuizzesService {
@@ -18,6 +19,7 @@ export class QuizzesService {
     @InjectModel(Option) private optionModel: typeof Option,
     @InjectModel(Module) private moduleModel: typeof Module,
     @InjectModel(QuizAttempt) private quizAttemptModel: typeof QuizAttempt,
+    private readonly gamificationService: GamificationService,
     private sequelize: Sequelize,
   ) {}
 
@@ -212,6 +214,10 @@ export class QuizzesService {
       attemptNumber,
       answers: processedAnswers,
     });
+
+    if (isPassed) {
+      await this.gamificationService.processActivity(userId, 'PASS_QUIZ');
+    }
 
     return {
       attemptId: attempt.id,

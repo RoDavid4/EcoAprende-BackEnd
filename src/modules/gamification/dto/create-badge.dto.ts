@@ -25,4 +25,13 @@ export class CreateBadgeDto {
   @IsEnum(['ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'])
   @IsOptional()
   category?: 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
+
+  @IsEnum(['STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'])
+  @IsOptional()
+  triggerEvent?: 'STREAK' | 'TOTAL_XP' | 'LESSONS_COMPLETED' | 'QUIZZES_PASSED' | 'MISSIONS_APPROVED' | 'MANUAL';
+
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  triggerValue?: number;
 }

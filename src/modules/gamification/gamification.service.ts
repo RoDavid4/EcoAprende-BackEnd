@@ -5,7 +5,7 @@ import { UserBadge } from './user-badge.entity';
 import { User } from '../users/user.entity';
 import { Role } from '../roles/role.entity';
 import { CreateBadgeDto } from './dto/create-badge.dto';
-import { Transaction } from 'sequelize';
+import { Transaction, Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
@@ -100,33 +100,80 @@ export class GamificationService {
     return userBadge;
   }
 
+  async checkAutomaticBadges(userId: string, eventType: string, currentValue: number, t?: Transaction) {
+    const badgesAwarded: string[] = [];
+    const eligibleBadges = await this.badgeModel.findAll({
+      where: {
+        triggerEvent: eventType,
+        triggerValue: { [Op.lte]: currentValue },
+        isActive: true,
+      },
+      transaction: t,
+    });
+
+    for (const badge of eligibleBadges) {
+      const awarded = await this.awardBadge(userId, badge.code, t);
+      if (awarded) {
+        badgesAwarded.push(badge.code);
+      }
+    }
+
+    return badgesAwarded;
+  }
+
   async processActivity(userId: string, actionType: string, metadata?: any) {
     return this.sequelize.transaction(async (t) => {
+      const user = await this.userModel.findByPk(userId, { transaction: t });
+      if (!user) throw new NotFoundException('Usuario no encontrado');
+
       const streak = await this.updateStreak(userId, t);
       let xpAwarded = 0;
       let badgesAwarded: string[] = [];
 
-      // Logic based on actionType
+      // Award XP and increment counters
       switch (actionType) {
         case 'LOGIN':
-          // Optionally award small XP for daily login
           xpAwarded = 10;
-          await this.awardXp(userId, xpAwarded, t);
           break;
         case 'COMPLETE_LESSON':
-          xpAwarded = 50;
-          await this.awardXp(userId, xpAwarded, t);
+          xpAwarded = 25;
+          user.lessonsCompleted += 1;
           break;
-        case 'COMPLETE_MISSION':
-          xpAwarded = metadata?.pointsReward || 50;
-          await this.awardXp(userId, xpAwarded, t);
+        case 'PASS_QUIZ':
+          xpAwarded = 50;
+          user.quizzesPassed += 1;
+          break;
+        case 'APPROVE_MISSION':
+          xpAwarded = metadata?.pointsReward || 100;
+          user.missionsApproved += 1;
           break;
       }
 
-      // Check automatic badges
-      if (streak === 3) {
-        const badge = await this.awardBadge(userId, 'STREAK_3', t);
-        if (badge) badgesAwarded.push('STREAK_3');
+      await user.save({ transaction: t });
+      if (xpAwarded > 0) {
+        await this.awardXp(userId, xpAwarded, t);
+      }
+
+      // Check rules engine for newly unlocked badges
+      const streakBadges = await this.checkAutomaticBadges(userId, 'STREAK', streak, t);
+      badgesAwarded.push(...streakBadges);
+
+      // Re-fetch user to get the updated totalXp after awardXp
+      const updatedUser = await this.userModel.findByPk(userId, { transaction: t });
+      if (updatedUser) {
+        const xpBadges = await this.checkAutomaticBadges(userId, 'TOTAL_XP', updatedUser.totalXp, t);
+        badgesAwarded.push(...xpBadges);
+
+        if (actionType === 'COMPLETE_LESSON') {
+          const lessonBadges = await this.checkAutomaticBadges(userId, 'LESSONS_COMPLETED', updatedUser.lessonsCompleted, t);
+          badgesAwarded.push(...lessonBadges);
+        } else if (actionType === 'PASS_QUIZ') {
+          const quizBadges = await this.checkAutomaticBadges(userId, 'QUIZZES_PASSED', updatedUser.quizzesPassed, t);
+          badgesAwarded.push(...quizBadges);
+        } else if (actionType === 'APPROVE_MISSION') {
+          const missionBadges = await this.checkAutomaticBadges(userId, 'MISSIONS_APPROVED', updatedUser.missionsApproved, t);
+          badgesAwarded.push(...missionBadges);
+        }
       }
 
       return { streak, xpAwarded, badgesAwarded };

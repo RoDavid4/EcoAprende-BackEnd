@@ -6,11 +6,13 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users';
 import { RolesModule } from '../roles';
+import { GamificationModule } from '../gamification/gamification.module';
 
 @Module({
   imports: [
     UsersModule,
     RolesModule,
+    GamificationModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => ({

@@ -343,7 +343,7 @@ collection:
         meta:
           id: req_29aab314944f4f56a73e5afcf56db7cf
           created: 1786143025013
-          modified: 1786143070132
+          modified: 1787352796025
           isPrivate: false
           description: ""
           sortKey: -1785538410505.125
@@ -381,7 +381,7 @@ collection:
         meta:
           id: req_6c1a08445ac94ae3b64dacbb7d13288b
           created: 1785965670454
-          modified: 1785966786065
+          modified: 1787353007463
           isPrivate: false
           description: ""
           sortKey: -1785965682749
@@ -391,7 +391,7 @@ collection:
             value: insomnia/11.3.0
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM3NmIyY2Y0LWY4MjktNGFkYy04NjhjLThjZWMxMDEwNzM4OCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NTk2NjA3NiwiZXhwIjoxNzg2MDUyNDc2fQ.osdOAGjCJJpTl6lBFWIEeA9hgajWKScZPrUvmuTGcMA
+          token: "{{ _.student_token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -725,12 +725,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules"
+          - url: "{{ _.base_url }}/classrooms/7502c188-2e1a-4dd0-b705-e289532ecd60/modules"
             name: POST /classrooms/:id/modules (Asignar Módulo a un Aula)
             meta:
               id: req_d49df4ae3b1f4237bf2c8b406cbea7eb
               created: 1786750497161
-              modified: 1786751019670
+              modified: 1787356141934
               isPrivate: false
               description: ""
               sortKey: -1786246530657.125
@@ -739,7 +739,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "fc65483a-d70f-497b-9cf4-0c47e5ba01ee"
+                  "moduleId": "36faf9d9-c309-42b0-92f0-ab491ea5da3c"
                 }
             headers:
               - name: Content-Type
@@ -828,7 +828,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1786751256687
+              modified: 1787356030079
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -837,7 +837,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "code": "PCB1TE"
+                  "code": "W0K4L5"
                 }
             headers:
               - name: Content-Type
@@ -1058,12 +1058,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/c43cc7d0-4e74-4909-b26f-7e177c195daa"
+          - url: "{{ _.base_url }}/courses/9f20c658-751f-4e8e-8250-aee2e7a601d2"
             name: PATCH /courses/:id (Publicar Curso / Editar)
             meta:
               id: req_672e1c8bc4cb4393bc4a7498009c79d5
               created: 1786740008288
-              modified: 1786750680739
+              modified: 1787353231986
               isPrivate: false
               description: ""
               sortKey: -1786277354892
@@ -1127,7 +1127,7 @@ collection:
             meta:
               id: req_d4a07bb06f684d6b992161cffe4c31fa
               created: 1786741155993
-              modified: 1786750978145
+              modified: 1787353276576
               isPrivate: false
               description: ""
               sortKey: -1786741179116
@@ -1136,7 +1136,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "courseId": "c43cc7d0-4e74-4909-b26f-7e177c195daa",
+                  "courseId": "9f20c658-751f-4e8e-8250-aee2e7a601d2",
                   "title": "Módulo 1: La Huella Hídrica",
                   "description": "Comprendiendo el impacto del consumo cotidiano.",
                   "order": 1,
@@ -1158,12 +1158,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/modules/24251f6c-0832-45ad-aa2f-4c23990e9074"
+          - url: "{{ _.base_url }}/modules/36faf9d9-c309-42b0-92f0-ab491ea5da3c"
             name: GET /modules/:id (Obtener Módulo con Lecciones Anidadas)
             meta:
               id: req_557f165310f8418eac48503b8d73c3de
               created: 1786741480330
-              modified: 1786821153162
+              modified: 1787354524846
               isPrivate: false
               description: ""
               sortKey: -1786739926339
@@ -1252,7 +1252,7 @@ collection:
             meta:
               id: req_34964b05e8354e0f8bb5363342bc885a
               created: 1786742758974
-              modified: 1786746769740
+              modified: 1787353300303
               isPrivate: false
               description: ""
               sortKey: -1786742767266
@@ -1261,7 +1261,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "moduleId": "4ab48890-cca9-46f0-b8e1-3a377bd03126",
+                  "moduleId": "36faf9d9-c309-42b0-92f0-ab491ea5da3c",
                   "title": "Introducción a los Recursos Hídricos",
                   "contentType": "TEXT",
                   "content": "El 70% del planeta está cubierto de agua, pero solo el 2.5% es dulce...",
@@ -1284,12 +1284,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/lessons/ff84597d-f61e-41d4-be9d-666efafe8dfb"
+          - url: "{{ _.base_url }}/lessons/1b1b948f-bbdf-4f91-97af-30ca6bb702ab"
             name: GET /lessons/:id (Obtener Detalle de Lección)
             meta:
               id: req_22467da88b044bf2b3729267a48fc635
               created: 1786743106561
-              modified: 1786743156633
+              modified: 1787354605922
               isPrivate: false
               description: ""
               sortKey: -1786741973191
@@ -1299,7 +1299,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1313,7 +1313,7 @@ collection:
             meta:
               id: req_5073df0432084b2997bf289e9a2d19a2
               created: 1786743193346
-              modified: 1786746754081
+              modified: 1787353314584
               isPrivate: false
               description: ""
               sortKey: -1786742370228.5
@@ -1322,7 +1322,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "4ab48890-cca9-46f0-b8e1-3a377bd03126",
+                  "moduleId": "36faf9d9-c309-42b0-92f0-ab491ea5da3c",
                   "title": "Video: Cómo medir tu huella hídrica",
                   "contentType": "VIDEO",
                   "content": "Breve documental explicativo.",
@@ -1351,7 +1351,7 @@ collection:
             meta:
               id: req_e9326af183db4f0ea729107c6c3f8770
               created: 1786743299203
-              modified: 1786743360702
+              modified: 1787354448071
               isPrivate: false
               description: ""
               sortKey: -1786741576153.5
@@ -1369,7 +1369,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1383,7 +1383,7 @@ collection:
             meta:
               id: req_b67321321b5e4c258c3644171666e30f
               created: 1786743420773
-              modified: 1786743537999
+              modified: 1787354427232
               isPrivate: false
               description: ""
               sortKey: -1786741377634.75
@@ -1393,7 +1393,31 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/lessons/1b1b948f-bbdf-4f91-97af-30ca6bb702ab/complete"
+            name: POST /lessons/:id/complete
+            meta:
+              id: req_c4b52138d73a499588c9b96b0874e03a
+              created: 1787354918172
+              modified: 1787355974311
+              isPrivate: false
+              description: ""
+              sortKey: -1786741377534.75
+            method: POST
+            headers:
+              - name: User-Agent
+                value: insomnia/11.3.0
+            authentication:
+              type: bearer
+              token: "{{ _.student_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1415,7 +1439,7 @@ collection:
         meta:
           id: req_f023a89f874540ec81b74e4b36d954e0
           created: 1786817878204
-          modified: 1786821196540
+          modified: 1787353615131
           isPrivate: false
           description: ""
           sortKey: -1786817891479
@@ -1424,7 +1448,7 @@ collection:
           mimeType: application/json
           text: >-
             {
-              "moduleId": "24251f6c-0832-45ad-aa2f-4c23990e9074",
+              "moduleId": "36faf9d9-c309-42b0-92f0-ab491ea5da3c",
               "title": "Evaluación: Huella Hídrica y Conservación",
               "description": "Comprueba lo aprendido sobre el uso responsable del agua.",
               "passingScore": 70,
@@ -1470,12 +1494,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70"
+      - url: "{{ _.base_url }}/quizzes/96b4ca2f-8ec0-416a-a6ef-a4ead9c97913"
         name: GET /quizzes/:id (Auditoría Docente)
         meta:
           id: req_e171cec97714472f808000c4f6997f59
           created: 1786821341229
-          modified: 1786821373005
+          modified: 1787353662912
           isPrivate: false
           description: ""
           sortKey: -1786780329372.5
@@ -1494,12 +1518,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70"
+      - url: "{{ _.base_url }}/quizzes/96b4ca2f-8ec0-416a-a6ef-a4ead9c97913"
         name: GET /quizzes/:id (Consulta Estudiante Anti-Trampa)
         meta:
           id: req_73a63f60ecc4480aac5cfdedf64b8aae
           created: 1786821443426
-          modified: 1786821481098
+          modified: 1787353677348
           isPrivate: false
           description: ""
           sortKey: -1786761548319.25
@@ -1578,12 +1602,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/quizzes/5ca72c16-eb4c-4fd4-a07a-e7becb3dfe70/submit"
+      - url: "{{ _.base_url }}/quizzes/96b4ca2f-8ec0-416a-a6ef-a4ead9c97913/submit"
         name: POST /quizzes/:id/submit (Rendir Quiz)
         meta:
           id: req_82a1ad24326f424187b36573d5e76762
           created: 1786924606648
-          modified: 1786924868263
+          modified: 1787353954270
           isPrivate: false
           description: ""
           sortKey: -1786752157792.625
@@ -1594,12 +1618,12 @@ collection:
             {
               "answers": [
                 {
-                  "questionId": "8b0fe4f5-27b9-49f8-8a30-121587509f95",
-                  "selectedOptionId": "bc54c8c1-73a2-461b-8a72-c14f73a7924a"
+                  "questionId": "7dca959a-d569-4ea6-861c-9e61b9241b18",
+                  "selectedOptionId": "da73ab0d-568f-496a-8870-40de3b416356"
                 },
                 {
-                  "questionId": "23d9ba11-6dbc-4f97-a45d-bc83b29c4889",
-                  "selectedOptionId": "d26b1868-86c6-4afc-a705-bf6ff26f35fb"
+                  "questionId": "f4295505-afe8-4023-aea1-74650838438e",
+                  "selectedOptionId": "899417c2-c0a7-4037-9439-dcc4b5ba8937"
                 }
               ]
             }
@@ -1712,12 +1736,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/missions/02ca2ed8-ffc8-4e3c-b4b4-df8fc1b80f30/submit"
+      - url: "{{ _.base_url }}/missions/d3a5be76-a97d-4591-abf0-9501b41c1713/submit"
         name: POST /missions/:id/submit (Entregar Evidencia)
         meta:
           id: req_6dff62e38ad94e3a99f7768bf1cf7981
           created: 1786941115619
-          modified: 1786941592789
+          modified: 1787353365744
           isPrivate: false
           description: ""
           sortKey: -1786848525215.5
@@ -1804,12 +1828,12 @@ collection:
             store: true
           rebuildPath: true
       - url: "{{ _.base_url
-          }}/missions/submissions/4e6b04dc-e0a0-43fc-a4c0-437f460ea959/review"
+          }}/missions/submissions/9e8ea456-35b5-4f24-8988-b5e3fb6b36e9/review"
         name: PATCH /missions/submissions/:id/review (Corregir y Aprobar)
         meta:
           id: req_68d33555003a46159a333304388d5584
           created: 1786941837838
-          modified: 1786942193517
+          modified: 1787353461623
           isPrivate: false
           description: ""
           sortKey: -1786825549863.125
@@ -1922,21 +1946,23 @@ collection:
         meta:
           id: req_293326c658334d7f9f751897e300b44c
           created: 1787179443583
-          modified: 1787179582724
+          modified: 1787352907949
           isPrivate: false
           description: ""
           sortKey: -1787000034929
         method: POST
         body:
           mimeType: application/json
-          text: >-
+          text: |-
             {
-              "code": "WATER_GUARDIAN",
-              "name": "Guardián del Agua",
-              "description": "Completá el curso intensivo de Conservación de Recursos Hídricos.",
-              "iconUrl": "https://cdn.ecoaprende.com/badges/water-guardian.svg",
-              "xpValue": 75,
-              "category": "ACADEMIC"
+              "code": "FAST_LEARNER",
+              "name": "Aprendiz Veloz",
+              "description": "Completá 2 lecciones en la plataforma.",
+              "iconUrl": "https://cdn.ecoaprende.com/badges/fast-learner.svg",
+              "xpValue": 60,
+              "category": "ACADEMIC",
+              "triggerEvent": "LESSONS_COMPLETED",
+              "triggerValue": 2
             }
         headers:
           - name: Content-Type
@@ -1965,10 +1991,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1787179764413
+    modified: 1787352854478
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZjNGFhNzU2LTI4MGEtNDJkNC1iMTQ3LWQ4NTQ2OTExZTcyYSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzE3OTYzOSwiZXhwIjoxNzg3MjY2MDM5fQ.7l2piwNcztGpRzCLHwJEnu36jQC9bxKLw9XdJJG7Ffc
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNmU3YmFhLTk4ZGUtNDE2MC1iZDVmLTkxOWFjOTkyZTljZCIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzE3OTc0MywiZXhwIjoxNzg3MjY2MTQzfQ.ksZEPlQgBKu9cfgnHsaw93Tnifsxk_kQIO9KmIuwYDI
-    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJjNTJmYmVlLTYzMjEtNDU3Ni05NWQ4LTRjYWQzZDMzOWVkMSIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODcxNzk2NzUsImV4cCI6MTc4NzI2NjA3NX0.LTwaT8vvoDWt6czgBGDB15V9htSeJ2unbr5mGwUWaTY
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEzZjM4YTcxLTI0NGEtNDk0Ny05YjRiLTVmNGUwOWJjZTQwYiIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzM1Mjc3MCwiZXhwIjoxNzg3NDM5MTcwfQ.I1C5KOs7gJ7qIox81KkBUM0fRmIys8tCsK7YE-ZA1Hw
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIyZmZjNjY5LTEwYjctNDNiOS05ZGVhLTAwMjc2Nzg3NGJkYiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzM1MjgzMSwiZXhwIjoxNzg3NDM5MjMxfQ.H7dfdVo7exnmA8oBwIPNbrF4bOuYSvLUpTpF0ngGX9A
+    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUzZWVjNzEzLTlkMzItNDk0MS04OGZjLWJkNDY0N2JlYmYwYSIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODczNTI3OTgsImV4cCI6MTc4NzQzOTE5OH0.rDic2l_xvNndpFHVnnPJ9jW8jJGalIeDyjEV9iqsKTY

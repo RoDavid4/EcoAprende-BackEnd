@@ -8,12 +8,14 @@ import { SubmitMissionDto } from './dto/submit-mission.dto';
 import { ReviewMissionDto } from './dto/review-mission.dto';
 import { User } from '../users/user.entity';
 import { Op } from 'sequelize';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class MissionsService {
   constructor(
     @InjectModel(Mission) private missionModel: typeof Mission,
     @InjectModel(MissionSubmission) private missionSubmissionModel: typeof MissionSubmission,
+    private readonly gamificationService: GamificationService,
   ) {}
 
   async create(createMissionDto: CreateMissionDto, userId: string) {
@@ -103,16 +105,26 @@ export class MissionsService {
   }
 
   async reviewSubmission(submissionId: string, reviewerId: string, dto: ReviewMissionDto) {
-    const submission = await this.missionSubmissionModel.findByPk(submissionId);
+    const submission = await this.missionSubmissionModel.findByPk(submissionId, {
+      include: [{ model: Mission, as: 'mission' }],
+    });
     if (!submission) {
       throw new NotFoundException(`Entrega con ID ${submissionId} no encontrada`);
     }
 
-    return submission.update({
+    const updatedSubmission = await submission.update({
       status: dto.status,
       feedback: dto.feedback,
       reviewedById: reviewerId,
       reviewedAt: new Date(),
     });
+
+    if (dto.status === 'APPROVED') {
+      await this.gamificationService.processActivity(submission.userId, 'APPROVE_MISSION', {
+        pointsReward: submission.mission.pointsReward,
+      });
+    }
+
+    return updatedSubmission;
   }
 }
