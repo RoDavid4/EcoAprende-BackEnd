@@ -40,6 +40,9 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `level` (Integer, Default: 1): Nivel calculado según el progreso.
 - `currentStreak` (Integer, Default: 0): Días consecutivos de actividad.
 - `lastActivityDate` (DateOnly, Nullable): Última vez que realizó una acción puntuable.
+- `lessonsCompleted` (Integer, Default: 0): Contador de lecciones.
+- `quizzesPassed` (Integer, Default: 0): Contador de evaluaciones aprobadas.
+- `missionsApproved` (Integer, Default: 0): Contador de misiones completadas.
 - `isActive` (Boolean - Default: true)
 - `resetPasswordToken` (String, Nullable)
 - `resetPasswordExpires` (Date, Nullable)
@@ -99,6 +102,14 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `durationMinutes` (Integer, Nullable)
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
+
+#### `LessonProgress` (Modulo `courses` - Tabla intermedia de progreso)
+- `id` (UUIDV4, Primary Key)
+- `userId` (UUID, Foreign Key, asocia con `User`)
+- `lessonId` (UUID, Foreign Key, asocia con `Lesson`)
+- `isCompleted` (Boolean, Default: false)
+- `completedAt` (Date, Nullable)
+- Presenta un índice único compuesto en `['userId', 'lessonId']` para implementar control de idempotencia y prevenir la duplicación de recompensas.
 
 #### `Quiz` (Modulo `quizzes`)
 - `id` (UUIDV4, Primary Key)
@@ -174,6 +185,8 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `iconUrl` (String, Not Null)
 - `xpValue` (Integer, Default: 50): Experiencia que otorga.
 - `category` (Enum: 'ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL' - Default: 'ACADEMIC')
+- `triggerEvent` (Enum: 'STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL' - Default: 'MANUAL')
+- `triggerValue` (Integer, Default: 0)
 - `isActive` (Boolean - Default: true)
 - Timestamps de auditoria (`createdAt`, `updatedAt`)
 
@@ -308,6 +321,9 @@ Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestion
   - **Seguridad y Creación**: Acciones estrictamente limitadas a roles `TEACHER` y `ADMIN`. Al crear un curso, el sistema inyecta automáticamente el ID del creador (`createdById`) extraído del payload del JWT de forma segura.
   - **Validaciones Anti-Colisiones**: La lógica de negocio (`ModulesService` y `LessonsService`) revisa preventivamente la posible colisión de índices de orden y puede auto-calcular de forma determinista el consecutivo libre (mediante `max() + 1`) garantizando consistencia en las listas de reproducción multimedia.
 
+- **Progreso y Completitud (`POST /lessons/:id/complete`)**
+  - **Idempotencia y Anti-Farmeo**: Exclusivo para el rol `STUDENT`. Verifica que el estudiante esté inscripto en un aula que tenga acceso al módulo de la lección (validando `ClassroomStudent` contra `ClassroomModule`). Si el usuario accede por primera vez, se genera el registro en `LessonProgress`, se asignan los XP y se incrementa el contador del perfil invocando a `GamificationService`. Las peticiones subsiguientes identifican la lección como ya completada, bloqueando intentos de abuso/grindeo de puntos.
+
 - **Gestión de Evaluaciones (`POST /quizzes`, `GET`, `PATCH`, `DELETE`)**
   - **Creación Transaccional y Validaciones**: La creación de evaluaciones permite enviar payloads anidados (`Quiz` con array de `questions` y array de `options`). La capa de servicios envuelve la creación en una transacción (`sequelize.transaction`). Adicionalmente, validaciones DTO y reglas de negocio garantizan que cada pregunta disponga de al menos 2 opciones y obligatoriamente contenga al menos una opción correcta (`isCorrect: true`).
   - **Consultas con Prevención de Trampas (`GET /quizzes/:id`)**: Si el usuario que efectúa la consulta posee el rol `STUDENT`, el backend aplica una política de seguridad que excluye dinámicamente el atributo `isCorrect` de todas las opciones en la respuesta. Esto imposibilita el fraude mediante inspección de tráfico de red.
@@ -332,10 +348,11 @@ Este módulo gestiona la creación de retos y misiones ambientales junto con su 
 ### Endpoints (Gamification)
 
 Este módulo expone la interfaz para la mecánica de retención de usuarios.
-- **`GET /gamification/profile`**: Retorna el progreso individual (`totalXp`, `level`, `currentStreak`) y la lista de insignias desbloqueadas.
+- **Motor de Reglas Dinámico**: `GamificationService` opera como un procesador de eventos (`checkAutomaticBadges` y `processActivity`). Los servicios de negocio (Lessons, Quizzes, Missions, Auth) disparan un evento cuando ocurre una acción puntuable. El motor actualiza los contadores de progreso del usuario y coteja su estado contra el catálogo de insignias para entregar los coleccionables cuyas condiciones (`triggerEvent` y `triggerValue`) hayan sido satisfechas.
+- **`GET /gamification/profile`**: Retorna el progreso individual (`totalXp`, `level`, `currentStreak`, `lessonsCompleted`, `quizzesPassed`, `missionsApproved`) y la lista de insignias desbloqueadas.
 - **`GET /gamification/badges`**: Catálogo que contrasta todas las insignias disponibles y flaggea con un booleano dinámico (`isUnlocked`) cuáles posee el usuario consultante.
 - **`GET /gamification/leaderboard`**: Tabla de clasificación anónima. Ordena `totalXp DESC` limitando al top 20, filtrando intrínsecamente solo a cuentas con `role: 'STUDENT'` e `isActive: true`.
-- **`POST /gamification/badges`**: Exclusivo para rol `ADMIN`. Permite la inyección manual de nuevos coleccionables.
+- **`POST /gamification/badges`**: Exclusivo para rol `ADMIN`. Permite la inyección manual de nuevos coleccionables (configurando el `triggerEvent` y el umbral numérico `triggerValue` para su emisión automática).
 
 ## Configuración y Entorno
 
@@ -345,7 +362,7 @@ El backend está diseñado para ser configurable mediante variables de entorno (
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones y estados de publicación), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias, rachas y ranking estudiantil), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones, estados de publicación y endpoints idempotentes de finalización `POST /lessons/:id/complete`), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias dinámicas generadas por el motor de reglas, rachas y ranking estudiantil), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

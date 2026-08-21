@@ -5,12 +5,21 @@ import { Module } from './module.entity';
 import { Course } from './course.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { GamificationService } from '../gamification/gamification.service';
+import { LessonProgress } from './lesson-progress.entity';
+import { ClassroomStudent } from '../classrooms/classroom-student.entity';
+import { ClassroomModule } from '../classrooms/classroom-module.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class LessonsService {
   constructor(
     @InjectModel(Lesson) private lessonModel: typeof Lesson,
     @InjectModel(Module) private moduleModel: typeof Module,
+    @InjectModel(LessonProgress) private lessonProgressModel: typeof LessonProgress,
+    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
+    @InjectModel(ClassroomModule) private classroomModuleModel: typeof ClassroomModule,
+    private readonly gamificationService: GamificationService,
   ) {}
 
   async create(createLessonDto: CreateLessonDto, user: any) {
@@ -104,5 +113,57 @@ export class LessonsService {
     }
 
     return lesson.update({ isActive: false });
+  }
+
+  async complete(id: string, user: any) {
+    if (user.role !== 'STUDENT') {
+      return { message: 'Only students receive XP for completing lessons' };
+    }
+
+    const lesson = await this.findOne(id, user);
+
+    // Verify enrollment
+    const enrolledClassrooms = await this.classroomStudentModel.findAll({
+      where: { studentId: user.id }
+    });
+    const classroomIds = enrolledClassrooms.map(c => c.classroomId);
+
+    const hasAccess = await this.classroomModuleModel.findOne({
+      where: { moduleId: lesson.moduleId, classroomId: { [Op.in]: classroomIds }, isVisible: true }
+    });
+
+    if (!hasAccess) {
+      throw new ForbiddenException('No estás inscripto en ningún aula que tenga acceso a esta lección.');
+    }
+
+    // Idempotency check
+    const existingProgress = await this.lessonProgressModel.findOne({
+      where: { userId: user.id, lessonId: lesson.id }
+    });
+
+    if (existingProgress && existingProgress.isCompleted) {
+      return {
+        message: 'Lección ya estaba completada',
+        progress: existingProgress,
+      };
+    }
+
+    const progress = existingProgress || await this.lessonProgressModel.create({
+      userId: user.id,
+      lessonId: lesson.id,
+    });
+
+    await progress.update({
+      isCompleted: true,
+      completedAt: new Date(),
+    });
+
+    const rewards = await this.gamificationService.processActivity(user.id, 'COMPLETE_LESSON');
+
+    return {
+      message: 'Lección completada exitosamente',
+      progress,
+      rewards,
+    };
   }
 }

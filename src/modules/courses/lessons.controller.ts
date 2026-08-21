@@ -40,4 +40,10 @@ export class LessonsController {
   remove(@Param('id') id: string, @Request() req: any) {
     return this.lessonsService.remove(id, req.user);
   }
+
+  @Post(':id/complete')
+  @Roles('STUDENT')
+  complete(@Param('id') id: string, @Request() req: any) {
+    return this.lessonsService.complete(id, req.user);
+  }
 }

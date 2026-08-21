@@ -63,10 +63,10 @@ export class SeederService implements OnModuleInit {
 
     // Seed Badges
     const defaultBadges = [
-      { code: 'WELCOME', name: 'Semilla Curiosa', description: 'Otorgada por unirte a EcoAprende.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/2922/2922037.png', xpValue: 20, category: 'SPECIAL' },
-      { code: 'FIRST_LESSON', name: 'Primeros Brotes', description: 'Otorgada por completar tu primera lección.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3233/3233483.png', xpValue: 50, category: 'ACADEMIC' },
-      { code: 'STREAK_3', name: 'Constancia Verde', description: 'Otorgada por ingresar 3 días seguidos.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/763/763365.png', xpValue: 100, category: 'STREAK' },
-      { code: 'ECO_HERO', name: 'Héroe Ambiental', description: 'Otorgada por completar tu primera misión práctica.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png', xpValue: 150, category: 'COMMUNITY' },
+      { code: 'WELCOME', name: 'Semilla Curiosa', description: 'Otorgada por unirte a EcoAprende.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/2922/2922037.png', xpValue: 20, category: 'SPECIAL', triggerEvent: 'TOTAL_XP', triggerValue: 0 },
+      { code: 'FIRST_LESSON', name: 'Primeros Brotes', description: 'Otorgada por completar tu primera lección.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3233/3233483.png', xpValue: 50, category: 'ACADEMIC', triggerEvent: 'LESSONS_COMPLETED', triggerValue: 1 },
+      { code: 'STREAK_3', name: 'Constancia Verde', description: 'Otorgada por ingresar 3 días seguidos.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/763/763365.png', xpValue: 100, category: 'STREAK', triggerEvent: 'STREAK', triggerValue: 3 },
+      { code: 'ECO_HERO', name: 'Héroe Ambiental', description: 'Otorgada por completar tu primera misión práctica.', iconUrl: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png', xpValue: 150, category: 'COMMUNITY', triggerEvent: 'MISSIONS_APPROVED', triggerValue: 1 },
     ];
 
     for (const badge of defaultBadges) {

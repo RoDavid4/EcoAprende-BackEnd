@@ -39,6 +39,20 @@ export class Badge extends Model {
   })
   declare iconUrl: string;
 
+  @Default('MANUAL')
+  @Column({
+    type: DataType.ENUM('STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'),
+    allowNull: true,
+  })
+  declare triggerEvent: 'STREAK' | 'TOTAL_XP' | 'LESSONS_COMPLETED' | 'QUIZZES_PASSED' | 'MISSIONS_APPROVED' | 'MANUAL';
+
+  @Default(0)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  declare triggerValue: number;
+
   @Default(50)
   @Column({
     type: DataType.INTEGER,
