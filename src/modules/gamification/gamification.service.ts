@@ -5,8 +5,11 @@ import { UserBadge } from './user-badge.entity';
 import { User } from '../users/user.entity';
 import { Role } from '../roles/role.entity';
 import { CreateBadgeDto } from './dto/create-badge.dto';
+import { LeaderboardQueryDto } from './dto/leaderboard-query.dto';
 import { Transaction, Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
+import { Classroom } from '../classrooms/classroom.entity';
+import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 
 @Injectable()
 export class GamificationService {
@@ -16,6 +19,8 @@ export class GamificationService {
     @InjectModel(Badge) private badgeModel: typeof Badge,
     @InjectModel(UserBadge) private userBadgeModel: typeof UserBadge,
     @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Classroom) private classroomModel: typeof Classroom,
+    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
     private sequelize: Sequelize,
   ) {}
 
@@ -207,10 +212,27 @@ export class GamificationService {
     });
   }
 
-  async getLeaderboard() {
-    return this.userModel.findAll({
-      where: { isActive: true },
-      attributes: ['id', 'fullName', 'level', 'totalXp'],
+  async getGlobalLeaderboard(query: LeaderboardQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const offset = (page - 1) * limit;
+
+    const whereClause: any = { isActive: true };
+    if (query.timeframe === 'MONTHLY') {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      whereClause.lastActivityDate = { [Op.gte]: startOfMonth };
+    } else if (query.timeframe === 'WEEKLY') {
+      const startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      whereClause.lastActivityDate = { [Op.gte]: startOfWeek };
+    }
+
+    const { rows, count } = await this.userModel.findAndCountAll({
+      where: whereClause,
+      attributes: ['id', 'fullName', 'totalXp', 'level', 'currentStreak'],
       include: [
         {
           model: Role,
@@ -219,9 +241,120 @@ export class GamificationService {
           attributes: [],
         }
       ],
-      order: [['totalXp', 'DESC']],
-      limit: 20,
+      order: [
+        ['totalXp', 'DESC'],
+        ['level', 'DESC'],
+        ['currentStreak', 'DESC']
+      ],
+      limit,
+      offset,
     });
+
+    const data = rows.map((user, index) => {
+      const plainUser = user.get({ plain: true }) as any;
+      plainUser.rank = offset + index + 1;
+      const names = plainUser.fullName.split(' ');
+      plainUser.firstName = names[0];
+      plainUser.lastName = names.slice(1).join(' ');
+      delete plainUser.fullName;
+      return plainUser;
+    });
+
+    return {
+      data,
+      meta: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit),
+      },
+    };
+  }
+
+  async getClassroomLeaderboard(classroomId: string, query: LeaderboardQueryDto, currentUserId: string, currentUserRole: string) {
+    const classroom = await this.classroomModel.findByPk(classroomId);
+    if (!classroom) {
+      throw new NotFoundException('Aula no encontrada');
+    }
+
+    // Auth check
+    if (currentUserRole !== 'ADMIN' && classroom.teacherId !== currentUserId) {
+      const isStudent = await this.classroomStudentModel.findOne({
+        where: { classroomId, studentId: currentUserId }
+      });
+      if (!isStudent) {
+        throw new NotFoundException('No tienes acceso a esta aula');
+      }
+    }
+
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const offset = (page - 1) * limit;
+
+    const classroomStudents = await this.classroomStudentModel.findAll({
+      where: { classroomId },
+      attributes: ['studentId'],
+    });
+    
+    const studentIds = classroomStudents.map(cs => cs.studentId);
+
+    const whereClause: any = { isActive: true, id: { [Op.in]: studentIds } };
+    
+    if (query.timeframe === 'MONTHLY') {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      whereClause.lastActivityDate = { [Op.gte]: startOfMonth };
+    } else if (query.timeframe === 'WEEKLY') {
+      const startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      whereClause.lastActivityDate = { [Op.gte]: startOfWeek };
+    }
+
+    const { rows, count } = await this.userModel.findAndCountAll({
+      where: whereClause,
+      attributes: ['id', 'fullName', 'totalXp', 'level', 'currentStreak'],
+      include: [
+        {
+          model: Role,
+          as: 'role',
+          where: { name: 'STUDENT' },
+          attributes: [],
+        }
+      ],
+      order: [
+        ['totalXp', 'DESC'],
+        ['level', 'DESC'],
+        ['currentStreak', 'DESC']
+      ],
+      limit,
+      offset,
+    });
+
+    const data = rows.map((user, index) => {
+      const plainUser = user.get({ plain: true }) as any;
+      plainUser.rank = offset + index + 1;
+      const names = plainUser.fullName.split(' ');
+      plainUser.firstName = names[0];
+      plainUser.lastName = names.slice(1).join(' ');
+      delete plainUser.fullName;
+      return plainUser;
+    });
+
+    return {
+      classroom: {
+        id: classroom.id,
+        name: classroom.name,
+      },
+      data,
+      meta: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit),
+      },
+    };
   }
 
   async createBadge(dto: CreateBadgeDto) {
