@@ -17,6 +17,18 @@ export class CoursesController {
     return this.coursesService.create(createCourseDto, req.user.id);
   }
 
+  @Get('progress/me')
+  @Roles('STUDENT', 'TEACHER', 'ADMIN')
+  getMyProgress(@Request() req: any) {
+    return this.coursesService.getStudentProgress(req.user.id);
+  }
+
+  @Get('progress/:studentId')
+  @Roles('TEACHER', 'ADMIN')
+  getStudentProgress(@Param('studentId') studentId: string) {
+    return this.coursesService.getStudentProgress(studentId);
+  }
+
   @Get()
   @Roles('TEACHER', 'ADMIN', 'STUDENT')
   findAll(@Request() req: any) {

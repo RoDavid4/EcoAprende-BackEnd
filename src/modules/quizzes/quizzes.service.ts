@@ -8,8 +8,10 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { Module } from '../courses/module.entity';
+import { Module as CourseModule } from '../courses/module.entity';
 import { QuizAttempt } from './quiz-attempt.entity';
 import { GamificationService } from '../gamification/gamification.service';
+import { CoursesService } from '../courses/courses.service';
 
 @Injectable()
 export class QuizzesService {
@@ -17,14 +19,15 @@ export class QuizzesService {
     @InjectModel(Quiz) private quizModel: typeof Quiz,
     @InjectModel(Question) private questionModel: typeof Question,
     @InjectModel(Option) private optionModel: typeof Option,
-    @InjectModel(Module) private moduleModel: typeof Module,
     @InjectModel(QuizAttempt) private quizAttemptModel: typeof QuizAttempt,
+    @InjectModel(CourseModule) private courseModuleModel: typeof CourseModule,
     private readonly gamificationService: GamificationService,
+    private readonly coursesService: CoursesService,
     private sequelize: Sequelize,
   ) {}
 
   async create(createQuizDto: CreateQuizDto, user: any) {
-    const moduleRecord = await this.moduleModel.findByPk(createQuizDto.moduleId, {
+    const moduleRecord = await this.courseModuleModel.findByPk(createQuizDto.moduleId, {
       include: ['course']
     });
 
@@ -152,6 +155,10 @@ export class QuizzesService {
           model: Question,
           as: 'questions',
           include: [{ model: Option, as: 'options' }]
+        },
+        {
+          model: CourseModule,
+          as: 'module'
         }
       ]
     });
@@ -217,6 +224,10 @@ export class QuizzesService {
 
     if (isPassed) {
       await this.gamificationService.processActivity(userId, 'PASS_QUIZ');
+    }
+
+    if (quiz.module?.courseId) {
+      await this.coursesService.updateStudentProgress(userId, quiz.module.courseId);
     }
 
     return {
