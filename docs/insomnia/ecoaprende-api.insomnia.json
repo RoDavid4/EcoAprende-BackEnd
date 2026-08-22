@@ -368,6 +368,67 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.base_url }}/auth/register"
+        name: POST Register - Success (201 Created) (alumno 2)
+        meta:
+          id: req_fdb97048d90f498b8528faebf62dd3f6
+          created: 1787359055986
+          modified: 1787359090079
+          isPrivate: false
+          description: ""
+          sortKey: -1785538410577
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fullName": "Juan Carlos",
+              "email": "juancarlos@ecoaprende.com",
+              "password": "Password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/auth/login"
+        name: POST Login - Success (200 OK) (alumno 2)
+        meta:
+          id: req_ec4e7cc1faf249ed9f5fed28fe3e6b30
+          created: 1787359071694
+          modified: 1787359102068
+          isPrivate: false
+          description: ""
+          sortKey: -1785538410512.9375
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "juancarlos@ecoaprende.com",
+              "password": "Password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
   - name: Users
     meta:
       id: fld_89ae22e96ca944208ca2b46b32ac3d09
@@ -828,7 +889,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1787356030079
+              modified: 1787359488778
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -1972,6 +2033,82 @@ collection:
         authentication:
           type: bearer
           token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/gamification/leaderboard?page=1&limit=10"
+        name: GET /gamification/leaderboard?page=1&limit=10
+        meta:
+          id: req_67d9273999c542f6b5e8992a64e3de55
+          created: 1787358948961
+          modified: 1787358994118
+          isPrivate: false
+          description: ""
+          sortKey: -1787000034979
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/gamification/leaderboard/classroom/7502c188-2e1a-4dd0-b705-e289532\
+          ecd60"
+        name: GET /gamification/leaderboard/classroom/<ID_DE_AULA>
+        meta:
+          id: req_cca35286f9cf4d1eb967a775c5b9b02b
+          created: 1787359157280
+          modified: 1787359565590
+          isPrivate: false
+          description: ""
+          sortKey: -1787000034954
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.teacher_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/gamification/leaderboard?classroomId=7502c188-2e1a-4dd0-b705-e2895\
+          32ecd60"
+        name: GET /gamification/leaderboard?classroomId=<ID_DE_AULA>
+        meta:
+          id: req_a12d6e1b6ab5411b9b4a6589320a06f2
+          created: 1787359283644
+          modified: 1787359379332
+          isPrivate: false
+          description: ""
+          sortKey: -1787000034941.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.student_token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
