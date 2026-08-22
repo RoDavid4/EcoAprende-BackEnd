@@ -10,6 +10,7 @@ import { Transaction, Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
+import { BADGE_ICONS_POOL } from './constants/badge-icons.constant';
 
 @Injectable()
 export class GamificationService {
@@ -210,6 +211,10 @@ export class GamificationService {
         isUnlocked: userBadgeIds.includes(badge.id),
       };
     });
+  }
+
+  getAvailableIcons() {
+    return BADGE_ICONS_POOL;
   }
 
   async getGlobalLeaderboard(query: LeaderboardQueryDto) {

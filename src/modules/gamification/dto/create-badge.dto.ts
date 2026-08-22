@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsUrl, IsInt, IsEnum, IsOptional, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsIn, IsOptional, Min } from 'class-validator';
 
 export class CreateBadgeDto {
   @IsString()
@@ -13,7 +13,7 @@ export class CreateBadgeDto {
   @IsNotEmpty()
   description: string;
 
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   iconUrl: string;
 
@@ -22,11 +22,11 @@ export class CreateBadgeDto {
   @IsOptional()
   xpValue?: number;
 
-  @IsEnum(['ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'])
+  @IsIn(['ECOLOGY', 'ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'])
   @IsOptional()
-  category?: 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
+  category?: 'ECOLOGY' | 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
 
-  @IsEnum(['STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'])
+  @IsIn(['STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'])
   @IsOptional()
   triggerEvent?: 'STREAK' | 'TOTAL_XP' | 'LESSONS_COMPLETED' | 'QUIZZES_PASSED' | 'MISSIONS_APPROVED' | 'MANUAL';
 
