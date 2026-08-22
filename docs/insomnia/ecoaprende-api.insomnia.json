@@ -2007,23 +2007,23 @@ collection:
         meta:
           id: req_293326c658334d7f9f751897e300b44c
           created: 1787179443583
-          modified: 1787352907949
+          modified: 1787427709254
           isPrivate: false
           description: ""
           sortKey: -1787000034929
         method: POST
         body:
           mimeType: application/json
-          text: |-
+          text: >-
             {
-              "code": "FAST_LEARNER",
-              "name": "Aprendiz Veloz",
-              "description": "Completá 2 lecciones en la plataforma.",
-              "iconUrl": "https://cdn.ecoaprende.com/badges/fast-learner.svg",
-              "xpValue": 60,
-              "category": "ACADEMIC",
+              "code": "SOLAR_CHAMPION",
+              "name": "Campeón Solar",
+              "description": "Completá el módulo de energías renovables.",
+              "iconUrl": "https://api.iconify.design/lucide:sun.svg?color=%23eab308",
+              "xpValue": 75,
+              "category": "ECOLOGY",
               "triggerEvent": "LESSONS_COMPLETED",
-              "triggerValue": 2
+              "triggerValue": 5
             }
         headers:
           - name: Content-Type
@@ -2117,6 +2117,30 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.base_url }}/gamification/badges/icons"
+        name: GET /gamification/badges/icons (Catálogo de Iconos de Insignias)
+        meta:
+          id: req_5a2b799060cd4bb1bd0682cb8e492f17
+          created: 1787427525191
+          modified: 1787427586486
+          isPrivate: false
+          description: ""
+          sortKey: -1787000034829
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -2128,10 +2152,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1787352854478
+    modified: 1787428957638
     isPrivate: false
   data:
     base_url: http://localhost:3000
     teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEzZjM4YTcxLTI0NGEtNDk0Ny05YjRiLTVmNGUwOWJjZTQwYiIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzM1Mjc3MCwiZXhwIjoxNzg3NDM5MTcwfQ.I1C5KOs7gJ7qIox81KkBUM0fRmIys8tCsK7YE-ZA1Hw
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIyZmZjNjY5LTEwYjctNDNiOS05ZGVhLTAwMjc2Nzg3NGJkYiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzM1MjgzMSwiZXhwIjoxNzg3NDM5MjMxfQ.H7dfdVo7exnmA8oBwIPNbrF4bOuYSvLUpTpF0ngGX9A
-    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUzZWVjNzEzLTlkMzItNDk0MS04OGZjLWJkNDY0N2JlYmYwYSIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODczNTI3OTgsImV4cCI6MTc4NzQzOTE5OH0.rDic2l_xvNndpFHVnnPJ9jW8jJGalIeDyjEV9iqsKTY
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3MDBlNTAwLTY2NTEtNDU5ZC05OTNhLWY4MDg5ZDI5ZDVmYiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzQyODk0MiwiZXhwIjoxNzg3NTE1MzQyfQ.NKW2iv4qlChkQ1u1OKX3-BolxeltApdjGNf-vxtaR5o
+    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNzg1M2E3LWVlZjAtNDY5NC05ODUwLWRhN2ZkM2UwNzViNiIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc0Mjg4NzEsImV4cCI6MTc4NzUxNTI3MX0.xlDM2TyFwNuu3t6VgA70NWXYzM_UBFBLbCbsP3kXuQM

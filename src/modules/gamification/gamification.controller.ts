@@ -23,6 +23,12 @@ export class GamificationController {
     return this.gamificationService.getBadges(req.user.id);
   }
 
+  @Get('badges/icons')
+  @Roles('STUDENT', 'TEACHER', 'ADMIN')
+  getAvailableIcons() {
+    return this.gamificationService.getAvailableIcons();
+  }
+
   @Get('leaderboard')
   @Roles('STUDENT', 'TEACHER', 'ADMIN')
   getLeaderboard(@Query() query: LeaderboardQueryDto, @Request() req: any) {

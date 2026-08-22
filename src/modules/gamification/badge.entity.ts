@@ -60,12 +60,12 @@ export class Badge extends Model {
   })
   declare xpValue: number;
 
-  @Default('ACADEMIC')
+  @Default('ECOLOGY')
   @Column({
-    type: DataType.ENUM('ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'),
+    type: DataType.ENUM('ECOLOGY', 'ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'),
     allowNull: false,
   })
-  declare category: 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
+  declare category: 'ECOLOGY' | 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
 
   @Default(true)
   @Column({
