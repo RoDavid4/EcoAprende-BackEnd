@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Lesson } from './lesson.entity';
 import { Module } from './module.entity';
 import { Course } from './course.entity';
+import { CoursesService } from './courses.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { GamificationService } from '../gamification/gamification.service';
 import { LessonProgress } from './lesson-progress.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 import { ClassroomModule } from '../classrooms/classroom-module.entity';
+import { StudentProgress } from './student-progress.entity';
 import { Op } from 'sequelize';
 
 @Injectable()
@@ -19,7 +21,9 @@ export class LessonsService {
     @InjectModel(LessonProgress) private lessonProgressModel: typeof LessonProgress,
     @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
     @InjectModel(ClassroomModule) private classroomModuleModel: typeof ClassroomModule,
+    @InjectModel(StudentProgress) private studentProgressModel: typeof StudentProgress,
     private readonly gamificationService: GamificationService,
+    @Inject(forwardRef(() => CoursesService)) private coursesService: CoursesService,
   ) {}
 
   async create(createLessonDto: CreateLessonDto, user: any) {
@@ -159,6 +163,10 @@ export class LessonsService {
     });
 
     const rewards = await this.gamificationService.processActivity(user.id, 'COMPLETE_LESSON');
+
+    // Remove direct StudentProgress update logic and call CoursesService (which handles everything)
+    const courseId = lesson.module.course.id;
+    await this.coursesService.updateStudentProgress(user.id, courseId);
 
     return {
       message: 'Lección completada exitosamente',

@@ -111,6 +111,19 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `completedAt` (Date, Nullable)
 - Presenta un índice único compuesto en `['userId', 'lessonId']` para implementar control de idempotencia y prevenir la duplicación de recompensas.
 
+#### `StudentProgress` (Modulo `courses` - Progreso Consolidado)
+- `id` (UUIDV4, Primary Key)
+- `userId` (UUID, Foreign Key, asocia con `User`)
+- `courseId` (UUID, Foreign Key, asocia con `Course`)
+- `completedLessonsCount` (Integer, Default: 0)
+- `totalLessonsCount` (Integer, Default: 0)
+- `completedQuizzesCount` (Integer, Default: 0)
+- `totalQuizzesCount` (Integer, Default: 0)
+- `percentage` (Float, Default: 0.00): Promedio global de aprendizaje del curso.
+- `isCompleted` (Boolean, Default: false)
+- `lastAccessedAt` (Date, Nullable)
+- `completedAt` (Date, Nullable)
+
 #### `Quiz` (Modulo `quizzes`)
 - `id` (UUIDV4, Primary Key)
 - `moduleId` (UUID, Foreign Key, asocia con `Module`)
@@ -321,8 +334,12 @@ Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestion
   - **Seguridad y Creación**: Acciones estrictamente limitadas a roles `TEACHER` y `ADMIN`. Al crear un curso, el sistema inyecta automáticamente el ID del creador (`createdById`) extraído del payload del JWT de forma segura.
   - **Validaciones Anti-Colisiones**: La lógica de negocio (`ModulesService` y `LessonsService`) revisa preventivamente la posible colisión de índices de orden y puede auto-calcular de forma determinista el consecutivo libre (mediante `max() + 1`) garantizando consistencia en las listas de reproducción multimedia.
 
-- **Progreso y Completitud (`POST /lessons/:id/complete`)**
-  - **Idempotencia y Anti-Farmeo**: Exclusivo para el rol `STUDENT`. Verifica que el estudiante esté inscripto en un aula que tenga acceso al módulo de la lección (validando `ClassroomStudent` contra `ClassroomModule`). Si el usuario accede por primera vez, se genera el registro en `LessonProgress`, se asignan los XP y se incrementa el contador del perfil invocando a `GamificationService`. Las peticiones subsiguientes identifican la lección como ya completada, bloqueando intentos de abuso/grindeo de puntos.
+- **Progreso Consolidado del Estudiante (`GET /courses/progress/me`, `GET /courses/progress/:studentId`)**
+  - **Recálculo en Tiempo Real (`StudentProgress`)**: Exposición de métricas globales de completitud. Para evitar que el progreso quede desfasado cuando el profesor elimina o agrega contenidos (lecciones o quizzes), el servicio intercepta las consultas y ejecuta sincronizaciones dinámicas de las entidades `Lesson` y `Quiz` asociadas a los módulos activos del curso antes de devolver los porcentajes.
+  - **Estructura del Payload**: Retorna un objeto `global` con el recuento total acumulado de aprendizaje (`enrolledCoursesCount`, `completedCoursesCount`, `totalLessonsCompleted`, `totalQuizzesPassed`, `averagePercentage`), anidando además las mecánicas ludificadas (`gamification`) extraídas en memoria (nivel, xp, racha, insignias) y finalmente desglosando la situación particular de los cursos (`courses`) con contadores de ítems individuales (`completedItemsCount` vs `totalItemsCount`).
+
+- **Progreso y Completitud Modular (`POST /lessons/:id/complete`)**
+  - **Idempotencia y Anti-Farmeo**: Exclusivo para el rol `STUDENT`. Verifica que el estudiante esté inscripto en un aula que tenga acceso al módulo de la lección (validando `ClassroomStudent` contra `ClassroomModule`). Si el usuario accede por primera vez, se genera el registro en `LessonProgress`, se asignan los XP y se incrementa el contador del perfil invocando a `GamificationService`. Las peticiones subsiguientes identifican la lección como ya completada, bloqueando intentos de abuso/grindeo de puntos. Por detrás, se invoca automáticamente la sincronización asíncrona de la entidad `StudentProgress`.
 
 - **Gestión de Evaluaciones (`POST /quizzes`, `GET`, `PATCH`, `DELETE`)**
   - **Creación Transaccional y Validaciones**: La creación de evaluaciones permite enviar payloads anidados (`Quiz` con array de `questions` y array de `options`). La capa de servicios envuelve la creación en una transacción (`sequelize.transaction`). Adicionalmente, validaciones DTO y reglas de negocio garantizan que cada pregunta disponga de al menos 2 opciones y obligatoriamente contenga al menos una opción correcta (`isCorrect: true`).

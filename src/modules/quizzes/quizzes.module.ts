@@ -8,9 +8,10 @@ import { Option } from './option.entity';
 import { QuizAttempt } from './quiz-attempt.entity';
 import { Module as CourseModule } from '../courses/module.entity';
 import { GamificationModule } from '../gamification/gamification.module';
+import { CoursesModule } from '../courses/courses.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Quiz, Question, Option, QuizAttempt, CourseModule]), GamificationModule],
+  imports: [SequelizeModule.forFeature([Quiz, Question, Option, QuizAttempt, CourseModule]), GamificationModule, CoursesModule],
   controllers: [QuizzesController],
   providers: [QuizzesService],
   exports: [SequelizeModule, QuizzesService],
