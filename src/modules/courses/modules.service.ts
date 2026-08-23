@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Module } from './module.entity';
 import { Lesson } from './lesson.entity';
@@ -54,11 +54,13 @@ export class ModulesService {
   }
 
   async findOne(id: string, user: any) {
-    const whereClause: any = { id, isActive: true };
-    const lessonWhereClause: any = { isActive: true };
+    const whereClause: any = { id };
+    const lessonWhereClause: any = {};
 
     if (user.role === 'STUDENT') {
+      whereClause.isActive = true;
       whereClause.status = 'PUBLISHED';
+      lessonWhereClause.isActive = true;
     }
 
     const moduleRecord = await this.moduleModel.findOne({
@@ -94,12 +96,27 @@ export class ModulesService {
       throw new ForbiddenException('No tienes permisos para editar este módulo');
     }
 
-    if (updateModuleDto.order !== undefined) {
-      const existing = await this.moduleModel.findOne({
-        where: { courseId: moduleRecord.courseId, order: updateModuleDto.order, isActive: true }
-      });
-      if (existing && existing.id !== moduleRecord.id) {
-        throw new BadRequestException(`Ya existe un módulo con el orden ${updateModuleDto.order} en este curso`);
+    const isReactivating = updateModuleDto.isActive === true && !moduleRecord.isActive;
+    const becomesInactive = updateModuleDto.isActive === false && moduleRecord.isActive;
+
+    if (becomesInactive) {
+      updateModuleDto.order = -1;
+    }
+
+    if (isReactivating || updateModuleDto.order !== undefined) {
+      const targetOrder = updateModuleDto.order !== undefined ? updateModuleDto.order : moduleRecord.order;
+      
+      if (targetOrder <= 0 && updateModuleDto.isActive !== false) {
+        throw new BadRequestException('Debe especificar un número de orden válido (> 0) para reactivar el módulo.');
+      }
+      
+      if (targetOrder > 0) {
+        const existing = await this.moduleModel.findOne({
+          where: { courseId: moduleRecord.courseId, order: targetOrder, isActive: true }
+        });
+        if (existing && existing.id !== moduleRecord.id) {
+          throw new ConflictException('El orden solicitado ya está ocupado por otro módulo activo.');
+        }
       }
     }
 
@@ -113,6 +130,6 @@ export class ModulesService {
       throw new ForbiddenException('No tienes permisos para eliminar este módulo');
     }
 
-    return moduleRecord.update({ isActive: false });
+    return moduleRecord.update({ isActive: false, order: -1 });
   }
 }

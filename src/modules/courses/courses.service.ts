@@ -2,11 +2,14 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectModel } from '@nestjs/sequelize';
 import { Course } from './course.entity';
 import { Module } from './module.entity';
+import { Lesson } from './lesson.entity';
+import { Quiz } from '../quizzes/quiz.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { User } from '../users/user.entity';
 import { StudentProgress } from './student-progress.entity';
 import { GamificationService } from '../gamification/gamification.service';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CoursesService {
@@ -43,13 +46,35 @@ export class CoursesService {
     });
   }
 
-  async findOne(id: string, user: any) {
-    const whereClause: any = { id, isActive: true };
-    const moduleWhereClause: any = { isActive: true };
+  async findOne(id: string, user: any, includeInactive = false) {
+    const whereClause: any = { id };
+    const moduleWhereClause: any = {};
+    const lessonWhereClause: any = {};
+    const quizWhereClause: any = {};
 
     if (user.role === 'STUDENT') {
+      whereClause.isActive = true;
       whereClause.status = 'PUBLISHED';
+      
+      moduleWhereClause.isActive = true;
       moduleWhereClause.status = 'PUBLISHED';
+      moduleWhereClause.order = { [Op.gt]: 0 };
+
+      lessonWhereClause.isActive = true;
+      lessonWhereClause.order = { [Op.gt]: 0 };
+
+      quizWhereClause.isActive = true;
+    } else {
+      if (!includeInactive) {
+        // Por defecto, TEACHER y ADMIN ven solo lo activo y ordenado > 0
+        moduleWhereClause.isActive = true;
+        moduleWhereClause.order = { [Op.gt]: 0 };
+
+        lessonWhereClause.isActive = true;
+        lessonWhereClause.order = { [Op.gt]: 0 };
+
+        quizWhereClause.isActive = true;
+      }
     }
 
     const course = await this.courseModel.findOne({
@@ -65,10 +90,25 @@ export class CoursesService {
           as: 'modules',
           where: moduleWhereClause,
           required: false,
+          include: [
+            {
+              model: Lesson,
+              as: 'lessons',
+              where: lessonWhereClause,
+              required: false,
+            },
+            {
+              model: Quiz,
+              as: 'quizzes',
+              where: quizWhereClause,
+              required: false,
+            }
+          ]
         }
       ],
       order: [
-        [{ model: Module, as: 'modules' }, 'order', 'ASC']
+        [{ model: Module, as: 'modules' }, 'order', 'ASC'],
+        [{ model: Module, as: 'modules' }, { model: Lesson, as: 'lessons' }, 'order', 'ASC']
       ]
     });
 

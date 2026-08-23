@@ -8,6 +8,9 @@ import { Module } from './module.entity';
     {
       unique: true,
       fields: ['moduleId', 'order'],
+      where: {
+        isActive: true
+      }
     }
   ]
 })
