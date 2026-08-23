@@ -39,6 +39,12 @@ export class ClassroomsController {
     return this.classroomsService.findOne(id);
   }
 
+  @Get(':id/metrics')
+  @Roles('TEACHER', 'ADMIN')
+  getMetrics(@Param('id') id: string, @Request() req: any) {
+    return this.classroomsService.getClassroomMetrics(id, req.user);
+  }
+
   @Patch(':id')
   @Roles('TEACHER', 'ADMIN')
   update(@Param('id') id: string, @Body() updateClassroomDto: UpdateClassroomDto, @Request() req: any) {

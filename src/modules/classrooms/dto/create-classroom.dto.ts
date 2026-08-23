@@ -8,4 +8,8 @@ export class CreateClassroomDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  courseId?: string;
 }

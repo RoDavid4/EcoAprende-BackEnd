@@ -6,9 +6,10 @@ import { Classroom } from './classroom.entity';
 import { ClassroomStudent } from './classroom-student.entity';
 import { ClassroomModule as ClassroomModuleEntity } from './classroom-module.entity';
 import { Module as CourseModuleEntity } from '../courses/module.entity';
+import { StudentProgress } from '../courses/student-progress.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Classroom, ClassroomStudent, ClassroomModuleEntity, CourseModuleEntity])],
+  imports: [SequelizeModule.forFeature([Classroom, ClassroomStudent, ClassroomModuleEntity, CourseModuleEntity, StudentProgress])],
   controllers: [ClassroomsController],
   providers: [ClassroomsService],
   exports: [SequelizeModule, ClassroomsService],

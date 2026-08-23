@@ -45,6 +45,12 @@ export class Classroom extends Model {
   @BelongsTo(() => User)
   declare teacher: User;
 
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  declare courseId: string;
+
   @Default(true)
   @Column({
     type: DataType.BOOLEAN,

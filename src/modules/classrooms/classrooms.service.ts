@@ -11,6 +11,8 @@ import { Module as CourseModuleEntity } from '../courses/module.entity';
 import { AssignModuleDto } from './dto/assign-module.dto';
 import { UpdateClassroomModuleDto } from './dto/update-classroom-module.dto';
 
+import { StudentProgress } from '../courses/student-progress.entity';
+
 @Injectable()
 export class ClassroomsService {
   constructor(
@@ -18,6 +20,7 @@ export class ClassroomsService {
     @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
     @InjectModel(ClassroomModuleEntity) private classroomModuleModel: typeof ClassroomModuleEntity,
     @InjectModel(CourseModuleEntity) private courseModuleModel: typeof CourseModuleEntity,
+    @InjectModel(StudentProgress) private studentProgressModel: typeof StudentProgress,
   ) {}
 
   private async generateUniqueCode(): Promise<string> {
@@ -246,6 +249,131 @@ export class ClassroomsService {
     }
 
     return classroom.modules;
+  }
+
+  async getClassroomMetrics(classroomId: string, user: any) {
+    const classroom = await this.classroomModel.findByPk(classroomId, {
+      include: [
+        {
+          model: User,
+          as: 'students',
+          attributes: ['id', 'fullName', 'totalXp', 'level', 'currentStreak', 'lastActivityDate']
+        }
+      ]
+    });
+
+    if (!classroom) {
+      throw new NotFoundException('Aula no encontrada');
+    }
+
+    if (user.role === 'TEACHER' && classroom.teacherId !== user.id) {
+      throw new ForbiddenException('No tienes permisos para auditar las métricas de esta aula.');
+    }
+
+    const students = classroom.students || [];
+    const studentIds = students.map(s => s.id);
+
+    const courseId = classroom.courseId;
+
+    let progressRecords = [];
+    if (studentIds.length > 0) {
+      const whereClause: any = { userId: studentIds };
+      if (courseId) {
+        whereClause.courseId = courseId;
+      }
+      progressRecords = await this.studentProgressModel.findAll({
+        where: whereClause
+      });
+    }
+
+    const progressMap = new Map<string, any[]>();
+    for (const p of progressRecords) {
+      if (!progressMap.has(p.userId)) {
+        progressMap.set(p.userId, []);
+      }
+      progressMap.get(p.userId)!.push(p);
+    }
+
+    const activeThreshold = new Date();
+    activeThreshold.setDate(activeThreshold.getDate() - 7);
+
+    let activeStudentsCount = 0;
+    let totalProgressSum = 0;
+    let totalXpSum = 0;
+    let totalLevelSum = 0;
+    let completedStudentsCount = 0;
+
+    const studentMetrics = students.map(student => {
+      const pRecords = progressMap.get(student.id) || [];
+      
+      let studentProgress = 0;
+      let completedLessons = 0;
+      let completedQuizzes = 0;
+      let isCompleted = false;
+
+      if (pRecords.length > 0) {
+        if (courseId) {
+          studentProgress = pRecords[0].percentage;
+          completedLessons = pRecords[0].completedLessonsCount;
+          completedQuizzes = pRecords[0].completedQuizzesCount;
+          isCompleted = pRecords[0].isCompleted;
+        } else {
+          const sumPercentage = pRecords.reduce((acc, p) => acc + p.percentage, 0);
+          studentProgress = sumPercentage / pRecords.length;
+          completedLessons = pRecords.reduce((acc, p) => acc + p.completedLessonsCount, 0);
+          completedQuizzes = pRecords.reduce((acc, p) => acc + p.completedQuizzesCount, 0);
+          isCompleted = pRecords.every(p => p.isCompleted);
+        }
+      }
+
+      if (isCompleted && pRecords.length > 0) {
+        completedStudentsCount++;
+      }
+
+      const isActive = student.lastActivityDate && new Date(student.lastActivityDate) >= activeThreshold;
+      if (isActive) activeStudentsCount++;
+
+      totalProgressSum += studentProgress;
+      totalXpSum += student.totalXp;
+      totalLevelSum += student.level;
+
+      return {
+        id: student.id,
+        firstName: student.fullName.split(' ')[0],
+        lastName: student.fullName.split(' ').slice(1).join(' ') || '',
+        avatarUrl: null,
+        progressPercentage: parseFloat(studentProgress.toFixed(2)),
+        isCompleted,
+        totalXp: student.totalXp,
+        level: student.level,
+        currentStreak: student.currentStreak,
+        completedLessonsCount: completedLessons,
+        completedQuizzesCount: completedQuizzes,
+        lastAccessedAt: student.lastActivityDate,
+      };
+    });
+
+    studentMetrics.sort((a, b) => b.progressPercentage - a.progressPercentage || b.totalXp - a.totalXp);
+
+    const totalStudents = students.length;
+    
+    return {
+      classroom: {
+        id: classroom.id,
+        name: classroom.name,
+        code: classroom.code,
+        courseId: classroom.courseId,
+      },
+      summary: {
+        totalStudents,
+        activeStudentsCount,
+        averageProgress: totalStudents > 0 ? parseFloat((totalProgressSum / totalStudents).toFixed(2)) : 0,
+        averageXp: totalStudents > 0 ? Math.round(totalXpSum / totalStudents) : 0,
+        averageLevel: totalStudents > 0 ? Math.round(totalLevelSum / totalStudents) : 0,
+        completedStudentsCount,
+      },
+      students: studentMetrics,
+    };
   }
 
   async updateModuleVisibility(classroomId: string, moduleId: string, updateDto: UpdateClassroomModuleDto, user: any) {
