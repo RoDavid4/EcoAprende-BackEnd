@@ -13,4 +13,8 @@ export class UpdateClassroomDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  courseId?: string;
 }
