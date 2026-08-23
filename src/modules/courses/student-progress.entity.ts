@@ -1,4 +1,13 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { Course } from './course.entity';
 
@@ -60,7 +69,7 @@ export class StudentProgress extends Model {
     allowNull: false,
   })
   declare totalQuizzesCount: number;
-  @Default(0.00)
+  @Default(0.0)
   @Column({
     type: DataType.FLOAT,
     allowNull: false,

@@ -1,4 +1,14 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, BelongsToMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { ClassroomStudent } from './classroom-student.entity';
 import { ClassroomModule } from './classroom-module.entity';

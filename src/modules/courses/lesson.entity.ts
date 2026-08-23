@@ -1,4 +1,13 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { Module } from './module.entity';
 
 @Table({
@@ -9,10 +18,10 @@ import { Module } from './module.entity';
       unique: true,
       fields: ['moduleId', 'order'],
       where: {
-        isActive: true
-      }
-    }
-  ]
+        isActive: true,
+      },
+    },
+  ],
 })
 export class Lesson extends Model {
   @PrimaryKey

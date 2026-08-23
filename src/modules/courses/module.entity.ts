@@ -1,4 +1,15 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { Course } from './course.entity';
 import { Lesson } from './lesson.entity';
 import { Classroom } from '../classrooms/classroom.entity';
@@ -14,10 +25,10 @@ import { Mission } from '../missions/mission.entity';
       unique: true,
       fields: ['courseId', 'order'],
       where: {
-        isActive: true
-      }
-    }
-  ]
+        isActive: true,
+      },
+    },
+  ],
 })
 export class Module extends Model {
   @PrimaryKey

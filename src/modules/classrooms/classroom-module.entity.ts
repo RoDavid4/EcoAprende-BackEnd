@@ -1,4 +1,12 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+} from 'sequelize-typescript';
 import { Classroom } from './classroom.entity';
 import { Module } from '../courses/module.entity';
 
@@ -9,8 +17,8 @@ import { Module } from '../courses/module.entity';
     {
       unique: true,
       fields: ['classroomId', 'moduleId'],
-    }
-  ]
+    },
+  ],
 })
 export class ClassroomModule extends Model {
   @PrimaryKey

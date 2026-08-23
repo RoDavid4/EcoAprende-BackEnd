@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Badge } from './badge.entity';
 import { UserBadge } from './user-badge.entity';
@@ -21,7 +26,8 @@ export class GamificationService {
     @InjectModel(UserBadge) private userBadgeModel: typeof UserBadge,
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Classroom) private classroomModel: typeof Classroom,
-    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
+    @InjectModel(ClassroomStudent)
+    private classroomStudentModel: typeof ClassroomStudent,
     private sequelize: Sequelize,
   ) {}
 
@@ -39,10 +45,14 @@ export class GamificationService {
 
     await user.update(
       { totalXp: newTotalXp, level: newLevel },
-      { transaction }
+      { transaction },
     );
 
-    return { totalXp: newTotalXp, level: newLevel, leveledUp: newLevel > user.level };
+    return {
+      totalXp: newTotalXp,
+      level: newLevel,
+      leveledUp: newLevel > user.level,
+    };
   }
 
   async updateStreak(userId: string, transaction?: Transaction) {
@@ -52,7 +62,9 @@ export class GamificationService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const lastActivity = user.lastActivityDate ? new Date(user.lastActivityDate) : null;
+    const lastActivity = user.lastActivityDate
+      ? new Date(user.lastActivityDate)
+      : null;
     let newStreak = user.currentStreak;
 
     if (!lastActivity) {
@@ -60,7 +72,7 @@ export class GamificationService {
     } else {
       const last = new Date(lastActivity);
       last.setHours(0, 0, 0, 0);
-      
+
       const diffTime = Math.abs(today.getTime() - last.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -74,14 +86,21 @@ export class GamificationService {
 
     await user.update(
       { currentStreak: newStreak, lastActivityDate: today },
-      { transaction }
+      { transaction },
     );
 
     return newStreak;
   }
 
-  async awardBadge(userId: string, badgeCode: string, transaction?: Transaction) {
-    const badge = await this.badgeModel.findOne({ where: { code: badgeCode }, transaction });
+  async awardBadge(
+    userId: string,
+    badgeCode: string,
+    transaction?: Transaction,
+  ) {
+    const badge = await this.badgeModel.findOne({
+      where: { code: badgeCode },
+      transaction,
+    });
     if (!badge) {
       this.logger.warn(`Badge code ${badgeCode} not found.`);
       return null;
@@ -98,7 +117,7 @@ export class GamificationService {
 
     const userBadge = await this.userBadgeModel.create(
       { userId, badgeId: badge.id },
-      { transaction }
+      { transaction },
     );
 
     await this.awardXp(userId, badge.xpValue, transaction);
@@ -106,7 +125,12 @@ export class GamificationService {
     return userBadge;
   }
 
-  async checkAutomaticBadges(userId: string, eventType: string, currentValue: number, t?: Transaction) {
+  async checkAutomaticBadges(
+    userId: string,
+    eventType: string,
+    currentValue: number,
+    t?: Transaction,
+  ) {
     const badgesAwarded: string[] = [];
     const eligibleBadges = await this.badgeModel.findAll({
       where: {
@@ -134,7 +158,7 @@ export class GamificationService {
 
       const streak = await this.updateStreak(userId, t);
       let xpAwarded = 0;
-      let badgesAwarded: string[] = [];
+      const badgesAwarded: string[] = [];
 
       // Award XP and increment counters
       switch (actionType) {
@@ -161,23 +185,50 @@ export class GamificationService {
       }
 
       // Check rules engine for newly unlocked badges
-      const streakBadges = await this.checkAutomaticBadges(userId, 'STREAK', streak, t);
+      const streakBadges = await this.checkAutomaticBadges(
+        userId,
+        'STREAK',
+        streak,
+        t,
+      );
       badgesAwarded.push(...streakBadges);
 
       // Re-fetch user to get the updated totalXp after awardXp
-      const updatedUser = await this.userModel.findByPk(userId, { transaction: t });
+      const updatedUser = await this.userModel.findByPk(userId, {
+        transaction: t,
+      });
       if (updatedUser) {
-        const xpBadges = await this.checkAutomaticBadges(userId, 'TOTAL_XP', updatedUser.totalXp, t);
+        const xpBadges = await this.checkAutomaticBadges(
+          userId,
+          'TOTAL_XP',
+          updatedUser.totalXp,
+          t,
+        );
         badgesAwarded.push(...xpBadges);
 
         if (actionType === 'COMPLETE_LESSON') {
-          const lessonBadges = await this.checkAutomaticBadges(userId, 'LESSONS_COMPLETED', updatedUser.lessonsCompleted, t);
+          const lessonBadges = await this.checkAutomaticBadges(
+            userId,
+            'LESSONS_COMPLETED',
+            updatedUser.lessonsCompleted,
+            t,
+          );
           badgesAwarded.push(...lessonBadges);
         } else if (actionType === 'PASS_QUIZ') {
-          const quizBadges = await this.checkAutomaticBadges(userId, 'QUIZZES_PASSED', updatedUser.quizzesPassed, t);
+          const quizBadges = await this.checkAutomaticBadges(
+            userId,
+            'QUIZZES_PASSED',
+            updatedUser.quizzesPassed,
+            t,
+          );
           badgesAwarded.push(...quizBadges);
         } else if (actionType === 'APPROVE_MISSION') {
-          const missionBadges = await this.checkAutomaticBadges(userId, 'MISSIONS_APPROVED', updatedUser.missionsApproved, t);
+          const missionBadges = await this.checkAutomaticBadges(
+            userId,
+            'MISSIONS_APPROVED',
+            updatedUser.missionsApproved,
+            t,
+          );
           badgesAwarded.push(...missionBadges);
         }
       }
@@ -189,22 +240,32 @@ export class GamificationService {
   // Controller methods
   async getProfile(userId: string) {
     const user = await this.userModel.findByPk(userId, {
-      attributes: ['id', 'totalXp', 'level', 'currentStreak', 'lastActivityDate'],
-      include: [{
-        model: Badge,
-        as: 'badges',
-        through: { attributes: ['awardedAt'] }
-      }]
+      attributes: [
+        'id',
+        'totalXp',
+        'level',
+        'currentStreak',
+        'lastActivityDate',
+      ],
+      include: [
+        {
+          model: Badge,
+          as: 'badges',
+          through: { attributes: ['awardedAt'] },
+        },
+      ],
     });
     return user;
   }
 
   async getBadges(userId: string) {
-    const allBadges = await this.badgeModel.findAll({ where: { isActive: true } });
+    const allBadges = await this.badgeModel.findAll({
+      where: { isActive: true },
+    });
     const userBadges = await this.userBadgeModel.findAll({ where: { userId } });
-    const userBadgeIds = userBadges.map(ub => ub.badgeId);
+    const userBadgeIds = userBadges.map((ub) => ub.badgeId);
 
-    return allBadges.map(badge => {
+    return allBadges.map((badge) => {
       const plainBadge = badge.get({ plain: true });
       return {
         ...plainBadge,
@@ -244,19 +305,19 @@ export class GamificationService {
           as: 'role',
           where: { name: 'STUDENT' },
           attributes: [],
-        }
+        },
       ],
       order: [
         ['totalXp', 'DESC'],
         ['level', 'DESC'],
-        ['currentStreak', 'DESC']
+        ['currentStreak', 'DESC'],
       ],
       limit,
       offset,
     });
 
     const data = rows.map((user, index) => {
-      const plainUser = user.get({ plain: true }) as any;
+      const plainUser = user.get({ plain: true });
       plainUser.rank = offset + index + 1;
       const names = plainUser.fullName.split(' ');
       plainUser.firstName = names[0];
@@ -276,7 +337,12 @@ export class GamificationService {
     };
   }
 
-  async getClassroomLeaderboard(classroomId: string, query: LeaderboardQueryDto, currentUserId: string, currentUserRole: string) {
+  async getClassroomLeaderboard(
+    classroomId: string,
+    query: LeaderboardQueryDto,
+    currentUserId: string,
+    currentUserRole: string,
+  ) {
     const classroom = await this.classroomModel.findByPk(classroomId);
     if (!classroom) {
       throw new NotFoundException('Aula no encontrada');
@@ -285,7 +351,7 @@ export class GamificationService {
     // Auth check
     if (currentUserRole !== 'ADMIN' && classroom.teacherId !== currentUserId) {
       const isStudent = await this.classroomStudentModel.findOne({
-        where: { classroomId, studentId: currentUserId }
+        where: { classroomId, studentId: currentUserId },
       });
       if (!isStudent) {
         throw new NotFoundException('No tienes acceso a esta aula');
@@ -300,11 +366,11 @@ export class GamificationService {
       where: { classroomId },
       attributes: ['studentId'],
     });
-    
-    const studentIds = classroomStudents.map(cs => cs.studentId);
+
+    const studentIds = classroomStudents.map((cs) => cs.studentId);
 
     const whereClause: any = { isActive: true, id: { [Op.in]: studentIds } };
-    
+
     if (query.timeframe === 'MONTHLY') {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -326,19 +392,19 @@ export class GamificationService {
           as: 'role',
           where: { name: 'STUDENT' },
           attributes: [],
-        }
+        },
       ],
       order: [
         ['totalXp', 'DESC'],
         ['level', 'DESC'],
-        ['currentStreak', 'DESC']
+        ['currentStreak', 'DESC'],
       ],
       limit,
       offset,
     });
 
     const data = rows.map((user, index) => {
-      const plainUser = user.get({ plain: true }) as any;
+      const plainUser = user.get({ plain: true });
       plainUser.rank = offset + index + 1;
       const names = plainUser.fullName.split(' ');
       plainUser.firstName = names[0];
@@ -363,7 +429,9 @@ export class GamificationService {
   }
 
   async createBadge(dto: CreateBadgeDto) {
-    const existing = await this.badgeModel.findOne({ where: { code: dto.code } });
+    const existing = await this.badgeModel.findOne({
+      where: { code: dto.code },
+    });
     if (existing) {
       throw new ConflictException(`Badge con código ${dto.code} ya existe.`);
     }

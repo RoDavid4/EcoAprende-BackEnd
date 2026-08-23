@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Quiz } from './quiz.entity';
@@ -27,23 +32,33 @@ export class QuizzesService {
   ) {}
 
   async create(createQuizDto: CreateQuizDto, user: any) {
-    const moduleRecord = await this.courseModuleModel.findByPk(createQuizDto.moduleId, {
-      include: ['course']
-    });
+    const moduleRecord = await this.courseModuleModel.findByPk(
+      createQuizDto.moduleId,
+      {
+        include: ['course'],
+      },
+    );
 
     if (!moduleRecord) {
       throw new NotFoundException('Módulo no encontrado');
     }
 
-    if (user.role !== 'ADMIN' && (moduleRecord as any).course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para agregar evaluaciones a este módulo');
+    if (
+      user.role !== 'ADMIN' &&
+      (moduleRecord as any).course.createdById !== user.id
+    ) {
+      throw new ForbiddenException(
+        'No tienes permisos para agregar evaluaciones a este módulo',
+      );
     }
 
     if (createQuizDto.questions && createQuizDto.questions.length > 0) {
       for (const [index, q] of createQuizDto.questions.entries()) {
-        const hasCorrectOption = q.options.some(opt => opt.isCorrect);
+        const hasCorrectOption = q.options.some((opt) => opt.isCorrect);
         if (!hasCorrectOption) {
-          throw new BadRequestException(`La pregunta en el índice ${index} debe tener al menos una opción correcta`);
+          throw new BadRequestException(
+            `La pregunta en el índice ${index} debe tener al menos una opción correcta`,
+          );
         }
       }
     }
@@ -51,33 +66,42 @@ export class QuizzesService {
     const transaction = await this.sequelize.transaction();
 
     try {
-      const quiz = await this.quizModel.create({
-        moduleId: createQuizDto.moduleId,
-        title: createQuizDto.title,
-        description: createQuizDto.description,
-        passingScore: createQuizDto.passingScore,
-        maxAttempts: createQuizDto.maxAttempts,
-        timeLimitMinutes: createQuizDto.timeLimitMinutes,
-        isActive: createQuizDto.isActive,
-      }, { transaction });
+      const quiz = await this.quizModel.create(
+        {
+          moduleId: createQuizDto.moduleId,
+          title: createQuizDto.title,
+          description: createQuizDto.description,
+          passingScore: createQuizDto.passingScore,
+          maxAttempts: createQuizDto.maxAttempts,
+          timeLimitMinutes: createQuizDto.timeLimitMinutes,
+          isActive: createQuizDto.isActive,
+        },
+        { transaction },
+      );
 
       if (createQuizDto.questions && createQuizDto.questions.length > 0) {
         for (const qDto of createQuizDto.questions) {
-          const question = await this.questionModel.create({
-            quizId: quiz.id,
-            statement: qDto.statement,
-            explanation: qDto.explanation,
-            order: qDto.order,
-            points: qDto.points,
-          }, { transaction });
+          const question = await this.questionModel.create(
+            {
+              quizId: quiz.id,
+              statement: qDto.statement,
+              explanation: qDto.explanation,
+              order: qDto.order,
+              points: qDto.points,
+            },
+            { transaction },
+          );
 
           for (const [optIndex, optDto] of qDto.options.entries()) {
-            await this.optionModel.create({
-              questionId: question.id,
-              text: optDto.text,
-              isCorrect: optDto.isCorrect,
-              order: optDto.order ?? optIndex,
-            }, { transaction });
+            await this.optionModel.create(
+              {
+                questionId: question.id,
+                text: optDto.text,
+                isCorrect: optDto.isCorrect,
+                order: optDto.order ?? optIndex,
+              },
+              { transaction },
+            );
           }
         }
       }
@@ -106,13 +130,14 @@ export class QuizzesService {
         {
           model: Option,
           as: 'options',
-          attributes: user.role === 'STUDENT' ? { exclude: ['isCorrect'] } : undefined
-        }
-      ]
+          attributes:
+            user.role === 'STUDENT' ? { exclude: ['isCorrect'] } : undefined,
+        },
+      ],
     };
 
     const quiz = await this.quizModel.findByPk(id, {
-      include: [includeOptions]
+      include: [includeOptions],
     });
 
     if (!quiz) {
@@ -128,10 +153,17 @@ export class QuizzesService {
 
   async update(id: string, updateQuizDto: UpdateQuizDto, user: any) {
     const quiz = await this.findOne(id, user);
-    const quizWithModule = await this.quizModel.findByPk(id, { include: [{ model: Module, as: 'module', include: ['course'] }] });
-    
-    if (user.role !== 'ADMIN' && (quizWithModule as any).module.course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para editar esta evaluación');
+    const quizWithModule = await this.quizModel.findByPk(id, {
+      include: [{ model: Module, as: 'module', include: ['course'] }],
+    });
+
+    if (
+      user.role !== 'ADMIN' &&
+      (quizWithModule as any).module.course.createdById !== user.id
+    ) {
+      throw new ForbiddenException(
+        'No tienes permisos para editar esta evaluación',
+      );
     }
 
     return quiz.update(updateQuizDto);
@@ -139,10 +171,17 @@ export class QuizzesService {
 
   async remove(id: string, user: any) {
     const quiz = await this.findOne(id, user);
-    const quizWithModule = await this.quizModel.findByPk(id, { include: [{ model: Module, as: 'module', include: ['course'] }] });
-    
-    if (user.role !== 'ADMIN' && (quizWithModule as any).module.course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para eliminar esta evaluación');
+    const quizWithModule = await this.quizModel.findByPk(id, {
+      include: [{ model: Module, as: 'module', include: ['course'] }],
+    });
+
+    if (
+      user.role !== 'ADMIN' &&
+      (quizWithModule as any).module.course.createdById !== user.id
+    ) {
+      throw new ForbiddenException(
+        'No tienes permisos para eliminar esta evaluación',
+      );
     }
 
     return quiz.update({ isActive: false });
@@ -154,13 +193,13 @@ export class QuizzesService {
         {
           model: Question,
           as: 'questions',
-          include: [{ model: Option, as: 'options' }]
+          include: [{ model: Option, as: 'options' }],
         },
         {
           model: CourseModule,
-          as: 'module'
-        }
-      ]
+          as: 'module',
+        },
+      ],
     });
 
     if (!quiz || !quiz.isActive) {
@@ -168,11 +207,16 @@ export class QuizzesService {
     }
 
     const previousAttemptsCount = await this.quizAttemptModel.count({
-      where: { quizId, userId }
+      where: { quizId, userId },
     });
 
-    if (quiz.maxAttempts !== null && previousAttemptsCount >= quiz.maxAttempts) {
-      throw new BadRequestException('Has alcanzado el límite máximo de intentos permitidos para esta evaluación');
+    if (
+      quiz.maxAttempts !== null &&
+      previousAttemptsCount >= quiz.maxAttempts
+    ) {
+      throw new BadRequestException(
+        'Has alcanzado el límite máximo de intentos permitidos para esta evaluación',
+      );
     }
 
     let pointsObtained = 0;
@@ -189,8 +233,10 @@ export class QuizzesService {
       const question = questionsMap.get(answer.questionId);
       if (!question) continue;
 
-      const correctOption = question.options.find(opt => opt.isCorrect);
-      const selectedOption = question.options.find(opt => opt.id === answer.selectedOptionId);
+      const correctOption = question.options.find((opt) => opt.isCorrect);
+      const selectedOption = question.options.find(
+        (opt) => opt.id === answer.selectedOptionId,
+      );
 
       const isCorrect = selectedOption ? selectedOption.isCorrect : false;
       const pointsAwarded = isCorrect ? question.points : 0;
@@ -227,7 +273,10 @@ export class QuizzesService {
     }
 
     if (quiz.module?.courseId) {
-      await this.coursesService.updateStudentProgress(userId, quiz.module.courseId);
+      await this.coursesService.updateStudentProgress(
+        userId,
+        quiz.module.courseId,
+      );
     }
 
     return {
@@ -237,7 +286,8 @@ export class QuizzesService {
       attemptNumber,
       pointsObtained,
       totalPoints,
-      attemptsRemaining: quiz.maxAttempts !== null ? quiz.maxAttempts - attemptNumber : null,
+      attemptsRemaining:
+        quiz.maxAttempts !== null ? quiz.maxAttempts - attemptNumber : null,
       answers: processedAnswers,
     };
   }

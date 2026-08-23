@@ -16,7 +16,18 @@ import { ClassroomModule as ClassroomModuleEntity } from '../classrooms/classroo
 import { StudentProgress } from './student-progress.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Course, CourseModule, Lesson, LessonProgress, ClassroomStudent, ClassroomModuleEntity, StudentProgress]), GamificationModule],
+  imports: [
+    SequelizeModule.forFeature([
+      Course,
+      CourseModule,
+      Lesson,
+      LessonProgress,
+      ClassroomStudent,
+      ClassroomModuleEntity,
+      StudentProgress,
+    ]),
+    GamificationModule,
+  ],
   controllers: [CoursesController, ModulesController, LessonsController],
   providers: [CoursesService, ModulesService, LessonsService],
   exports: [SequelizeModule, CoursesService, ModulesService, LessonsService],

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Classroom } from './classroom.entity';
 import { ClassroomStudent } from './classroom-student.entity';
@@ -17,10 +22,14 @@ import { StudentProgress } from '../courses/student-progress.entity';
 export class ClassroomsService {
   constructor(
     @InjectModel(Classroom) private classroomModel: typeof Classroom,
-    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
-    @InjectModel(ClassroomModuleEntity) private classroomModuleModel: typeof ClassroomModuleEntity,
-    @InjectModel(CourseModuleEntity) private courseModuleModel: typeof CourseModuleEntity,
-    @InjectModel(StudentProgress) private studentProgressModel: typeof StudentProgress,
+    @InjectModel(ClassroomStudent)
+    private classroomStudentModel: typeof ClassroomStudent,
+    @InjectModel(ClassroomModuleEntity)
+    private classroomModuleModel: typeof ClassroomModuleEntity,
+    @InjectModel(CourseModuleEntity)
+    private courseModuleModel: typeof CourseModuleEntity,
+    @InjectModel(StudentProgress)
+    private studentProgressModel: typeof StudentProgress,
   ) {}
 
   private async generateUniqueCode(): Promise<string> {
@@ -33,7 +42,7 @@ export class ClassroomsService {
       for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      
+
       const existing = await this.classroomModel.findOne({ where: { code } });
       if (!existing) {
         isUnique = true;
@@ -44,7 +53,7 @@ export class ClassroomsService {
 
   async create(createClassroomDto: CreateClassroomDto, teacherId: string) {
     const code = await this.generateUniqueCode();
-    
+
     return this.classroomModel.create({
       ...createClassroomDto,
       code,
@@ -54,13 +63,15 @@ export class ClassroomsService {
 
   async joinClassroom(joinDto: JoinClassroomDto, studentId: string) {
     const code = joinDto.code.toUpperCase();
-    
+
     const classroom = await this.classroomModel.findOne({
       where: { code, isActive: true },
     });
 
     if (!classroom) {
-      throw new NotFoundException('El código de aula ingresado no es válido o el aula está inactiva');
+      throw new NotFoundException(
+        'El código de aula ingresado no es válido o el aula está inactiva',
+      );
     }
 
     const existingEnrollment = await this.classroomStudentModel.findOne({
@@ -81,11 +92,11 @@ export class ClassroomsService {
 
   async findAll(user: any, includeInactive?: string) {
     const whereClause: any = {};
-    
+
     if (includeInactive !== 'true') {
       whereClause.isActive = true;
     }
-    
+
     if (user.role === 'TEACHER') {
       whereClause.teacherId = user.id;
     }
@@ -95,7 +106,7 @@ export class ClassroomsService {
         model: User,
         as: 'teacher',
         attributes: ['id', 'fullName', 'email'],
-      }
+      },
     ];
 
     if (user.role === 'STUDENT') {
@@ -127,8 +138,8 @@ export class ClassroomsService {
           as: 'students',
           attributes: ['id', 'fullName', 'email'],
           through: { attributes: ['joinedAt'] },
-        }
-      ]
+        },
+      ],
     });
 
     if (!classroom) {
@@ -152,7 +163,9 @@ export class ClassroomsService {
     const classroom = await this.findOne(id);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para eliminar esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para eliminar esta aula',
+      );
     }
 
     return classroom.update({ isActive: false });
@@ -162,7 +175,9 @@ export class ClassroomsService {
     const classroom = await this.findOne(classroomId);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para ver los estudiantes de esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para ver los estudiantes de esta aula',
+      );
     }
 
     return classroom.students;
@@ -172,11 +187,13 @@ export class ClassroomsService {
     const classroom = await this.findOne(classroomId);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para remover estudiantes de esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para remover estudiantes de esta aula',
+      );
     }
 
     const enrollment = await this.classroomStudentModel.findOne({
-      where: { classroomId, studentId }
+      where: { classroomId, studentId },
     });
 
     if (!enrollment) {
@@ -187,20 +204,28 @@ export class ClassroomsService {
     return { message: 'Estudiante removido del aula correctamente' };
   }
 
-  async assignModule(classroomId: string, assignDto: AssignModuleDto, user: any) {
+  async assignModule(
+    classroomId: string,
+    assignDto: AssignModuleDto,
+    user: any,
+  ) {
     const classroom = await this.findOne(classroomId);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para asignar módulos a esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para asignar módulos a esta aula',
+      );
     }
 
-    const moduleRecord = await this.courseModuleModel.findOne({ where: { id: assignDto.moduleId, isActive: true } });
+    const moduleRecord = await this.courseModuleModel.findOne({
+      where: { id: assignDto.moduleId, isActive: true },
+    });
     if (!moduleRecord) {
       throw new NotFoundException('Módulo no encontrado');
     }
 
     const existing = await this.classroomModuleModel.findOne({
-      where: { classroomId, moduleId: assignDto.moduleId }
+      where: { classroomId, moduleId: assignDto.moduleId },
     });
 
     if (existing) {
@@ -221,14 +246,14 @@ export class ClassroomsService {
         {
           model: CourseModuleEntity,
           as: 'modules',
-          through: { attributes: ['assignedAt', 'isVisible'] }
+          through: { attributes: ['assignedAt', 'isVisible'] },
         },
         {
           model: User,
           as: 'students',
-          attributes: ['id']
-        }
-      ]
+          attributes: ['id'],
+        },
+      ],
     });
 
     if (!classroom) {
@@ -236,16 +261,20 @@ export class ClassroomsService {
     }
 
     if (user.role === 'STUDENT') {
-      const isStudent = classroom.students.some(s => s.id === user.id);
+      const isStudent = classroom.students.some((s) => s.id === user.id);
       if (!isStudent) {
         throw new ForbiddenException('No perteneces a esta aula');
       }
 
-      return classroom.modules.filter(m => m.isActive && (m as any).ClassroomModule.isVisible);
+      return classroom.modules.filter(
+        (m) => m.isActive && (m as any).ClassroomModule.isVisible,
+      );
     }
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para ver los módulos de esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para ver los módulos de esta aula',
+      );
     }
 
     return classroom.modules;
@@ -257,9 +286,16 @@ export class ClassroomsService {
         {
           model: User,
           as: 'students',
-          attributes: ['id', 'fullName', 'totalXp', 'level', 'currentStreak', 'lastActivityDate']
-        }
-      ]
+          attributes: [
+            'id',
+            'fullName',
+            'totalXp',
+            'level',
+            'currentStreak',
+            'lastActivityDate',
+          ],
+        },
+      ],
     });
 
     if (!classroom) {
@@ -267,11 +303,13 @@ export class ClassroomsService {
     }
 
     if (user.role === 'TEACHER' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para auditar las métricas de esta aula.');
+      throw new ForbiddenException(
+        'No tienes permisos para auditar las métricas de esta aula.',
+      );
     }
 
     const students = classroom.students || [];
-    const studentIds = students.map(s => s.id);
+    const studentIds = students.map((s) => s.id);
 
     const courseId = classroom.courseId;
 
@@ -282,7 +320,7 @@ export class ClassroomsService {
         whereClause.courseId = courseId;
       }
       progressRecords = await this.studentProgressModel.findAll({
-        where: whereClause
+        where: whereClause,
       });
     }
 
@@ -291,7 +329,7 @@ export class ClassroomsService {
       if (!progressMap.has(p.userId)) {
         progressMap.set(p.userId, []);
       }
-      progressMap.get(p.userId)!.push(p);
+      progressMap.get(p.userId).push(p);
     }
 
     const activeThreshold = new Date();
@@ -303,9 +341,9 @@ export class ClassroomsService {
     let totalLevelSum = 0;
     let completedStudentsCount = 0;
 
-    const studentMetrics = students.map(student => {
+    const studentMetrics = students.map((student) => {
       const pRecords = progressMap.get(student.id) || [];
-      
+
       let studentProgress = 0;
       let completedLessons = 0;
       let completedQuizzes = 0;
@@ -318,11 +356,20 @@ export class ClassroomsService {
           completedQuizzes = pRecords[0].completedQuizzesCount;
           isCompleted = pRecords[0].isCompleted;
         } else {
-          const sumPercentage = pRecords.reduce((acc, p) => acc + p.percentage, 0);
+          const sumPercentage = pRecords.reduce(
+            (acc, p) => acc + p.percentage,
+            0,
+          );
           studentProgress = sumPercentage / pRecords.length;
-          completedLessons = pRecords.reduce((acc, p) => acc + p.completedLessonsCount, 0);
-          completedQuizzes = pRecords.reduce((acc, p) => acc + p.completedQuizzesCount, 0);
-          isCompleted = pRecords.every(p => p.isCompleted);
+          completedLessons = pRecords.reduce(
+            (acc, p) => acc + p.completedLessonsCount,
+            0,
+          );
+          completedQuizzes = pRecords.reduce(
+            (acc, p) => acc + p.completedQuizzesCount,
+            0,
+          );
+          isCompleted = pRecords.every((p) => p.isCompleted);
         }
       }
 
@@ -330,7 +377,9 @@ export class ClassroomsService {
         completedStudentsCount++;
       }
 
-      const isActive = student.lastActivityDate && new Date(student.lastActivityDate) >= activeThreshold;
+      const isActive =
+        student.lastActivityDate &&
+        new Date(student.lastActivityDate) >= activeThreshold;
       if (isActive) activeStudentsCount++;
 
       totalProgressSum += studentProgress;
@@ -353,10 +402,13 @@ export class ClassroomsService {
       };
     });
 
-    studentMetrics.sort((a, b) => b.progressPercentage - a.progressPercentage || b.totalXp - a.totalXp);
+    studentMetrics.sort(
+      (a, b) =>
+        b.progressPercentage - a.progressPercentage || b.totalXp - a.totalXp,
+    );
 
     const totalStudents = students.length;
-    
+
     return {
       classroom: {
         id: classroom.id,
@@ -367,24 +419,36 @@ export class ClassroomsService {
       summary: {
         totalStudents,
         activeStudentsCount,
-        averageProgress: totalStudents > 0 ? parseFloat((totalProgressSum / totalStudents).toFixed(2)) : 0,
-        averageXp: totalStudents > 0 ? Math.round(totalXpSum / totalStudents) : 0,
-        averageLevel: totalStudents > 0 ? Math.round(totalLevelSum / totalStudents) : 0,
+        averageProgress:
+          totalStudents > 0
+            ? parseFloat((totalProgressSum / totalStudents).toFixed(2))
+            : 0,
+        averageXp:
+          totalStudents > 0 ? Math.round(totalXpSum / totalStudents) : 0,
+        averageLevel:
+          totalStudents > 0 ? Math.round(totalLevelSum / totalStudents) : 0,
         completedStudentsCount,
       },
       students: studentMetrics,
     };
   }
 
-  async updateModuleVisibility(classroomId: string, moduleId: string, updateDto: UpdateClassroomModuleDto, user: any) {
+  async updateModuleVisibility(
+    classroomId: string,
+    moduleId: string,
+    updateDto: UpdateClassroomModuleDto,
+    user: any,
+  ) {
     const classroom = await this.findOne(classroomId);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para editar módulos en esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para editar módulos en esta aula',
+      );
     }
 
     const assignment = await this.classroomModuleModel.findOne({
-      where: { classroomId, moduleId }
+      where: { classroomId, moduleId },
     });
 
     if (!assignment) {
@@ -403,11 +467,13 @@ export class ClassroomsService {
     const classroom = await this.findOne(classroomId);
 
     if (user.role !== 'ADMIN' && classroom.teacherId !== user.id) {
-      throw new ForbiddenException('No tienes permisos para remover módulos de esta aula');
+      throw new ForbiddenException(
+        'No tienes permisos para remover módulos de esta aula',
+      );
     }
 
     const assignment = await this.classroomModuleModel.findOne({
-      where: { classroomId, moduleId }
+      where: { classroomId, moduleId },
     });
 
     if (!assignment) {

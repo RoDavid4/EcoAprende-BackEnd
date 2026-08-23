@@ -11,7 +11,17 @@ import { GamificationModule } from '../gamification/gamification.module';
 import { CoursesModule } from '../courses/courses.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Quiz, Question, Option, QuizAttempt, CourseModule]), GamificationModule, CoursesModule],
+  imports: [
+    SequelizeModule.forFeature([
+      Quiz,
+      Question,
+      Option,
+      QuizAttempt,
+      CourseModule,
+    ]),
+    GamificationModule,
+    CoursesModule,
+  ],
   controllers: [QuizzesController],
   providers: [QuizzesService],
   exports: [SequelizeModule, QuizzesService],

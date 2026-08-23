@@ -17,7 +17,7 @@ export class SeederService implements OnModuleInit {
 
   async onModuleInit() {
     console.log('Running automatic seeder...');
-    
+
     const roles = [
       { name: 'ADMIN', description: 'Administrator with full access' },
       { name: 'TEACHER', description: 'Teacher role' },
@@ -32,8 +32,12 @@ export class SeederService implements OnModuleInit {
     }
 
     // Seed default users
-    const adminRole = await this.roleModel.findOne({ where: { name: 'ADMIN' } });
-    const teacherRole = await this.roleModel.findOne({ where: { name: 'TEACHER' } });
+    const adminRole = await this.roleModel.findOne({
+      where: { name: 'ADMIN' },
+    });
+    const teacherRole = await this.roleModel.findOne({
+      where: { name: 'TEACHER' },
+    });
 
     if (adminRole) {
       const adminPassword = await bcrypt.hash('Admin123!', 10);
@@ -63,10 +67,46 @@ export class SeederService implements OnModuleInit {
 
     // Seed Badges
     const defaultBadges = [
-      { code: 'WELCOME', name: 'Semilla Curiosa', description: 'Otorgada por unirte a EcoAprende.', iconUrl: 'sparkles', xpValue: 20, category: 'SPECIAL', triggerEvent: 'TOTAL_XP', triggerValue: 0 },
-      { code: 'FIRST_LESSON', name: 'Primeros Brotes', description: 'Otorgada por completar tu primera lección.', iconUrl: 'book-open', xpValue: 50, category: 'ACADEMIC', triggerEvent: 'LESSONS_COMPLETED', triggerValue: 1 },
-      { code: 'STREAK_3', name: 'Constancia Verde', description: 'Otorgada por ingresar 3 días seguidos.', iconUrl: 'flame', xpValue: 100, category: 'STREAK', triggerEvent: 'STREAK', triggerValue: 3 },
-      { code: 'ECO_HERO', name: 'Héroe Ambiental', description: 'Otorgada por completar tu primera misión práctica.', iconUrl: 'recycle', xpValue: 150, category: 'COMMUNITY', triggerEvent: 'MISSIONS_APPROVED', triggerValue: 1 },
+      {
+        code: 'WELCOME',
+        name: 'Semilla Curiosa',
+        description: 'Otorgada por unirte a EcoAprende.',
+        iconUrl: 'sparkles',
+        xpValue: 20,
+        category: 'SPECIAL',
+        triggerEvent: 'TOTAL_XP',
+        triggerValue: 0,
+      },
+      {
+        code: 'FIRST_LESSON',
+        name: 'Primeros Brotes',
+        description: 'Otorgada por completar tu primera lección.',
+        iconUrl: 'book-open',
+        xpValue: 50,
+        category: 'ACADEMIC',
+        triggerEvent: 'LESSONS_COMPLETED',
+        triggerValue: 1,
+      },
+      {
+        code: 'STREAK_3',
+        name: 'Constancia Verde',
+        description: 'Otorgada por ingresar 3 días seguidos.',
+        iconUrl: 'flame',
+        xpValue: 100,
+        category: 'STREAK',
+        triggerEvent: 'STREAK',
+        triggerValue: 3,
+      },
+      {
+        code: 'ECO_HERO',
+        name: 'Héroe Ambiental',
+        description: 'Otorgada por completar tu primera misión práctica.',
+        iconUrl: 'recycle',
+        xpValue: 150,
+        category: 'COMMUNITY',
+        triggerEvent: 'MISSIONS_APPROVED',
+        triggerValue: 1,
+      },
     ];
 
     for (const badge of defaultBadges) {

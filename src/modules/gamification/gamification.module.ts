@@ -10,7 +10,16 @@ import { ClassroomStudent } from '../classrooms/classroom-student.entity';
 import { Role } from '../roles/role.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Badge, UserBadge, User, Classroom, ClassroomStudent, Role])],
+  imports: [
+    SequelizeModule.forFeature([
+      Badge,
+      UserBadge,
+      User,
+      Classroom,
+      ClassroomStudent,
+      Role,
+    ]),
+  ],
   controllers: [GamificationController],
   providers: [GamificationService],
   exports: [GamificationService, SequelizeModule],

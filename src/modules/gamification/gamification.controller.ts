@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Request, UseGuards, Query, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Request,
+  UseGuards,
+  Query,
+  Param,
+} from '@nestjs/common';
 import { GamificationService } from './gamification.service';
 import { CreateBadgeDto } from './dto/create-badge.dto';
 import { LeaderboardQueryDto } from './dto/leaderboard-query.dto';
@@ -33,7 +42,12 @@ export class GamificationController {
   @Roles('STUDENT', 'TEACHER', 'ADMIN')
   getLeaderboard(@Query() query: LeaderboardQueryDto, @Request() req: any) {
     if (query.classroomId) {
-      return this.gamificationService.getClassroomLeaderboard(query.classroomId, query, req.user.id, req.user.role);
+      return this.gamificationService.getClassroomLeaderboard(
+        query.classroomId,
+        query,
+        req.user.id,
+        req.user.role,
+      );
     }
     return this.gamificationService.getGlobalLeaderboard(query);
   }
@@ -43,9 +57,14 @@ export class GamificationController {
   getClassroomLeaderboard(
     @Param('classroomId') classroomId: string,
     @Query() query: LeaderboardQueryDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
-    return this.gamificationService.getClassroomLeaderboard(classroomId, query, req.user.id, req.user.role);
+    return this.gamificationService.getClassroomLeaderboard(
+      classroomId,
+      query,
+      req.user.id,
+      req.user.role,
+    );
   }
 
   @Post('badges')

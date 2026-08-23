@@ -7,9 +7,12 @@ import { MissionSubmission } from './mission-submission.entity';
 import { GamificationModule } from '../gamification/gamification.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Mission, MissionSubmission]), GamificationModule],
+  imports: [
+    SequelizeModule.forFeature([Mission, MissionSubmission]),
+    GamificationModule,
+  ],
   controllers: [MissionsController],
   providers: [MissionsService],
-  exports: [MissionsService, SequelizeModule]
+  exports: [MissionsService, SequelizeModule],
 })
 export class MissionsModule {}

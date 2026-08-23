@@ -1,4 +1,17 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, IsEmail, Unique, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  IsEmail,
+  Unique,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { Role } from '../roles/role.entity';
 import { Classroom } from '../classrooms/classroom.entity';
 import { ClassroomStudent } from '../classrooms/classroom-student.entity';
@@ -133,10 +146,16 @@ export class User extends Model {
   @HasMany(() => Mission, { as: 'createdMissions', foreignKey: 'createdById' })
   declare createdMissions: Mission[];
 
-  @HasMany(() => MissionSubmission, { as: 'missionSubmissions', foreignKey: 'userId' })
+  @HasMany(() => MissionSubmission, {
+    as: 'missionSubmissions',
+    foreignKey: 'userId',
+  })
   declare missionSubmissions: MissionSubmission[];
 
-  @HasMany(() => MissionSubmission, { as: 'reviewedSubmissions', foreignKey: 'reviewedById' })
+  @HasMany(() => MissionSubmission, {
+    as: 'reviewedSubmissions',
+    foreignKey: 'reviewedById',
+  })
   declare reviewedSubmissions: MissionSubmission[];
 
   @BelongsToMany(() => Badge, () => UserBadge)

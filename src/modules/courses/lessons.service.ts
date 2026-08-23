@@ -1,4 +1,12 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+  ConflictException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Lesson } from './lesson.entity';
 import { Module } from './module.entity';
@@ -18,44 +26,61 @@ export class LessonsService {
   constructor(
     @InjectModel(Lesson) private lessonModel: typeof Lesson,
     @InjectModel(Module) private moduleModel: typeof Module,
-    @InjectModel(LessonProgress) private lessonProgressModel: typeof LessonProgress,
-    @InjectModel(ClassroomStudent) private classroomStudentModel: typeof ClassroomStudent,
-    @InjectModel(ClassroomModule) private classroomModuleModel: typeof ClassroomModule,
-    @InjectModel(StudentProgress) private studentProgressModel: typeof StudentProgress,
+    @InjectModel(LessonProgress)
+    private lessonProgressModel: typeof LessonProgress,
+    @InjectModel(ClassroomStudent)
+    private classroomStudentModel: typeof ClassroomStudent,
+    @InjectModel(ClassroomModule)
+    private classroomModuleModel: typeof ClassroomModule,
+    @InjectModel(StudentProgress)
+    private studentProgressModel: typeof StudentProgress,
     private readonly gamificationService: GamificationService,
-    @Inject(forwardRef(() => CoursesService)) private coursesService: CoursesService,
+    @Inject(forwardRef(() => CoursesService))
+    private coursesService: CoursesService,
   ) {}
 
   async create(createLessonDto: CreateLessonDto, user: any) {
-    const moduleRecord = await this.moduleModel.findByPk(createLessonDto.moduleId, {
-      include: [{ model: Course, as: 'course' }]
-    });
+    const moduleRecord = await this.moduleModel.findByPk(
+      createLessonDto.moduleId,
+      {
+        include: [{ model: Course, as: 'course' }],
+      },
+    );
 
     if (!moduleRecord || !moduleRecord.isActive) {
       throw new NotFoundException('Módulo no encontrado');
     }
 
     if (user.role !== 'ADMIN' && moduleRecord.course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para agregar lecciones a este módulo');
+      throw new ForbiddenException(
+        'No tienes permisos para agregar lecciones a este módulo',
+      );
     }
 
     if (createLessonDto.order === undefined || createLessonDto.order === null) {
       const maxOrder = await this.lessonModel.max('order', {
-        where: { moduleId: createLessonDto.moduleId, isActive: true }
-      }) as number | null;
-      createLessonDto.order = (maxOrder || 0) + 1;
+        where: { moduleId: createLessonDto.moduleId, isActive: true },
+      });
+      createLessonDto.order = Number(maxOrder ?? 0) + 1;
     } else {
       const existing = await this.lessonModel.findOne({
-        where: { moduleId: createLessonDto.moduleId, order: createLessonDto.order, isActive: true }
+        where: {
+          moduleId: createLessonDto.moduleId,
+          order: createLessonDto.order,
+          isActive: true,
+        },
       });
       if (existing) {
-        throw new BadRequestException(`Ya existe una lección con el orden ${createLessonDto.order} en este módulo`);
+        throw new BadRequestException(
+          `Ya existe una lección con el orden ${createLessonDto.order} en este módulo`,
+        );
       }
     }
 
     return this.lessonModel.create({ ...createLessonDto });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async findAll(user: any) {
     const whereClause: any = { isActive: true };
 
@@ -77,9 +102,9 @@ export class LessonsService {
         {
           model: Module,
           as: 'module',
-          include: [{ model: Course, as: 'course' }]
-        }
-      ]
+          include: [{ model: Course, as: 'course' }],
+        },
+      ],
     });
 
     if (!lesson) {
@@ -87,7 +112,10 @@ export class LessonsService {
     }
 
     if (user.role === 'STUDENT') {
-      if (lesson.module.status !== 'PUBLISHED' || lesson.module.course.status !== 'PUBLISHED') {
+      if (
+        lesson.module.status !== 'PUBLISHED' ||
+        lesson.module.course.status !== 'PUBLISHED'
+      ) {
         throw new NotFoundException('Lección no disponible');
       }
     }
@@ -99,29 +127,44 @@ export class LessonsService {
     const lesson = await this.findOne(id, user);
 
     if (user.role !== 'ADMIN' && lesson.module.course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para editar esta lección');
+      throw new ForbiddenException(
+        'No tienes permisos para editar esta lección',
+      );
     }
 
-    const isReactivating = updateLessonDto.isActive === true && !lesson.isActive;
-    const becomesInactive = updateLessonDto.isActive === false && lesson.isActive;
+    const isReactivating =
+      updateLessonDto.isActive === true && !lesson.isActive;
+    const becomesInactive =
+      updateLessonDto.isActive === false && lesson.isActive;
 
     if (becomesInactive) {
       updateLessonDto.order = -1;
     }
 
     if (isReactivating || updateLessonDto.order !== undefined) {
-      const targetOrder = updateLessonDto.order !== undefined ? updateLessonDto.order : lesson.order;
-      
+      const targetOrder =
+        updateLessonDto.order !== undefined
+          ? updateLessonDto.order
+          : lesson.order;
+
       if (targetOrder <= 0 && updateLessonDto.isActive !== false) {
-        throw new BadRequestException('Debe especificar un número de orden válido (> 0) para reactivar el elemento.');
+        throw new BadRequestException(
+          'Debe especificar un número de orden válido (> 0) para reactivar el elemento.',
+        );
       }
-      
+
       if (targetOrder > 0) {
         const existing = await this.lessonModel.findOne({
-          where: { moduleId: lesson.moduleId, order: targetOrder, isActive: true }
+          where: {
+            moduleId: lesson.moduleId,
+            order: targetOrder,
+            isActive: true,
+          },
         });
         if (existing && existing.id !== lesson.id) {
-          throw new ConflictException('El orden solicitado ya está ocupado por otro elemento activo.');
+          throw new ConflictException(
+            'El orden solicitado ya está ocupado por otro elemento activo.',
+          );
         }
       }
     }
@@ -133,7 +176,9 @@ export class LessonsService {
     const lesson = await this.findOne(id, user);
 
     if (user.role !== 'ADMIN' && lesson.module.course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para eliminar esta lección');
+      throw new ForbiddenException(
+        'No tienes permisos para eliminar esta lección',
+      );
     }
 
     return lesson.update({ isActive: false, order: -1 });
@@ -148,21 +193,27 @@ export class LessonsService {
 
     // Verify enrollment
     const enrolledClassrooms = await this.classroomStudentModel.findAll({
-      where: { studentId: user.id }
+      where: { studentId: user.id },
     });
-    const classroomIds = enrolledClassrooms.map(c => c.classroomId);
+    const classroomIds = enrolledClassrooms.map((c) => c.classroomId);
 
     const hasAccess = await this.classroomModuleModel.findOne({
-      where: { moduleId: lesson.moduleId, classroomId: { [Op.in]: classroomIds }, isVisible: true }
+      where: {
+        moduleId: lesson.moduleId,
+        classroomId: { [Op.in]: classroomIds },
+        isVisible: true,
+      },
     });
 
     if (!hasAccess) {
-      throw new ForbiddenException('No estás inscripto en ningún aula que tenga acceso a esta lección.');
+      throw new ForbiddenException(
+        'No estás inscripto en ningún aula que tenga acceso a esta lección.',
+      );
     }
 
     // Idempotency check
     const existingProgress = await this.lessonProgressModel.findOne({
-      where: { userId: user.id, lessonId: lesson.id }
+      where: { userId: user.id, lessonId: lesson.id },
     });
 
     if (existingProgress && existingProgress.isCompleted) {
@@ -172,17 +223,22 @@ export class LessonsService {
       };
     }
 
-    const progress = existingProgress || await this.lessonProgressModel.create({
-      userId: user.id,
-      lessonId: lesson.id,
-    });
+    const progress =
+      existingProgress ||
+      (await this.lessonProgressModel.create({
+        userId: user.id,
+        lessonId: lesson.id,
+      }));
 
     await progress.update({
       isCompleted: true,
       completedAt: new Date(),
     });
 
-    const rewards = await this.gamificationService.processActivity(user.id, 'COMPLETE_LESSON');
+    const rewards = await this.gamificationService.processActivity(
+      user.id,
+      'COMPLETE_LESSON',
+    );
 
     // Remove direct StudentProgress update logic and call CoursesService (which handles everything)
     const courseId = lesson.module.course.id;

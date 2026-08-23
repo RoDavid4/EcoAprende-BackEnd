@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { MissionsService } from './missions.service';
 import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
@@ -26,7 +36,7 @@ export class MissionsController {
   }
 
   // --- Entregas y Revisiones ---
-  
+
   @Get('submissions/my-submissions')
   @Roles('STUDENT', 'TEACHER', 'ADMIN')
   getMySubmissions(@Request() req: any) {
@@ -40,7 +50,11 @@ export class MissionsController {
     @Body() reviewMissionDto: ReviewMissionDto,
     @Request() req: any,
   ) {
-    return this.missionsService.reviewSubmission(submissionId, req.user.id, reviewMissionDto);
+    return this.missionsService.reviewSubmission(
+      submissionId,
+      req.user.id,
+      reviewMissionDto,
+    );
   }
 
   // --- /Entregas y Revisiones ---
@@ -65,8 +79,16 @@ export class MissionsController {
 
   @Post(':id/submit')
   @Roles('STUDENT', 'TEACHER', 'ADMIN')
-  submitMission(@Param('id') id: string, @Body() submitMissionDto: SubmitMissionDto, @Request() req: any) {
-    return this.missionsService.submitMission(id, req.user.id, submitMissionDto);
+  submitMission(
+    @Param('id') id: string,
+    @Body() submitMissionDto: SubmitMissionDto,
+    @Request() req: any,
+  ) {
+    return this.missionsService.submitMission(
+      id,
+      req.user.id,
+      submitMissionDto,
+    );
   }
 
   @Get(':id/submissions')

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Mission } from './mission.entity';
 import { MissionSubmission } from './mission-submission.entity';
@@ -14,7 +19,8 @@ import { GamificationService } from '../gamification/gamification.service';
 export class MissionsService {
   constructor(
     @InjectModel(Mission) private missionModel: typeof Mission,
-    @InjectModel(MissionSubmission) private missionSubmissionModel: typeof MissionSubmission,
+    @InjectModel(MissionSubmission)
+    private missionSubmissionModel: typeof MissionSubmission,
     private readonly gamificationService: GamificationService,
   ) {}
 
@@ -33,9 +39,7 @@ export class MissionsService {
 
   async findOne(id: string) {
     const mission = await this.missionModel.findByPk(id, {
-      include: [
-        { model: User, as: 'creator', attributes: ['id', 'fullName'] },
-      ],
+      include: [{ model: User, as: 'creator', attributes: ['id', 'fullName'] }],
     });
     if (!mission) {
       throw new NotFoundException(`Misión con ID ${id} no encontrada`);
@@ -55,7 +59,11 @@ export class MissionsService {
 
   // --- Submissions ---
 
-  async submitMission(missionId: string, userId: string, dto: SubmitMissionDto) {
+  async submitMission(
+    missionId: string,
+    userId: string,
+    dto: SubmitMissionDto,
+  ) {
     const mission = await this.findOne(missionId);
     if (!mission.isActive) {
       throw new BadRequestException('La misión no está activa');
@@ -67,13 +75,15 @@ export class MissionsService {
         missionId,
         userId,
         status: {
-          [Op.in]: ['PENDING', 'APPROVED']
-        }
-      }
+          [Op.in]: ['PENDING', 'APPROVED'],
+        },
+      },
     });
 
     if (existingSubmission) {
-      throw new ConflictException(`Ya tienes una entrega en estado ${existingSubmission.status} para esta misión.`);
+      throw new ConflictException(
+        `Ya tienes una entrega en estado ${existingSubmission.status} para esta misión.`,
+      );
     }
 
     return this.missionSubmissionModel.create({
@@ -99,17 +109,28 @@ export class MissionsService {
 
     return this.missionSubmissionModel.findAll({
       where: { missionId },
-      include: [{ model: User, as: 'student', attributes: ['id', 'fullName', 'email'] }],
+      include: [
+        { model: User, as: 'student', attributes: ['id', 'fullName', 'email'] },
+      ],
       order: [['createdAt', 'DESC']],
     });
   }
 
-  async reviewSubmission(submissionId: string, reviewerId: string, dto: ReviewMissionDto) {
-    const submission = await this.missionSubmissionModel.findByPk(submissionId, {
-      include: [{ model: Mission, as: 'mission' }],
-    });
+  async reviewSubmission(
+    submissionId: string,
+    reviewerId: string,
+    dto: ReviewMissionDto,
+  ) {
+    const submission = await this.missionSubmissionModel.findByPk(
+      submissionId,
+      {
+        include: [{ model: Mission, as: 'mission' }],
+      },
+    );
     if (!submission) {
-      throw new NotFoundException(`Entrega con ID ${submissionId} no encontrada`);
+      throw new NotFoundException(
+        `Entrega con ID ${submissionId} no encontrada`,
+      );
     }
 
     const updatedSubmission = await submission.update({
@@ -120,9 +141,13 @@ export class MissionsService {
     });
 
     if (dto.status === 'APPROVED') {
-      await this.gamificationService.processActivity(submission.userId, 'APPROVE_MISSION', {
-        pointsReward: submission.mission.pointsReward,
-      });
+      await this.gamificationService.processActivity(
+        submission.userId,
+        'APPROVE_MISSION',
+        {
+          pointsReward: submission.mission.pointsReward,
+        },
+      );
     }
 
     return updatedSubmission;

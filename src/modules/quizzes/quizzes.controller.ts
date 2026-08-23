@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
@@ -32,7 +42,11 @@ export class QuizzesController {
 
   @Patch(':id')
   @Roles('TEACHER', 'ADMIN')
-  update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto, @Request() req: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateQuizDto: UpdateQuizDto,
+    @Request() req: any,
+  ) {
     return this.quizzesService.update(id, updateQuizDto, req.user);
   }
 
@@ -44,7 +58,11 @@ export class QuizzesController {
 
   @Post(':id/submit')
   @Roles('STUDENT', 'TEACHER', 'ADMIN')
-  submitQuiz(@Param('id') id: string, @Body() submitQuizDto: SubmitQuizDto, @Request() req: any) {
+  submitQuiz(
+    @Param('id') id: string,
+    @Body() submitQuizDto: SubmitQuizDto,
+    @Request() req: any,
+  ) {
     return this.quizzesService.submitQuiz(id, req.user.id, submitQuizDto);
   }
 
