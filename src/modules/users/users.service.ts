@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.entity';
 import { Role } from '../roles/role.entity';
@@ -8,14 +12,14 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User) private userModel: typeof User,
-  ) {}
+  constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async getProfile(userId: string) {
     const user = await this.userModel.findByPk(userId, {
       include: [Role],
-      attributes: { exclude: ['password', 'resetPasswordToken', 'resetPasswordExpires'] },
+      attributes: {
+        exclude: ['password', 'resetPasswordToken', 'resetPasswordExpires'],
+      },
     });
 
     if (!user) {
@@ -48,12 +52,18 @@ export class UsersService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    const isPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      changePasswordDto.currentPassword,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('La contraseña actual es incorrecta');
     }
 
-    const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    const hashedNewPassword = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      10,
+    );
     user.password = hashedNewPassword;
     await user.save();
 

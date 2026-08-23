@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsEnum, IsBoolean, IsNotEmpty, IsInt, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  IsNotEmpty,
+  IsInt,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateModuleDto {
   @IsUUID()

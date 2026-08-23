@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -31,7 +41,11 @@ export class LessonsController {
 
   @Patch(':id')
   @Roles('TEACHER', 'ADMIN')
-  update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto, @Request() req: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateLessonDto: UpdateLessonDto,
+    @Request() req: any,
+  ) {
     return this.lessonsService.update(id, updateLessonDto, req.user);
   }
 

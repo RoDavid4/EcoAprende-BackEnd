@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsInt, IsIn, IsOptional, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsInt,
+  IsIn,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class CreateBadgeDto {
   @IsString()
@@ -26,9 +33,22 @@ export class CreateBadgeDto {
   @IsOptional()
   category?: 'ECOLOGY' | 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';
 
-  @IsIn(['STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'])
+  @IsIn([
+    'STREAK',
+    'TOTAL_XP',
+    'LESSONS_COMPLETED',
+    'QUIZZES_PASSED',
+    'MISSIONS_APPROVED',
+    'MANUAL',
+  ])
   @IsOptional()
-  triggerEvent?: 'STREAK' | 'TOTAL_XP' | 'LESSONS_COMPLETED' | 'QUIZZES_PASSED' | 'MISSIONS_APPROVED' | 'MANUAL';
+  triggerEvent?:
+    | 'STREAK'
+    | 'TOTAL_XP'
+    | 'LESSONS_COMPLETED'
+    | 'QUIZZES_PASSED'
+    | 'MISSIONS_APPROVED'
+    | 'MANUAL';
 
   @IsInt()
   @Min(0)

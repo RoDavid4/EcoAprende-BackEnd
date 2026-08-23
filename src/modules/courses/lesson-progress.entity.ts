@@ -1,4 +1,13 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { Lesson } from './lesson.entity';
 
@@ -9,8 +18,8 @@ import { Lesson } from './lesson.entity';
     {
       unique: true,
       fields: ['userId', 'lessonId'],
-    }
-  ]
+    },
+  ],
 })
 export class LessonProgress extends Model {
   @PrimaryKey

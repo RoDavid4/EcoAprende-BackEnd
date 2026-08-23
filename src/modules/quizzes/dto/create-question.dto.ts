@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, IsInt, ValidateNested, ArrayMinSize, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsInt,
+  ValidateNested,
+  ArrayMinSize,
+  IsArray,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateOptionDto } from './create-option.dto';
 

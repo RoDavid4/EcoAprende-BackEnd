@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -21,13 +25,17 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const existingUser = await this.userModel.findOne({ where: { email: registerDto.email } });
+    const existingUser = await this.userModel.findOne({
+      where: { email: registerDto.email },
+    });
     if (existingUser) {
       throw new ConflictException('El email ya esta registrado');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    const defaultRole = await this.roleModel.findOne({ where: { name: 'STUDENT' } });
+    const defaultRole = await this.roleModel.findOne({
+      where: { name: 'STUDENT' },
+    });
 
     const user = await this.userModel.create({
       fullName: registerDto.fullName,
@@ -46,22 +54,25 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userModel.findOne({ 
+    const user = await this.userModel.findOne({
       where: { email: loginDto.email },
-      include: [Role]
+      include: [Role],
     });
-    
+
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Credenciales invalidas');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales invalidas');
     }
 
     const payload = { id: user.id, email: user.email, role: user.role?.name };
-    
+
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -69,13 +80,15 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         role: user.role?.name,
-      }
+      },
     };
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.userModel.findOne({ where: { email: forgotPasswordDto.email } });
-    
+    const user = await this.userModel.findOne({
+      where: { email: forgotPasswordDto.email },
+    });
+
     if (user) {
       const resetToken = crypto.randomBytes(32).toString('hex');
       const resetExpires = new Date();
@@ -85,22 +98,34 @@ export class AuthService {
       user.resetPasswordExpires = resetExpires;
       await user.save();
 
-      console.log(`[DEV] Token de recuperacion para ${user.email}: ${resetToken}`);
-      return { 
-        message: 'Si el correo electronico existe en nuestra base de datos, recibiras un enlace de recuperacion pronto.',
-        devToken: resetToken 
+      console.log(
+        `[DEV] Token de recuperacion para ${user.email}: ${resetToken}`,
+      );
+      return {
+        message:
+          'Si el correo electronico existe en nuestra base de datos, recibiras un enlace de recuperacion pronto.',
+        devToken: resetToken,
       };
     }
 
-    return { message: 'Si el correo electronico existe en nuestra base de datos, recibiras un enlace de recuperacion pronto.' };
+    return {
+      message:
+        'Si el correo electronico existe en nuestra base de datos, recibiras un enlace de recuperacion pronto.',
+    };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword } = resetPasswordDto;
-    
-    const user = await this.userModel.findOne({ where: { resetPasswordToken: token } });
-    
-    if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+
+    const user = await this.userModel.findOne({
+      where: { resetPasswordToken: token },
+    });
+
+    if (
+      !user ||
+      !user.resetPasswordExpires ||
+      user.resetPasswordExpires < new Date()
+    ) {
       throw new UnauthorizedException('El token es invalido o ha expirado');
     }
 

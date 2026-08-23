@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Course } from './course.entity';
 import { Module } from './module.entity';
@@ -16,7 +20,8 @@ export class CoursesService {
   constructor(
     @InjectModel(Course) private courseModel: typeof Course,
     @InjectModel(Module) private moduleModel: typeof Module,
-    @InjectModel(StudentProgress) private studentProgressModel: typeof StudentProgress,
+    @InjectModel(StudentProgress)
+    private studentProgressModel: typeof StudentProgress,
     private readonly gamificationService: GamificationService,
   ) {}
 
@@ -41,8 +46,8 @@ export class CoursesService {
           model: User,
           as: 'creator',
           attributes: ['id', 'fullName'],
-        }
-      ]
+        },
+      ],
     });
   }
 
@@ -55,7 +60,7 @@ export class CoursesService {
     if (user.role === 'STUDENT') {
       whereClause.isActive = true;
       whereClause.status = 'PUBLISHED';
-      
+
       moduleWhereClause.isActive = true;
       moduleWhereClause.status = 'PUBLISHED';
       moduleWhereClause.order = { [Op.gt]: 0 };
@@ -102,14 +107,19 @@ export class CoursesService {
               as: 'quizzes',
               where: quizWhereClause,
               required: false,
-            }
-          ]
-        }
+            },
+          ],
+        },
       ],
       order: [
         [{ model: Module, as: 'modules' }, 'order', 'ASC'],
-        [{ model: Module, as: 'modules' }, { model: Lesson, as: 'lessons' }, 'order', 'ASC']
-      ]
+        [
+          { model: Module, as: 'modules' },
+          { model: Lesson, as: 'lessons' },
+          'order',
+          'ASC',
+        ],
+      ],
     });
 
     if (!course) {
@@ -133,7 +143,9 @@ export class CoursesService {
     const course = await this.findOne(id, user);
 
     if (user.role !== 'ADMIN' && course.createdById !== user.id) {
-      throw new ForbiddenException('No tienes permisos para eliminar este curso');
+      throw new ForbiddenException(
+        'No tienes permisos para eliminar este curso',
+      );
     }
 
     return course.update({ isActive: false });
@@ -146,34 +158,39 @@ export class CoursesService {
         {
           model: Course,
           as: 'course',
-          attributes: ['id', 'title', 'imageUrl']
-        }
-      ]
+          attributes: ['id', 'title', 'imageUrl'],
+        },
+      ],
     });
 
-    const updatedProgressList = await Promise.all(progressList.map(async p => {
-      const updated = await this.updateStudentProgress(studentId, p.courseId);
-      if (updated) {
-        (updated as any).course = p.course;
-        return updated;
-      }
-      return p;
-    }));
+    const updatedProgressList = await Promise.all(
+      progressList.map(async (p) => {
+        const updated = await this.updateStudentProgress(studentId, p.courseId);
+        if (updated) {
+          (updated as any).course = p.course;
+          return updated;
+        }
+        return p;
+      }),
+    );
 
-    const gamificationProfile = await this.gamificationService.getProfile(studentId);
+    const gamificationProfile =
+      await this.gamificationService.getProfile(studentId);
 
     const enrolledCoursesCount = updatedProgressList.length;
-    const completedCoursesCount = updatedProgressList.filter(p => p.isCompleted).length;
-    
+    const completedCoursesCount = updatedProgressList.filter(
+      (p) => p.isCompleted,
+    ).length;
+
     let totalCompletedLessons = 0;
     let totalCompletedQuizzes = 0;
     let totalPercentageSum = 0;
 
-    const courseDetails = updatedProgressList.map(p => {
+    const courseDetails = updatedProgressList.map((p) => {
       totalCompletedLessons += p.completedLessonsCount;
       totalCompletedQuizzes += p.completedQuizzesCount;
       totalPercentageSum += p.percentage;
-      
+
       return {
         courseId: p.courseId,
         courseTitle: p.course.title,
@@ -191,7 +208,8 @@ export class CoursesService {
       };
     });
 
-    const globalPercentage = enrolledCoursesCount > 0 ? (totalPercentageSum / enrolledCoursesCount) : 0;
+    const globalPercentage =
+      enrolledCoursesCount > 0 ? totalPercentageSum / enrolledCoursesCount : 0;
 
     return {
       global: {
@@ -207,20 +225,20 @@ export class CoursesService {
         currentStreak: gamificationProfile?.currentStreak || 0,
         badgesCount: gamificationProfile?.badges?.length || 0,
       },
-      courses: courseDetails
+      courses: courseDetails,
     };
   }
 
   async updateStudentProgress(userId: string, courseId: string) {
     const modules = await this.moduleModel.findAll({
       where: { courseId, isActive: true },
-      attributes: ['id']
+      attributes: ['id'],
     });
-    const moduleIds = modules.map(m => m.id);
+    const moduleIds = modules.map((m) => m.id);
 
     const sequelize = this.courseModel.sequelize;
     if (!sequelize) return null;
-    
+
     const LessonModel = sequelize.models.Lesson;
     const QuizModel = sequelize.models.Quiz;
     const LessonProgressModel = sequelize.models.LessonProgress;
@@ -229,24 +247,42 @@ export class CoursesService {
     // Default to empty arrays for `where` IN clauses to avoid errors
     const moduleIdClause = moduleIds.length > 0 ? moduleIds : [null];
 
-    const totalLessons = await LessonModel.count({ where: { moduleId: moduleIdClause, isActive: true } });
-    const totalQuizzes = QuizModel ? await QuizModel.count({ where: { moduleId: moduleIdClause, isActive: true } }) : 0;
-    
-    // completed lessons
-    const lessons = await LessonModel.findAll({ where: { moduleId: moduleIdClause, isActive: true }, attributes: ['id'] });
-    const lessonIds = lessons.map(l => (l as any).id);
-    const completedLessons = lessonIds.length > 0 
-      ? await LessonProgressModel.count({ where: { userId, lessonId: lessonIds, isCompleted: true } })
+    const totalLessons = await LessonModel.count({
+      where: { moduleId: moduleIdClause, isActive: true },
+    });
+    const totalQuizzes = QuizModel
+      ? await QuizModel.count({
+          where: { moduleId: moduleIdClause, isActive: true },
+        })
       : 0;
+
+    // completed lessons
+    const lessons = await LessonModel.findAll({
+      where: { moduleId: moduleIdClause, isActive: true },
+      attributes: ['id'],
+    });
+    const lessonIds = lessons.map((l) => (l as any).id);
+    const completedLessons =
+      lessonIds.length > 0
+        ? await LessonProgressModel.count({
+            where: { userId, lessonId: lessonIds, isCompleted: true },
+          })
+        : 0;
 
     // completed quizzes
     let passedQuizzes = 0;
     if (QuizModel && QuizAttemptModel) {
-      const quizzes = await QuizModel.findAll({ where: { moduleId: moduleIdClause, isActive: true }, attributes: ['id'] });
-      const quizIds = quizzes.map(q => (q as any).id);
-      passedQuizzes = quizIds.length > 0
-        ? await QuizAttemptModel.count({ where: { userId, quizId: quizIds, isPassed: true } })
-        : 0;
+      const quizzes = await QuizModel.findAll({
+        where: { moduleId: moduleIdClause, isActive: true },
+        attributes: ['id'],
+      });
+      const quizIds = quizzes.map((q) => (q as any).id);
+      passedQuizzes =
+        quizIds.length > 0
+          ? await QuizAttemptModel.count({
+              where: { userId, quizId: quizIds, isPassed: true },
+            })
+          : 0;
     }
 
     const totalItems = totalLessons + totalQuizzes;
@@ -255,7 +291,9 @@ export class CoursesService {
     const percentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
     const isCompleted = percentage >= 100 && totalItems > 0;
 
-    let studentProgress = await this.studentProgressModel.findOne({ where: { userId, courseId } });
+    let studentProgress = await this.studentProgressModel.findOne({
+      where: { userId, courseId },
+    });
     if (!studentProgress) {
       studentProgress = await this.studentProgressModel.create({
         userId,
@@ -277,7 +315,10 @@ export class CoursesService {
         completedQuizzesCount: passedQuizzes,
         percentage: percentage > 100 ? 100 : percentage,
         isCompleted,
-        completedAt: isCompleted && !studentProgress.isCompleted ? new Date() : studentProgress.completedAt,
+        completedAt:
+          isCompleted && !studentProgress.isCompleted
+            ? new Date()
+            : studentProgress.completedAt,
         lastAccessedAt: new Date(),
       });
     }

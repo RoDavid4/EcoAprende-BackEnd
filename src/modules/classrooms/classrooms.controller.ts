@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ClassroomsService } from './classrooms.service';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
@@ -29,7 +42,10 @@ export class ClassroomsController {
 
   @Get()
   @Roles('TEACHER', 'ADMIN', 'STUDENT')
-  findAll(@Request() req: any, @Query('includeInactive') includeInactive?: string) {
+  findAll(
+    @Request() req: any,
+    @Query('includeInactive') includeInactive?: string,
+  ) {
     return this.classroomsService.findAll(req.user, includeInactive);
   }
 
@@ -47,7 +63,11 @@ export class ClassroomsController {
 
   @Patch(':id')
   @Roles('TEACHER', 'ADMIN')
-  update(@Param('id') id: string, @Body() updateClassroomDto: UpdateClassroomDto, @Request() req: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateClassroomDto: UpdateClassroomDto,
+    @Request() req: any,
+  ) {
     return this.classroomsService.update(id, updateClassroomDto, req.user);
   }
 
@@ -67,16 +87,20 @@ export class ClassroomsController {
   @HttpCode(HttpStatus.OK)
   @Roles('TEACHER', 'ADMIN')
   removeStudent(
-    @Param('id') id: string, 
-    @Param('studentId') studentId: string, 
-    @Request() req: any
+    @Param('id') id: string,
+    @Param('studentId') studentId: string,
+    @Request() req: any,
   ) {
     return this.classroomsService.removeStudent(id, studentId, req.user);
   }
 
   @Post(':id/modules')
   @Roles('TEACHER', 'ADMIN')
-  assignModule(@Param('id') id: string, @Body() assignDto: AssignModuleDto, @Request() req: any) {
+  assignModule(
+    @Param('id') id: string,
+    @Body() assignDto: AssignModuleDto,
+    @Request() req: any,
+  ) {
     return this.classroomsService.assignModule(id, assignDto, req.user);
   }
 
@@ -92,9 +116,14 @@ export class ClassroomsController {
     @Param('id') id: string,
     @Param('moduleId') moduleId: string,
     @Body() updateDto: UpdateClassroomModuleDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
-    return this.classroomsService.updateModuleVisibility(id, moduleId, updateDto, req.user);
+    return this.classroomsService.updateModuleVisibility(
+      id,
+      moduleId,
+      updateDto,
+      req.user,
+    );
   }
 
   @Delete(':id/modules/:moduleId')
@@ -103,7 +132,7 @@ export class ClassroomsController {
   removeModule(
     @Param('id') id: string,
     @Param('moduleId') moduleId: string,
-    @Request() req: any
+    @Request() req: any,
   ) {
     return this.classroomsService.removeModule(id, moduleId, req.user);
   }

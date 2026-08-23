@@ -1,4 +1,14 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+} from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { Module } from '../courses/module.entity';
 import { MissionSubmission } from './mission-submission.entity';
@@ -76,6 +86,9 @@ export class Mission extends Model {
   @BelongsTo(() => User, 'createdById')
   declare creator: User;
 
-  @HasMany(() => MissionSubmission, { as: 'submissions', foreignKey: 'missionId' })
+  @HasMany(() => MissionSubmission, {
+    as: 'submissions',
+    foreignKey: 'missionId',
+  })
   declare submissions: MissionSubmission[];
 }

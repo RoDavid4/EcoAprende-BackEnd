@@ -1,4 +1,14 @@
-import { Table, Column, Model, DataType, PrimaryKey, Default, Unique, BelongsToMany, HasMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  Default,
+  Unique,
+  BelongsToMany,
+  HasMany,
+} from 'sequelize-typescript';
 import { User } from '../users/user.entity';
 import { UserBadge } from './user-badge.entity';
 
@@ -41,10 +51,23 @@ export class Badge extends Model {
 
   @Default('MANUAL')
   @Column({
-    type: DataType.ENUM('STREAK', 'TOTAL_XP', 'LESSONS_COMPLETED', 'QUIZZES_PASSED', 'MISSIONS_APPROVED', 'MANUAL'),
+    type: DataType.ENUM(
+      'STREAK',
+      'TOTAL_XP',
+      'LESSONS_COMPLETED',
+      'QUIZZES_PASSED',
+      'MISSIONS_APPROVED',
+      'MANUAL',
+    ),
     allowNull: true,
   })
-  declare triggerEvent: 'STREAK' | 'TOTAL_XP' | 'LESSONS_COMPLETED' | 'QUIZZES_PASSED' | 'MISSIONS_APPROVED' | 'MANUAL';
+  declare triggerEvent:
+    | 'STREAK'
+    | 'TOTAL_XP'
+    | 'LESSONS_COMPLETED'
+    | 'QUIZZES_PASSED'
+    | 'MISSIONS_APPROVED'
+    | 'MANUAL';
 
   @Default(0)
   @Column({
@@ -62,7 +85,13 @@ export class Badge extends Model {
 
   @Default('ECOLOGY')
   @Column({
-    type: DataType.ENUM('ECOLOGY', 'ACADEMIC', 'COMMUNITY', 'STREAK', 'SPECIAL'),
+    type: DataType.ENUM(
+      'ECOLOGY',
+      'ACADEMIC',
+      'COMMUNITY',
+      'STREAK',
+      'SPECIAL',
+    ),
     allowNull: false,
   })
   declare category: 'ECOLOGY' | 'ACADEMIC' | 'COMMUNITY' | 'STREAK' | 'SPECIAL';

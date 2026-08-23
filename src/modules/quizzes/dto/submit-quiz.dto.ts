@@ -1,4 +1,10 @@
-import { IsArray, ArrayNotEmpty, ValidateNested, IsUUID, IsNotEmpty } from 'class-validator';
+import {
+  IsArray,
+  ArrayNotEmpty,
+  ValidateNested,
+  IsUUID,
+  IsNotEmpty,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AnswerDto {

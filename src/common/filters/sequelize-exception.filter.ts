@@ -1,6 +1,15 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpStatus,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ForeignKeyConstraintError, UniqueConstraintError, DatabaseError } from 'sequelize';
+import {
+  ForeignKeyConstraintError,
+  UniqueConstraintError,
+  DatabaseError,
+} from 'sequelize';
 
 @Catch(DatabaseError, ForeignKeyConstraintError, UniqueConstraintError)
 export class SequelizeExceptionFilter implements ExceptionFilter {
@@ -12,12 +21,19 @@ export class SequelizeExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
 
-    if (exception instanceof ForeignKeyConstraintError || exception.name === 'SequelizeForeignKeyConstraintError') {
+    if (
+      exception instanceof ForeignKeyConstraintError ||
+      exception.name === 'SequelizeForeignKeyConstraintError'
+    ) {
       status = HttpStatus.BAD_REQUEST;
       message = 'Operación inválida: registro referenciado no encontrado';
-    } else if (exception instanceof UniqueConstraintError || exception.name === 'SequelizeUniqueConstraintError') {
+    } else if (
+      exception instanceof UniqueConstraintError ||
+      exception.name === 'SequelizeUniqueConstraintError'
+    ) {
       status = HttpStatus.CONFLICT;
-      message = 'Conflicto: ya existe un registro con esos datos (violación de índice único)';
+      message =
+        'Conflicto: ya existe un registro con esos datos (violación de índice único)';
     }
 
     // Si aún es 500 pero es un error de BD, devolvemos 500 pero logeamos

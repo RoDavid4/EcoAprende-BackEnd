@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Usuario no válido o inexistente');
       }
       return { id: payload.id, email: payload.email, role: payload.role };
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Usuario no válido o inexistente');
     }
   }

@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsEnum, IsBoolean, IsNotEmpty, IsInt, IsUUID, IsUrl } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  IsNotEmpty,
+  IsInt,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateLessonDto {
   @IsUUID()

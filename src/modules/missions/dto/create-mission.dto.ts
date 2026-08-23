@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsEnum, IsInt, IsOptional, IsUUID, IsBoolean, IsUrl } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsUUID,
+  IsBoolean,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateMissionDto {
   @IsString()
