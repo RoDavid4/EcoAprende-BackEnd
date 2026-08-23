@@ -786,12 +786,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/classrooms/e1ebc950-6134-4259-bf7a-51027175c694/modules"
+          - url: "{{ _.base_url }}/classrooms/04562dc3-4d99-4318-9b64-e122ce5da924/modules"
             name: POST /classrooms/:id/modules (Asignar Módulo a un Aula)
             meta:
               id: req_d49df4ae3b1f4237bf2c8b406cbea7eb
               created: 1786750497161
-              modified: 1787460373419
+              modified: 1787512758350
               isPrivate: false
               description: ""
               sortKey: -1786246530657.125
@@ -800,7 +800,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "54da9ed6-91a1-4a6e-8b6f-62842484f04c"
+                  "moduleId": "b5accc18-7078-433c-96e0-384c277bebc7"
                 }
             headers:
               - name: Content-Type
@@ -818,12 +818,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/classrooms/12d203c9-ac1c-4856-8d13-dda149a683c2/modules"
+          - url: "{{ _.base_url }}/classrooms/e1ebc950-6134-4259-bf7a-51027175c694/modules"
             name: GET /classrooms/:id/modules (Listar Módulos Asignados al Aula)
             meta:
               id: req_749f066ceb5d4886b9f846d345224ca0
               created: 1786750882718
-              modified: 1786751164209
+              modified: 1787512792656
               isPrivate: false
               description: ""
               sortKey: -1786106106703.0625
@@ -939,7 +939,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1787460281538
+              modified: 1787519025575
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -948,7 +948,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "code": "JQ7NGR"
+                  "code": "SX4UHH"
                 }
             headers:
               - name: Content-Type
@@ -1145,12 +1145,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/8ebe2de0-9958-4386-ab40-b7730df8d56b"
+          - url: "{{ _.base_url }}/courses/f7d16eee-1eea-4941-8edf-a88869f6ac1b"
             name: GET /courses/:id (Obtener Curso con Módulos Anidados)
             meta:
               id: req_7766eb39a34b44cea8857071487b012b
               created: 1786739613979
-              modified: 1787437146081
+              modified: 1787519107816
               isPrivate: false
               description: ""
               sortKey: -1786308109470
@@ -1201,12 +1201,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/c3bcaf9f-9a2f-455d-b59d-0f99c0417feb"
+          - url: "{{ _.base_url }}/courses/443730d5-a084-4b93-8b8c-1fe2ae1c731d"
             name: DELETE /courses/:id (Desactivar Curso)
             meta:
               id: req_031451e62e104bab9b552d1adf3e6ecb
               created: 1786741046859
-              modified: 1786741055261
+              modified: 1787517545678
               isPrivate: false
               description: ""
               sortKey: -1786277354792
@@ -1288,7 +1288,7 @@ collection:
             meta:
               id: req_d4a07bb06f684d6b992161cffe4c31fa
               created: 1786741155993
-              modified: 1787460351588
+              modified: 1787519054550
               isPrivate: false
               description: ""
               sortKey: -1786741179116
@@ -1297,7 +1297,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "courseId": "fe9fecdd-c833-401c-801f-bcef7a6530fd",
+                  "courseId": "f7d16eee-1eea-4941-8edf-a88869f6ac1b",
                   "title": "Módulo 1: La Huella Hídrica",
                   "description": "Comprendiendo el impacto del consumo cotidiano.",
                   "order": 1,
@@ -1319,12 +1319,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/modules/687c19c8-afc9-4af9-a309-69a81402e167"
+          - url: "{{ _.base_url }}/modules/a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad"
             name: GET /modules/:id (Obtener Módulo con Lecciones Anidadas)
             meta:
               id: req_557f165310f8418eac48503b8d73c3de
               created: 1786741480330
-              modified: 1787433106912
+              modified: 1787519404988
               isPrivate: false
               description: ""
               sortKey: -1786739926339
@@ -1343,12 +1343,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/modules/6490e0d4-a435-421a-9e4b-0297b966f96b"
+          - url: "{{ _.base_url }}/modules/23202017-e1f2-4d77-893c-eba68e70a0a2"
             name: PATCH /modules/:id (Editar Módulo)
             meta:
               id: req_2b348d14dc864a3aa5a9439ecd4a6761
               created: 1786742147719
-              modified: 1786742254162
+              modified: 1787517517881
               isPrivate: false
               description: ""
               sortKey: -1786739299950.5
@@ -1357,8 +1357,8 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "title": "Módulo 3: Huella Hídrica y Ciclo del Agua",
-                  "order": 4
+                	"isActive": true,
+                  "order": 2
                 }
             headers:
               - name: Content-Type
@@ -1367,7 +1367,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1376,12 +1376,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/modules/9d722783-131d-44c1-ab0a-61b684ad73a2"
+          - url: "{{ _.base_url }}/modules/eaca3817-b94d-4c30-b699-89e15553d238"
             name: DELETE /modules/:id (Desactivar Módulo)
             meta:
               id: req_aed03ec2e4b8441280f0c4703d232d67
               created: 1786742345874
-              modified: 1786742396163
+              modified: 1787519131353
               isPrivate: false
               description: ""
               sortKey: -1786738986756.25
@@ -1391,7 +1391,7 @@ collection:
                 value: insomnia/11.3.0
             authentication:
               type: bearer
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkM2JmMTE4LTlhNDQtNGRiOC05MWEwLWNkYTIxMmJlMjI4OSIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NjczOTE5MSwiZXhwIjoxNzg2ODI1NTkxfQ.AthxEtq-MuCit1XFSPrVok6b402L2IhjtCckDyUNlCI
+              token: "{{ _.teacher_token }}"
             settings:
               renderRequestBody: true
               encodeUrl: true
@@ -1413,7 +1413,7 @@ collection:
             meta:
               id: req_34964b05e8354e0f8bb5363342bc885a
               created: 1786742758974
-              modified: 1787460387747
+              modified: 1787519158543
               isPrivate: false
               description: ""
               sortKey: -1786742767266
@@ -1422,7 +1422,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "moduleId": "54da9ed6-91a1-4a6e-8b6f-62842484f04c",
+                  "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
                   "title": "Introducción a los Recursos Hídricos",
                   "contentType": "TEXT",
                   "content": "El 70% del planeta está cubierto de agua, pero solo el 2.5% es dulce...",
@@ -1445,12 +1445,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/lessons/1b1b948f-bbdf-4f91-97af-30ca6bb702ab"
+          - url: "{{ _.base_url }}/lessons/3d179e3e-3807-4eea-b4af-6100cacf6b6c"
             name: GET /lessons/:id (Obtener Detalle de Lección)
             meta:
               id: req_22467da88b044bf2b3729267a48fc635
               created: 1786743106561
-              modified: 1787354605922
+              modified: 1787519290877
               isPrivate: false
               description: ""
               sortKey: -1786741973191
@@ -1474,7 +1474,7 @@ collection:
             meta:
               id: req_5073df0432084b2997bf289e9a2d19a2
               created: 1786743193346
-              modified: 1787460397718
+              modified: 1787519174372
               isPrivate: false
               description: ""
               sortKey: -1786742370228.5
@@ -1483,7 +1483,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "54da9ed6-91a1-4a6e-8b6f-62842484f04c",
+                  "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
                   "title": "Video: Cómo medir tu huella hídrica",
                   "contentType": "VIDEO",
                   "content": "Breve documental explicativo.",
@@ -1539,12 +1539,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/lessons/68ef4818-ec4e-42d4-a31c-92e1b2524c19"
+          - url: "{{ _.base_url }}/lessons/ef479a52-d4cd-4b91-8e81-338163a004bd"
             name: DELETE /lessons/:id (Desactivar Lección)
             meta:
               id: req_b67321321b5e4c258c3644171666e30f
               created: 1786743420773
-              modified: 1787354427232
+              modified: 1787519320128
               isPrivate: false
               description: ""
               sortKey: -1786741377634.75
@@ -1600,7 +1600,7 @@ collection:
         meta:
           id: req_f023a89f874540ec81b74e4b36d954e0
           created: 1786817878204
-          modified: 1787435832646
+          modified: 1787519437903
           isPrivate: false
           description: ""
           sortKey: -1786817891479
@@ -1609,7 +1609,7 @@ collection:
           mimeType: application/json
           text: >-
             {
-              "moduleId": "9632f18f-06bf-473b-8afc-77b2fdccb1a1",
+              "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
               "title": "Evaluación: Huella Hídrica y Conservación",
               "description": "Comprueba lo aprendido sobre el uso responsable del agua.",
               "passingScore": 70,
@@ -2252,10 +2252,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1787460192528
+    modified: 1787518997266
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyNTRkMzkyLThkODMtNDNmMi04YTM4LTY4ZjA4MDQzZTZkYiIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzQ2MDA5MSwiZXhwIjoxNzg3NTQ2NDkxfQ.EFk7lTpmTe1L1JsoaF7xD339lWzxfFg5WbpDEVpPk1M
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI4Y2U2MDYzLWNlOWMtNDU0Yy04MTBkLWM4N2Y3NjI3ZWUyYiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzQ2MDE3OCwiZXhwIjoxNzg3NTQ2NTc4fQ.mFxJ5hmntSkVYR1OVnFACu_gFBXFDS5rKNnIjUsPVZg
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM4MWJjOTVkLTZjYWMtNDE2OS1hOTcxLTZlYmVmOTE1NDM5NiIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzUxODkwNCwiZXhwIjoxNzg3NjA1MzA0fQ.daBAtOo6BzvS7conHDnPOVzeBmw0DflNmSzNworoYK4
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwYjU0NDI1LWNhYjMtNDE0MS1hMDU2LTI1YjlmMTliZTI5YiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzUxODk1NywiZXhwIjoxNzg3NjA1MzU3fQ.wbeFOIFrLMN_3ho-XnwgfyaSCaINKRIlAqkq2R1CEoU
     admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYjEwMzRlLWRhYmQtNGJkNy04NDI4LWJjZmI0ZjBhNGQ2NiIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc0MzUzODQsImV4cCI6MTc4NzUyMTc4NH0.txhYuDBh75nK2HO5KS81D_eq6BNYN6ofdk4RdslSwp0

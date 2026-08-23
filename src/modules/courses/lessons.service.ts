@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Lesson } from './lesson.entity';
 import { Module } from './module.entity';
@@ -66,8 +66,13 @@ export class LessonsService {
   }
 
   async findOne(id: string, user: any) {
+    const whereClause: any = { id };
+    if (user.role === 'STUDENT') {
+      whereClause.isActive = true;
+    }
+
     const lesson = await this.lessonModel.findOne({
-      where: { id, isActive: true },
+      where: whereClause,
       include: [
         {
           model: Module,
@@ -97,12 +102,27 @@ export class LessonsService {
       throw new ForbiddenException('No tienes permisos para editar esta lección');
     }
 
-    if (updateLessonDto.order !== undefined) {
-      const existing = await this.lessonModel.findOne({
-        where: { moduleId: lesson.moduleId, order: updateLessonDto.order, isActive: true }
-      });
-      if (existing && existing.id !== lesson.id) {
-        throw new BadRequestException(`Ya existe una lección con el orden ${updateLessonDto.order} en este módulo`);
+    const isReactivating = updateLessonDto.isActive === true && !lesson.isActive;
+    const becomesInactive = updateLessonDto.isActive === false && lesson.isActive;
+
+    if (becomesInactive) {
+      updateLessonDto.order = -1;
+    }
+
+    if (isReactivating || updateLessonDto.order !== undefined) {
+      const targetOrder = updateLessonDto.order !== undefined ? updateLessonDto.order : lesson.order;
+      
+      if (targetOrder <= 0 && updateLessonDto.isActive !== false) {
+        throw new BadRequestException('Debe especificar un número de orden válido (> 0) para reactivar el elemento.');
+      }
+      
+      if (targetOrder > 0) {
+        const existing = await this.lessonModel.findOne({
+          where: { moduleId: lesson.moduleId, order: targetOrder, isActive: true }
+        });
+        if (existing && existing.id !== lesson.id) {
+          throw new ConflictException('El orden solicitado ya está ocupado por otro elemento activo.');
+        }
       }
     }
 
@@ -116,7 +136,7 @@ export class LessonsService {
       throw new ForbiddenException('No tienes permisos para eliminar esta lección');
     }
 
-    return lesson.update({ isActive: false });
+    return lesson.update({ isActive: false, order: -1 });
   }
 
   async complete(id: string, user: any) {

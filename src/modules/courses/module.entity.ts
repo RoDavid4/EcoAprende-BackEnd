@@ -13,6 +13,9 @@ import { Mission } from '../missions/mission.entity';
     {
       unique: true,
       fields: ['courseId', 'order'],
+      where: {
+        isActive: true
+      }
     }
   ]
 })

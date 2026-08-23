@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -37,8 +37,9 @@ export class CoursesController {
 
   @Get(':id')
   @Roles('TEACHER', 'ADMIN', 'STUDENT')
-  findOne(@Param('id') id: string, @Request() req: any) {
-    return this.coursesService.findOne(id, req.user);
+  findOne(@Param('id') id: string, @Request() req: any, @Query('includeInactive') includeInactive?: string) {
+    const isInactiveRequested = includeInactive === 'true';
+    return this.coursesService.findOne(id, req.user, isInactiveRequested);
   }
 
   @Patch(':id')
