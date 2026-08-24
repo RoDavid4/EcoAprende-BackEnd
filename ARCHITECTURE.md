@@ -282,7 +282,7 @@ Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia ide
 
 ### Entorno Simulado (`npm run seed`)
 Para facilitar las pruebas intensivas durante el desarrollo y para los equipos de QA/Frontend, se provee adicionalmente un script de inicialización robusto en `src/database/seeds/seed.ts`. 
-Este comando es capaz de limpiar la base de datos de manera relacional segura y repoblarla completamente, inyectando un **Cheat Sheet** de usuarios listos para ser consumidos (1 Admin, 2 Profesores y 6 Estudiantes con métricas variadas), poblando Cursos, Módulos, Lecciones, Quizzes resueltos (con `Option.bulkCreate`), Aulas y progresiones de gamificación (con puntajes asimétricos para validar el Leaderboard). Ver el `README.md` para la lista completa de credenciales.
+Este comando es capaz de limpiar la base de datos de manera relacional segura y repoblarla completamente, inyectando un **Cheat Sheet** de usuarios listos para ser consumidos (1 Admin, 2 Profesores y 6 Estudiantes con métricas variadas), poblando Cursos, Módulos, Lecciones, Quizzes resueltos (con `Option.bulkCreate`), Misiones (con entregas en estado `PENDING`, `APPROVED` y `REJECTED` listas para evaluación docente), Aulas y progresiones de gamificación (con puntajes asimétricos para validar el Leaderboard). Ver el `README.md` para la lista completa de credenciales.
 
 ## Autenticacion y Seguridad
 
