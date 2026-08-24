@@ -2297,12 +2297,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/admin/users/338350ea-c8c3-4e5f-9a0b-fb903591aa4e/status"
+      - url: "{{ _.base_url }}/admin/users/ded9c806-2576-42d7-bd5c-d94b658003e9/status"
         name: PATCH /admin/users/:id/status (Cambio de estado y auditoria)
         meta:
           id: req_dc7ee4e5beb541f7883afeb81b858123
           created: 1787524278621
-          modified: 1787524552439
+          modified: 1787538843957
           isPrivate: false
           description: ""
           sortKey: -1787265072719.75
@@ -2353,12 +2353,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/admin/users/c191fa2b-3715-45ba-a177-7057a5b6500a/role"
+      - url: "{{ _.base_url }}/admin/users/ded9c806-2576-42d7-bd5c-d94b658003e9/role"
         name: PATCH /admin/users/:id/role (cambiar rol)
         meta:
           id: req_9ae7dabdd7a34c2eb2a9975df916cedd
           created: 1787524664004
-          modified: 1787527401600
+          modified: 1787538856069
           isPrivate: false
           description: ""
           sortKey: -1787221966780.375
@@ -2367,11 +2367,35 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"roleId": 3
+            	"roleId": 1
             }
         headers:
           - name: Content-Type
             value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/admin/users?search=juan&page=1&limit=10"
+        name: GET /admin/users con search
+        meta:
+          id: req_962f561696774bba8bcd838005205b8b
+          created: 1787532647354
+          modified: 1787538915547
+          isPrivate: false
+          description: ""
+          sortKey: -1787329731628.8125
+        method: GET
+        headers:
           - name: User-Agent
             value: insomnia/11.3.0
         authentication:
@@ -2396,10 +2420,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1787529666971
+    modified: 1787538702397
     isPrivate: false
   data:
     base_url: http://localhost:3000
     teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwZGY3OGEzLWU3YTAtNGYxZC1hNTVlLTY1ZTYxZmZmMTQ5NCIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzUyODUzOSwiZXhwIjoxNzg3NjE0OTM5fQ.aBuU3CQlC1JPjV9P2jGn_nlS1JuYFxzcDLu5Bub5_6Q
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk0YmE1NzFlLTk3M2EtNGQ2Ny04ODg0LTg5YWFhNDQ2OGJkZiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzUyODUwNywiZXhwIjoxNzg3NjE0OTA3fQ.zhkK296Na_rBlgGf-8JOFJlj6ZFy8eISc9bsvZQuVow
-    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBlZDU3OTJiLWI2YWYtNDhiZS1iNjUzLTdkZjI4YzRmMjljYyIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc1Mjk2NDksImV4cCI6MTc4NzYxNjA0OX0.exv8l3ZLBi5hRqOEDh_FMt22rz3SL0HnsbKbHhShq_w
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjODE5MDJiLWUyZjMtNDFhZS04NDAwLWZlM2QyNDYyZDFjZiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzUzMjc3OSwiZXhwIjoxNzg3NjE5MTc5fQ.v5l9kxbihADgIfjyoad-6juKmR8KL_xDy-kSiFtqfUg
+    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxZjUxYjE0LTZmOTYtNDIxZC1hYmUyLTUzNzg1ZGU2N2VjNCIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc1Mzg2NjksImV4cCI6MTc4NzYyNTA2OX0.gPRGbaEfx1hXKWR_vQsqBsVXB6BRZmYdr2j8PBl-FJc

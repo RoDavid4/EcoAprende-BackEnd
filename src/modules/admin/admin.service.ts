@@ -15,7 +15,8 @@ import { Role } from '../roles/role.entity';
 import { Badge } from '../gamification/badge.entity';
 import { UserBadge } from '../gamification/user-badge.entity';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
-import { Op } from 'sequelize';
+import { buildSearchFilter } from '../../common/utils/search.helper';
+import { createPaginatedResponse } from '../../common/pagination/pagination.helper';
 
 @Injectable()
 export class AdminService {
@@ -37,17 +38,20 @@ export class AdminService {
   async getUsers(page = 1, limit = 10, filters: any = {}) {
     const offset = (page - 1) * limit;
 
-    const whereClause: any = {};
+    let whereClause: any = {};
     if (filters.isActive !== undefined) whereClause.isActive = filters.isActive;
 
     const includeRoleClause: any = { model: Role };
     if (filters.role) includeRoleClause.where = { name: filters.role };
 
     if (filters.search) {
-      whereClause[Op.or] = [
-        { fullName: { [Op.iLike]: `%${filters.search}%` } },
-        { email: { [Op.iLike]: `%${filters.search}%` } },
-      ];
+      const searchFilter = buildSearchFilter(filters.search, [
+        'fullName',
+        'email',
+      ]);
+      if (searchFilter) {
+        whereClause = { ...whereClause, ...searchFilter };
+      }
     }
 
     const { rows, count } = await this.userModel.findAndCountAll({
@@ -61,22 +65,10 @@ export class AdminService {
       },
     });
 
-    return {
-      data: rows,
-      total: count,
-      page,
-      limit,
-      totalPages: Math.ceil(count / limit),
-    };
+    return createPaginatedResponse(rows, count, page, limit);
   }
 
-  async updateUserStatus(
-    adminId: string,
-    userId: string,
-    isActive: boolean,
-    ipAddress?: string,
-    userAgent?: string,
-  ) {
+  async updateUserStatus(adminId: string, userId: string, isActive: boolean) {
     if (adminId === userId) {
       throw new BadRequestException(
         'Un administrador no puede cambiar su propio estado.',
@@ -91,26 +83,10 @@ export class AdminService {
     user.isActive = isActive;
     await user.save();
 
-    await this.auditLogsService.logAction({
-      userId: adminId,
-      action: 'USER_STATUS_UPDATED',
-      resource: 'users',
-      resourceId: userId,
-      payload: { isActive },
-      ipAddress,
-      userAgent,
-    });
-
     return user;
   }
 
-  async updateUserRole(
-    adminId: string,
-    userId: string,
-    dto: any,
-    ipAddress?: string,
-    userAgent?: string,
-  ) {
+  async updateUserRole(adminId: string, userId: string, dto: any) {
     const user = await this.userModel.findByPk(userId);
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
@@ -141,16 +117,6 @@ export class AdminService {
 
     user.roleId = role.id;
     await user.save();
-
-    await this.auditLogsService.logAction({
-      userId: adminId,
-      action: 'USER_ROLE_UPDATED',
-      resource: 'users',
-      resourceId: userId,
-      payload: { role: role.name, roleId: role.id },
-      ipAddress,
-      userAgent,
-    });
 
     return user;
   }
