@@ -142,7 +142,7 @@ collection:
         meta:
           id: req_616f68d42e0a4169a2776ca15cde55f1
           created: 1785540736771
-          modified: 1785540741074
+          modified: 1787523613368
           isPrivate: false
           description: ""
           sortKey: -1785538410514.5
@@ -786,12 +786,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/classrooms/04562dc3-4d99-4318-9b64-e122ce5da924/modules"
+          - url: "{{ _.base_url }}/classrooms/cf06a2ae-1f00-4db5-8262-70efd53c06a2/modules"
             name: POST /classrooms/:id/modules (Asignar Módulo a un Aula)
             meta:
               id: req_d49df4ae3b1f4237bf2c8b406cbea7eb
               created: 1786750497161
-              modified: 1787512758350
+              modified: 1787528754983
               isPrivate: false
               description: ""
               sortKey: -1786246530657.125
@@ -800,7 +800,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "b5accc18-7078-433c-96e0-384c277bebc7"
+                  "moduleId": "b86fc65b-31c2-42a2-b5f0-cf9e2f0dec28"
                 }
             headers:
               - name: Content-Type
@@ -939,7 +939,7 @@ collection:
             meta:
               id: req_dea51fcb63b6412d94392867f38e16d3
               created: 1786246481685
-              modified: 1787519025575
+              modified: 1787528582910
               isPrivate: false
               description: ""
               sortKey: -1786246600314
@@ -948,7 +948,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "code": "SX4UHH"
+                  "code": "8FC9YL"
                 }
             headers:
               - name: Content-Type
@@ -1145,12 +1145,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/f7d16eee-1eea-4941-8edf-a88869f6ac1b"
+          - url: "{{ _.base_url }}/courses/77c31e4b-ad2d-4821-8622-0460c086db68"
             name: GET /courses/:id (Obtener Curso con Módulos Anidados)
             meta:
               id: req_7766eb39a34b44cea8857071487b012b
               created: 1786739613979
-              modified: 1787519107816
+              modified: 1787528782642
               isPrivate: false
               description: ""
               sortKey: -1786308109470
@@ -1169,12 +1169,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/courses/fe9fecdd-c833-401c-801f-bcef7a6530fd"
+          - url: "{{ _.base_url }}/courses/77c31e4b-ad2d-4821-8622-0460c086db68"
             name: PATCH /courses/:id (Publicar Curso / Editar)
             meta:
               id: req_672e1c8bc4cb4393bc4a7498009c79d5
               created: 1786740008288
-              modified: 1787460338801
+              modified: 1787528686112
               isPrivate: false
               description: ""
               sortKey: -1786277354892
@@ -1288,7 +1288,7 @@ collection:
             meta:
               id: req_d4a07bb06f684d6b992161cffe4c31fa
               created: 1786741155993
-              modified: 1787519054550
+              modified: 1787528700534
               isPrivate: false
               description: ""
               sortKey: -1786741179116
@@ -1297,7 +1297,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "courseId": "f7d16eee-1eea-4941-8edf-a88869f6ac1b",
+                  "courseId": "77c31e4b-ad2d-4821-8622-0460c086db68",
                   "title": "Módulo 1: La Huella Hídrica",
                   "description": "Comprendiendo el impacto del consumo cotidiano.",
                   "order": 1,
@@ -1413,7 +1413,7 @@ collection:
             meta:
               id: req_34964b05e8354e0f8bb5363342bc885a
               created: 1786742758974
-              modified: 1787519158543
+              modified: 1787528721355
               isPrivate: false
               description: ""
               sortKey: -1786742767266
@@ -1422,7 +1422,7 @@ collection:
               mimeType: application/json
               text: >-
                 {
-                  "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
+                  "moduleId": "b86fc65b-31c2-42a2-b5f0-cf9e2f0dec28",
                   "title": "Introducción a los Recursos Hídricos",
                   "contentType": "TEXT",
                   "content": "El 70% del planeta está cubierto de agua, pero solo el 2.5% es dulce...",
@@ -1474,7 +1474,7 @@ collection:
             meta:
               id: req_5073df0432084b2997bf289e9a2d19a2
               created: 1786743193346
-              modified: 1787519174372
+              modified: 1787528731659
               isPrivate: false
               description: ""
               sortKey: -1786742370228.5
@@ -1483,7 +1483,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
+                  "moduleId": "b86fc65b-31c2-42a2-b5f0-cf9e2f0dec28",
                   "title": "Video: Cómo medir tu huella hídrica",
                   "contentType": "VIDEO",
                   "content": "Breve documental explicativo.",
@@ -1563,12 +1563,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _.base_url }}/lessons/ba286f8d-0599-468b-861d-668527d48308/complete"
+          - url: "{{ _.base_url }}/lessons/f4d068ab-64eb-4319-be34-ee136f5c50b9/complete"
             name: POST /lessons/:id/complete
             meta:
               id: req_c4b52138d73a499588c9b96b0874e03a
               created: 1787354918172
-              modified: 1787460441097
+              modified: 1787528884149
               isPrivate: false
               description: ""
               sortKey: -1786741377534.75
@@ -1600,7 +1600,7 @@ collection:
         meta:
           id: req_f023a89f874540ec81b74e4b36d954e0
           created: 1786817878204
-          modified: 1787519437903
+          modified: 1787528820622
           isPrivate: false
           description: ""
           sortKey: -1786817891479
@@ -1609,7 +1609,7 @@ collection:
           mimeType: application/json
           text: >-
             {
-              "moduleId": "a9eb2e10-ee0e-4b33-93d9-17ac5ac31aad",
+              "moduleId": "b86fc65b-31c2-42a2-b5f0-cf9e2f0dec28",
               "title": "Evaluación: Huella Hídrica y Conservación",
               "description": "Comprueba lo aprendido sobre el uso responsable del agua.",
               "passingScore": 70,
@@ -2241,6 +2241,150 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Admin
+    meta:
+      id: fld_735b796b5c2f4ed0997246cafce1c4de
+      created: 1787523668941
+      modified: 1787523668941
+      sortKey: -1787523668941
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/admin/stats/overview"
+        name: GET /admin/stats/overview (Estadisticas Globales)
+        meta:
+          id: req_924b23cd8b1846aaac84b2532a446b33
+          created: 1787523673666
+          modified: 1787524081916
+          isPrivate: false
+          description: ""
+          sortKey: -1787523708356
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/admin/users"
+        name: GET /admin/users (Gestion de usuarios y paginacion)
+        meta:
+          id: req_a49f05889cda429485419e8176de2bfe
+          created: 1787524034714
+          modified: 1787527820226
+          isPrivate: false
+          description: ""
+          sortKey: -1787351284598.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/admin/users/338350ea-c8c3-4e5f-9a0b-fb903591aa4e/status"
+        name: PATCH /admin/users/:id/status (Cambio de estado y auditoria)
+        meta:
+          id: req_dc7ee4e5beb541f7883afeb81b858123
+          created: 1787524278621
+          modified: 1787524552439
+          isPrivate: false
+          description: ""
+          sortKey: -1787265072719.75
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"isActive": false
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/admin/audit-logs"
+        name: GET /admin/audit-logs
+        meta:
+          id: req_bef408312f914ed385f6771c6b3a0590
+          created: 1787524380928
+          modified: 1787524399339
+          isPrivate: false
+          description: ""
+          sortKey: -1787308178659.125
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/admin/users/c191fa2b-3715-45ba-a177-7057a5b6500a/role"
+        name: PATCH /admin/users/:id/role (cambiar rol)
+        meta:
+          id: req_9ae7dabdd7a34c2eb2a9975df916cedd
+          created: 1787524664004
+          modified: 1787527401600
+          isPrivate: false
+          description: ""
+          sortKey: -1787221966780.375
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"roleId": 3
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{{ _.admin_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -2252,10 +2396,10 @@ environments:
   meta:
     id: env_3300091c747942e987f7e6311270c6e7cc3822f8
     created: 1753795357593
-    modified: 1787518997266
+    modified: 1787529666971
     isPrivate: false
   data:
     base_url: http://localhost:3000
-    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM4MWJjOTVkLTZjYWMtNDE2OS1hOTcxLTZlYmVmOTE1NDM5NiIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzUxODkwNCwiZXhwIjoxNzg3NjA1MzA0fQ.daBAtOo6BzvS7conHDnPOVzeBmw0DflNmSzNworoYK4
-    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwYjU0NDI1LWNhYjMtNDE0MS1hMDU2LTI1YjlmMTliZTI5YiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzUxODk1NywiZXhwIjoxNzg3NjA1MzU3fQ.wbeFOIFrLMN_3ho-XnwgfyaSCaINKRIlAqkq2R1CEoU
-    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYjEwMzRlLWRhYmQtNGJkNy04NDI4LWJjZmI0ZjBhNGQ2NiIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc0MzUzODQsImV4cCI6MTc4NzUyMTc4NH0.txhYuDBh75nK2HO5KS81D_eq6BNYN6ofdk4RdslSwp0
+    teacher_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwZGY3OGEzLWU3YTAtNGYxZC1hNTVlLTY1ZTYxZmZmMTQ5NCIsImVtYWlsIjoicHJvZmVAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc4NzUyODUzOSwiZXhwIjoxNzg3NjE0OTM5fQ.aBuU3CQlC1JPjV9P2jGn_nlS1JuYFxzcDLu5Bub5_6Q
+    student_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk0YmE1NzFlLTk3M2EtNGQ2Ny04ODg0LTg5YWFhNDQ2OGJkZiIsImVtYWlsIjoibWVzc2lAZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc4NzUyODUwNywiZXhwIjoxNzg3NjE0OTA3fQ.zhkK296Na_rBlgGf-8JOFJlj6ZFy8eISc9bsvZQuVow
+    admin_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBlZDU3OTJiLWI2YWYtNDhiZS1iNjUzLTdkZjI4YzRmMjljYyIsImVtYWlsIjoiYWRtaW5AZWNvYXByZW5kZS5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODc1Mjk2NDksImV4cCI6MTc4NzYxNjA0OX0.exv8l3ZLBi5hRqOEDh_FMt22rz3SL0HnsbKbHhShq_w

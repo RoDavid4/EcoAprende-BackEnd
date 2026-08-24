@@ -224,6 +224,40 @@ Actualmente, el sistema define las siguientes entidades principales:
 - `roleId` (Integer, Foreign Key)
 - `permissionId` (Integer, Foreign Key)
 
+#### `AuditLog` (Modulo `audit-logs`)
+- `id` (UUIDV4, Primary Key)
+- `userId` (UUID, Foreign Key, Nullable, asocia con `User`): Autor de la acción (puede ser anónimo/sistema).
+- `action` (String, Not Null): Constante identificadora (ej: 'USER_ROLE_UPDATED', 'USER_STATUS_UPDATED').
+- `resource` (String, Not Null): Nombre del recurso afectado (ej: 'users', 'courses').
+- `resourceId` (String, Nullable): ID del recurso afectado.
+- `payload` (JSONB, Nullable): Información auxiliar de la mutación.
+- `ipAddress` (String, Nullable): Dirección de red de origen.
+- `userAgent` (String, Nullable): Identificador del cliente.
+- `createdAt` (Date): Timestamp inmutable de registro.
+
+## Administración y Auditoría (ECOA-72)
+
+El sistema incorpora un entorno blindado para tareas administrativas exclusivas de los usuarios con el rol `ADMIN`, dividido en dos grandes módulos globales.
+
+### Auditoría Continua (`AuditLogsModule`)
+- **Trazabilidad Integral**: La entidad `AuditLog` captura de forma inmutable todas las operaciones críticas y de alto riesgo dentro de la plataforma (cambios de estado, alteraciones de permisos, etc.). 
+- **Inyección Transversal**: El módulo está decorado como `@Global()`, exponiendo el `AuditLogsService` para que cualquier parte del sistema registre eventos mediante `.logAction()`, el cual formatea, sanitiza y atrapa asíncronamente el origen de la operación.
+- **Captura Precisa de Identidad de Red**: Al registrar operaciones a través de los controladores, se extrae el identificador del software (`User-Agent`) y la IP real del cliente resolviendo prioritariamente las cabeceras inversas (`x-forwarded-for`) antes de caer al socket TCP.
+- **Auditoría Protegida (`GET /admin/audit-logs`)**: Endpoint de consulta administrativa para cruzar logs. La respuesta pre-carga al usuario autor (Eager Loading) pero intercepta y excluye mediante `attributes: { exclude: [...] }` cualquier dato sensible como contraseñas y tokens.
+
+### Panel de Administración (`AdminModule`)
+Provee las siguientes capacidades estratégicas centralizadas en el `AdminController` (`GET`, `PATCH`):
+- **Gestión Avanzada de Usuarios**: Permite obtener la nómina paginada y fuertemente filtrada (búsqueda iLike por nombre y correo, por estado o rol).
+- **Mutación de Estado y Rol**: A través de `PATCH /admin/users/:id/status` y `PATCH /admin/users/:id/role`. 
+  - *Prevención de Deadlock*: La lógica contiene un candado semántico que impide a un administrador darse de baja a sí mismo y quedar bloqueado fuera del sistema.
+  - *Heurística Adaptativa*: La modificación de roles es resiliente e identifica el objetivo analizando con prelación una amplia gama de llaves en el payload JSON (`roleId`, `role`, `name`, `roleName`), previniendo caídas bruscas ante clientes no estandarizados. 
+  - Toda alteración exitosa despacha asíncronamente una firma a la tabla `audit_logs`.
+- **Inteligencia y Estadísticas Globales (`GET /admin/stats/overview`)**: Compila las métricas cardinales de la plataforma al vuelo mediante Nullish Coalescing y división anti-Zero. Expone:
+  - Distribución de usuarios totales, activos e inactivos separados por rol de sistema.
+  - Volúmen de currícula segregado (total de cursos vs publicados, módulos, lecciones, evaluaciones creadas).
+  - Volúmen institucional (número de aulas y proyecciones de densidad demográfica/alumnos).
+  - Tracción gamificada histórica (XP despachado, medallas de catálogo entregadas a estudiantes, lecciones y quizzes completados globalmente).
+
 ## Autoconfiguracion y Siembra de Datos (Zero-Config)
 
 Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
@@ -390,7 +424,7 @@ El backend está diseñado para ser configurable mediante variables de entorno (
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), las Métricas Agregadas por Aula (`GET /classrooms/:id/metrics`), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones, estados de publicación y obtención de árboles completos), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias dinámicas generadas por el motor de reglas con su nuevo catálogo de íconos temáticos, rachas y rankings de estudiantes a nivel global o filtrados dinámicamente por aulas y periodos temporales), y finalmente la interconexión mediante la asignación dinámica de Módulos en Aulas, permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), las Métricas Agregadas por Aula (`GET /classrooms/:id/metrics`), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones, estados de publicación y obtención de árboles completos), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias dinámicas generadas por el motor de reglas con su nuevo catálogo de íconos temáticos, rachas y rankings de estudiantes a nivel global o filtrados dinámicamente por aulas y periodos temporales), la interconexión mediante la asignación dinámica de Módulos en Aulas, y por último un sólido panel de Administración con auditoría continua (`AuditLogs`), mutación de roles/estados de usuario y la provisión de estadísticas globales. Todo esto permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 

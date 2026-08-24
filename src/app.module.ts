@@ -11,6 +11,8 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
 import { MissionsModule } from './modules/missions/missions.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { GamificationModule } from './modules/gamification/gamification.module';
     QuizzesModule,
     MissionsModule,
     GamificationModule,
+    AuditLogsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
