@@ -274,11 +274,15 @@ Para centralizar lógicas repetitivas y garantizar la uniformidad en los contrat
 - **Inyección por Metadatos**: En lugar de ensuciar los servicios de dominio con registros de auditoría, las firmas controladoras sensibles pueden ser expuestas al `@AuditLogEntry({ action, resource })`.
 - **`AuditLogInterceptor`**: Intercepta de forma exitosa y genérica estas peticiones, extrayendo silenciosamente las cabeceras proxy, resolviendo direcciones IP y disparando asíncronamente el volcado en base de datos (`tap(...)` vía RxJS) asegurando que el overhead del logger no impacte negativamente los tiempos de respuesta transaccionales.
 
-## Autoconfiguracion y Siembra de Datos (Zero-Config)
+## Autoconfiguracion y Siembra de Datos (Zero-Config y Mock Data)
 
 Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
 
-Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Adicionalmente, el seeder inyecta 4 insignias fundacionales del motor de gamificación (`WELCOME`, `FIRST_LESSON`, `STREAK_3`, `ECO_HERO`) utilizando dinámicamente los íconos del catálogo interno (`sparkles`, `book-open`, `flame`, `recycle`), y genera automáticamente dos usuarios de prueba predeterminados para facilitar las pruebas locales: un administrador (`admin@ecoaprende.com` / `Admin123!`) y un profesor (`profe@ecoaprende.com` / `Profe123!`). Esto evita duplicaciones en reinicios sucesivos y asegura que el sistema esté inmediatamente operativo tras ejecutar `docker compose up`.
+Al arrancar el contenedor, el sistema ejecuta automaticamente una estrategia idempotente (`findOrCreate`) para poblar la base de datos con los roles base (`ADMIN`, `TEACHER`, `STUDENT`). Adicionalmente, el seeder inyecta 4 insignias fundacionales del motor de gamificación (`WELCOME`, `FIRST_LESSON`, `STREAK_3`, `ECO_HERO`) utilizando dinámicamente los íconos del catálogo interno.
+
+### Entorno Simulado (`npm run seed`)
+Para facilitar las pruebas intensivas durante el desarrollo y para los equipos de QA/Frontend, se provee adicionalmente un script de inicialización robusto en `src/database/seeds/seed.ts`. 
+Este comando es capaz de limpiar la base de datos de manera relacional segura y repoblarla completamente, inyectando un **Cheat Sheet** de usuarios listos para ser consumidos (1 Admin, 2 Profesores y 6 Estudiantes con métricas variadas), poblando Cursos, Módulos, Lecciones, Quizzes resueltos (con `Option.bulkCreate`), Aulas y progresiones de gamificación (con puntajes asimétricos para validar el Leaderboard). Ver el `README.md` para la lista completa de credenciales.
 
 ## Autenticacion y Seguridad
 
