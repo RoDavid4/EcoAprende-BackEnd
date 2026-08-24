@@ -258,6 +258,22 @@ Provee las siguientes capacidades estratégicas centralizadas en el `AdminContro
   - Volúmen institucional (número de aulas y proyecciones de densidad demográfica/alumnos).
   - Tracción gamificada histórica (XP despachado, medallas de catálogo entregadas a estudiantes, lecciones y quizzes completados globalmente).
 
+## Capa Transversal y Helpers Comunes (ECOA-75)
+
+Para centralizar lógicas repetitivas y garantizar la uniformidad en los contratos HTTP a lo largo de los distintos dominios de la API, el backend aloja estructuras agnósticas en `src/common/`.
+
+### Paginación Unificada (`src/common/pagination/`)
+- **`PaginationDto`**: DTO base del que extienden los controladores para inyectar automáticamente la validación, tipado numérico e instanciación de los parámetros `page` (default 1) y `limit` (default 10).
+- **Consistencia de Respuestas**: Toda devolución paginada delega la construcción en la función de utilidad `createPaginatedResponse<T>` devolviendo obligatoriamente el formato `{ data, total, page, limit, totalPages }`, lo que encapsula a la API y garantiza una interfaz inquebrantable (`PaginatedResponse<T>`) frente a los requerimientos del frontend.
+
+### Filtrado y Búsqueda Segura (`src/common/utils/search.helper.ts`)
+- **`buildSearchFilter`**: Centraliza el armado del árbol binario de consultas `Op.iLike` (búsqueda case-insensitive) protegiendo al ORM contra inputs maliciosos o valores indefinidos, al aplicar `trim()` nativamente.
+- **Herencia DTO**: Módulos que requieren filtros compuestos (como `GetUsersFilterDto` en el AdminModule o `LeaderboardQueryDto` en Gamificación) implementan herencia de clases desde `PaginationDto` utilizando `@Transform` para resolver el parseo seguro de booleanos que viajan por Query Params (evitando las vulnerabilidades de falsos verdaderos sobre strings).
+
+### Automatización de Auditoría
+- **Inyección por Metadatos**: En lugar de ensuciar los servicios de dominio con registros de auditoría, las firmas controladoras sensibles pueden ser expuestas al `@AuditLogEntry({ action, resource })`.
+- **`AuditLogInterceptor`**: Intercepta de forma exitosa y genérica estas peticiones, extrayendo silenciosamente las cabeceras proxy, resolviendo direcciones IP y disparando asíncronamente el volcado en base de datos (`tap(...)` vía RxJS) asegurando que el overhead del logger no impacte negativamente los tiempos de respuesta transaccionales.
+
 ## Autoconfiguracion y Siembra de Datos (Zero-Config)
 
 Para garantizar un entorno agil sin configuraciones manuales, el backend implementa un modulo de siembra inicial (`SeederModule` y `SeederService`) utilizando el ciclo de vida `OnModuleInit` de NestJS. 
@@ -424,7 +440,7 @@ El backend está diseñado para ser configurable mediante variables de entorno (
 
 ## Herramientas de Pruebas
 
-El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), las Métricas Agregadas por Aula (`GET /classrooms/:id/metrics`), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones, estados de publicación y obtención de árboles completos), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias dinámicas generadas por el motor de reglas con su nuevo catálogo de íconos temáticos, rachas y rankings de estudiantes a nivel global o filtrados dinámicamente por aulas y periodos temporales), la interconexión mediante la asignación dinámica de Módulos en Aulas, y por último un sólido panel de Administración con auditoría continua (`AuditLogs`), mutación de roles/estados de usuario y la provisión de estadísticas globales. Todo esto permitiendo facilitar pruebas manuales inmediatas.
+El repositorio incluye una coleccion exportada en `docs/insomnia/ecoaprende-api.insomnia.json` con la configuracion pre-armada de los endpoints de la API. Esta coleccion refleja el flujo integrado de roles, las llamadas para recuperacion de contraseña, la gestión del perfil de usuario, el cambio de contraseña autenticado, el CRUD completo para la gestión de Aulas (Classrooms), las Métricas Agregadas por Aula (`GET /classrooms/:id/metrics`), el mecanismo de inscripción de estudiantes a las aulas, la administración de la nómina de alumnos (listado y remoción), la jerarquía completa del CRUD de Contenido (Cursos, Módulos y Lecciones con sus respectivas validaciones, estados de publicación y obtención de árboles completos), la gestión transaccional de Evaluaciones (Quizzes, Preguntas, Opciones) junto con sus validaciones anti-trampas, la resolución automática de evaluaciones con historial inmutable de intentos (QuizAttempt), el circuito íntegro del ciclo de Misiones (creación, entrega de evidencias y proceso de revisión con firma de auditoría), la mecánica central de Gamificación (XP, insignias dinámicas generadas por el motor de reglas con su nuevo catálogo de íconos temáticos, rachas y rankings de estudiantes a nivel global o filtrados dinámicamente por aulas y periodos temporales), la interconexión mediante la asignación dinámica de Módulos en Aulas, y por último un sólido panel de Administración con auditoría continua (`AuditLogs`), mutación de roles/estados de usuario, estadísticas globales, y endpoints refactorizados con los nuevos helpers de paginación y filtrado unificado. Todo esto permitiendo facilitar pruebas manuales inmediatas.
 
 ## Despliegue y Orquestacion
 
