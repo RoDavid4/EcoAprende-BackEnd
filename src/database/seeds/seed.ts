@@ -17,6 +17,8 @@ import { UserBadge } from '../../modules/gamification/user-badge.entity';
 import { LessonProgress } from '../../modules/courses/lesson-progress.entity';
 import { QuizAttempt } from '../../modules/quizzes/quiz-attempt.entity';
 import { AuditLog } from '../../modules/audit-logs/audit-log.entity';
+import { Mission } from '../../modules/missions/mission.entity';
+import { MissionSubmission } from '../../modules/missions/mission-submission.entity';
 
 async function bootstrap() {
   console.log('🌱 Iniciando script de Seed...');
@@ -29,6 +31,8 @@ async function bootstrap() {
 
     // Eliminamos datos en cascada o de forma directa
     await AuditLog.destroy({ where: {} });
+    await MissionSubmission.destroy({ where: {} });
+    await Mission.destroy({ where: {} });
     await LessonProgress.destroy({ where: {} });
     await QuizAttempt.destroy({ where: {} });
     await UserBadge.destroy({ where: {} });
@@ -406,6 +410,75 @@ async function bootstrap() {
         badgeId: firstLessonBadge.id,
       });
     }
+
+    console.log(' Creando Misiones (Missions)...');
+    const mission1 = await Mission.create({
+      title: 'Compostaje Domiciliario en Acción',
+      description: 'Crea tu propia compostera y documenta el primer mes.',
+      type: 'PRACTICAL',
+      pointsReward: 80,
+      createdById: teacher1.id,
+      moduleId: module1.id,
+    });
+    const mission2 = await Mission.create({
+      title: 'Eco-Botellas / Punto Limpio',
+      description: 'Llena 3 eco-botellas y llévalas a un punto de acopio.',
+      type: 'PRACTICAL',
+      pointsReward: 50,
+      createdById: teacher1.id,
+      moduleId: module2.id,
+    });
+    const mission3 = await Mission.create({
+      title: 'Auditoría de Consumo Eléctrico Familiar',
+      description: 'Analiza tu consumo eléctrico y propón mejoras.',
+      type: 'DIGITAL',
+      pointsReward: 60,
+      createdById: teacher2.id,
+      moduleId: module3.id,
+    });
+    await Mission.create({
+      title: 'Plantación de Especie Nativa o Huerta Urbana',
+      description:
+        'Planta al menos una especie nativa en tu hogar o comunidad.',
+      type: 'PRACTICAL',
+      pointsReward: 100,
+      createdById: teacher2.id,
+    });
+
+    console.log(' Creando Entregas de Misiones (Submissions)...');
+    // Carlos Lopez (student 2, idx 2) - APPROVED
+    await MissionSubmission.create({
+      missionId: mission1.id,
+      userId: students[2].id,
+      status: 'APPROVED',
+      evidenceText: 'Aquí adjunto fotos de mi nueva compostera.',
+      evidenceUrl: 'https://example.com/compostera.jpg',
+      feedback: '¡Excelente trabajo, Carlos! Sigue así.',
+      reviewedById: teacher1.id,
+      reviewedAt: new Date(),
+    });
+
+    // Juan Perez (student 0, idx 0) - PENDING
+    await MissionSubmission.create({
+      missionId: mission2.id,
+      userId: students[0].id,
+      status: 'PENDING',
+      evidenceText: 'Ya dejé las botellas en el punto limpio de mi plaza.',
+      evidenceUrl: 'https://example.com/botellas.jpg',
+    });
+
+    // Ana Gomez (student 1, idx 1) - REJECTED
+    await MissionSubmission.create({
+      missionId: mission3.id,
+      userId: students[1].id,
+      status: 'REJECTED',
+      evidenceText: 'Creo que consumimos mucho.',
+      evidenceUrl: '',
+      feedback:
+        'Hola Ana, falta el detalle del consumo eléctrico mes a mes como se pidió en las instrucciones.',
+      reviewedById: teacher2.id,
+      reviewedAt: new Date(),
+    });
 
     console.log(' Creando Logs de Auditoría...');
     await AuditLog.bulkCreate([

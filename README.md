@@ -57,6 +57,22 @@ El script genera las siguientes cuentas listas para utilizarse:
 | **STUDENT** | Carlos López | `carlos.lopez@student.com` | `Student123!` | 500 XP, Nivel 5, Líder en Leaderboard |
 | **STUDENT** | Sofía Castro | `sofia.castro@student.com` | `Student123!` | Usuario nuevo (0 XP, Nivel 1) para pruebas iniciales |
 
+### Misiones y Entregas (Missions & Submissions)
+
+El script siembra un entorno de misiones listo para validación docente:
+
+- **4 Misiones Prácticas:**
+  1. "Compostaje Domiciliario en Acción" (80 XP)
+  2. "Eco-Botellas / Punto Limpio" (50 XP)
+  3. "Auditoría de Consumo Eléctrico Familiar" (60 XP)
+  4. "Plantación de Especie Nativa o Huerta Urbana" (100 XP)
+
+- **3 Entregas de Muestra (Submissions):**
+  - **APPROVED:** Alumno Carlos López en Misión 1 (con feedback del docente).
+  - **PENDING:** Alumno Juan Pérez en Misión 2 (evidencia subida, lista para corrección docente en demo).
+  - **REJECTED:** Alumna Ana Gómez en Misión 3 (con observaciones para reenvío).
+  - *La Misión 4 se encuentra disponible sin entregas para probar envíos en vivo.*
+
 ## Variables de entorno
 
 El sistema utiliza las siguientes variables para su configuracion basica (se proveen valores por defecto a nivel de `docker-compose.yml` para desarrollo):
