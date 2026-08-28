@@ -19,6 +19,7 @@ import { QuizAttempt } from '../../modules/quizzes/quiz-attempt.entity';
 import { AuditLog } from '../../modules/audit-logs/audit-log.entity';
 import { Mission } from '../../modules/missions/mission.entity';
 import { MissionSubmission } from '../../modules/missions/mission-submission.entity';
+import { StudentProgress } from '../../modules/courses/student-progress.entity';
 
 async function bootstrap() {
   console.log('🌱 Iniciando script de Seed...');
@@ -44,6 +45,7 @@ async function bootstrap() {
     await Quiz.destroy({ where: {} });
     await Lesson.destroy({ where: {} });
     await Module.destroy({ where: {} });
+    await StudentProgress.destroy({ where: {}, truncate: false });
     await Course.destroy({ where: {} });
     await User.destroy({ where: {} });
 
@@ -62,6 +64,9 @@ async function bootstrap() {
     const firstLessonBadge = await Badge.findOne({
       where: { code: 'FIRST_LESSON' },
     });
+    const welcomeBadge = await Badge.findOne({ where: { code: 'WELCOME' } });
+    const streak3Badge = await Badge.findOne({ where: { code: 'STREAK_3' } });
+    const ecoHeroBadge = await Badge.findOne({ where: { code: 'ECO_HERO' } });
 
     console.log(' Creando usuarios...');
     const adminPassword = await bcrypt.hash('Admin123!', 10);
@@ -92,77 +97,24 @@ async function bootstrap() {
       isActive: true,
     });
 
-    const students = await User.bulkCreate(
-      [
-        {
-          fullName: 'Juan Perez',
-          email: 'juan.perez@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 150,
-          level: 2,
-          currentStreak: 3,
-          quizzesPassed: 1,
-          lessonsCompleted: 5,
-        },
-        {
-          fullName: 'Ana Gomez',
-          email: 'ana.gomez@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 320,
-          level: 4,
-          currentStreak: 5,
-          quizzesPassed: 2,
-          lessonsCompleted: 10,
-        },
-        {
-          fullName: 'Carlos Lopez',
-          email: 'carlos.lopez@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 500,
-          level: 5,
-          currentStreak: 7,
-          quizzesPassed: 3,
-          lessonsCompleted: 15,
-        },
-        {
-          fullName: 'Lucia Fernandez',
-          email: 'lucia.fernandez@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 50,
-          level: 1,
-          currentStreak: 1,
-          quizzesPassed: 0,
-          lessonsCompleted: 2,
-        },
-        {
-          fullName: 'Matias Silva',
-          email: 'matias.silva@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 200,
-          level: 3,
-          currentStreak: 2,
-          quizzesPassed: 1,
-          lessonsCompleted: 7,
-        },
-        {
-          fullName: 'Sofia Castro',
-          email: 'sofia.castro@student.com',
-          password: studentPassword,
-          roleId: studentRole.id,
-          totalXp: 0,
-          level: 1,
-          currentStreak: 0,
-          quizzesPassed: 0,
-          lessonsCompleted: 0,
-        },
-      ],
-      { returning: true },
-    );
+    const studentData = Array.from({ length: 15 }).map((_, i) => {
+      const isNew = i >= 10;
+      const isAdvanced = i < 3;
+      return {
+        fullName: `Student ${i + 1}`,
+        email: `student${i + 1}@student.com`,
+        password: studentPassword,
+        roleId: studentRole.id,
+        totalXp: isAdvanced ? 600 + i * 50 : isNew ? 0 : 150 + i * 20,
+        level: isAdvanced ? 5 + i : isNew ? 1 : 2,
+        currentStreak: isAdvanced ? 10 + i : isNew ? 0 : 3,
+        quizzesPassed: isAdvanced ? 5 : isNew ? 0 : 1,
+        lessonsCompleted: isAdvanced ? 20 : isNew ? 0 : 5,
+        isActive: true,
+      };
+    });
+
+    const students = await User.bulkCreate(studentData, { returning: true });
 
     console.log(' Creando cursos, módulos y lecciones...');
     const course1 = await Course.create({
@@ -221,62 +173,98 @@ async function bootstrap() {
       status: 'PUBLISHED',
     });
 
-    await Lesson.bulkCreate([
-      {
-        title: '¿Qué es la Ecología?',
-        content: 'La ecología es la rama de la biología...',
-        contentType: 'TEXT',
-        order: 1,
-        xpReward: 20,
-        moduleId: module1.id,
-        isActive: true,
-      },
-      {
-        title: 'Historia Ambiental',
-        content: 'Breve historia del ambientalismo...',
-        contentType: 'TEXT',
-        order: 2,
-        xpReward: 20,
-        moduleId: module1.id,
-        isActive: true,
-      },
-      {
-        title: 'Flora y Fauna',
-        content: 'Interacciones biológicas...',
-        contentType: 'TEXT',
-        order: 1,
-        xpReward: 30,
-        moduleId: module2.id,
-        isActive: true,
-      },
-      {
-        title: 'Tipos de Contaminación',
-        content: 'Aire, agua, suelo...',
-        contentType: 'TEXT',
-        order: 2,
-        xpReward: 30,
-        moduleId: module2.id,
-        isActive: true,
-      },
-      {
-        title: 'Regla de las 3R',
-        content: 'Reducir, Reutilizar, Reciclar.',
-        contentType: 'TEXT',
-        order: 1,
-        xpReward: 40,
-        moduleId: module3.id,
-        isActive: true,
-      },
-      {
-        title: 'Microplásticos',
-        content: 'El problema invisible...',
-        contentType: 'TEXT',
-        order: 2,
-        xpReward: 40,
-        moduleId: module3.id,
-        isActive: true,
-      },
-    ]);
+    const basicLessons = await Lesson.bulkCreate(
+      [
+        {
+          title: '¿Qué es la Ecología?',
+          content: 'La ecología es la rama de la biología...',
+          contentType: 'TEXT',
+          order: 1,
+          xpReward: 20,
+          moduleId: module1.id,
+          isActive: true,
+        },
+        {
+          title: 'Historia Ambiental',
+          content: 'Breve historia del ambientalismo...',
+          contentType: 'TEXT',
+          order: 2,
+          xpReward: 20,
+          moduleId: module1.id,
+          isActive: true,
+        },
+        {
+          title: 'Flora y Fauna',
+          content: 'Interacciones biológicas...',
+          contentType: 'TEXT',
+          order: 1,
+          xpReward: 30,
+          moduleId: module2.id,
+          isActive: true,
+        },
+        {
+          title: 'Tipos de Contaminación',
+          content: 'Aire, agua, suelo...',
+          contentType: 'TEXT',
+          order: 2,
+          xpReward: 30,
+          moduleId: module2.id,
+          isActive: true,
+        },
+        {
+          title: 'Regla de las 3R',
+          content: 'Reducir, Reutilizar, Reciclar.',
+          contentType: 'TEXT',
+          order: 1,
+          xpReward: 40,
+          moduleId: module3.id,
+          isActive: true,
+        },
+        {
+          title: 'Microplásticos',
+          content: 'El problema invisible...',
+          contentType: 'TEXT',
+          order: 2,
+          xpReward: 40,
+          moduleId: module3.id,
+          isActive: true,
+        },
+      ],
+      { returning: true },
+    );
+
+    console.log(' Creando Diplomatura (15 módulos y 15 lecciones)...');
+    const course3 = await Course.create({
+      title: 'Diplomatura Integral en Sustentabilidad Urbana',
+      description: 'Curso intensivo con 15 módulos para validar paginación.',
+      status: 'PUBLISHED',
+      createdById: teacher1.id,
+    });
+
+    const diplomaturaModulesData = Array.from({ length: 15 }).map((_, i) => ({
+      title: `Módulo ${i + 1} de la Diplomatura`,
+      description: `Descripción del módulo ${i + 1}`,
+      order: i + 1,
+      courseId: course3.id,
+      isActive: true,
+      status: 'PUBLISHED',
+    }));
+    const diplomaturaModules = await Module.bulkCreate(diplomaturaModulesData, {
+      returning: true,
+    });
+
+    const diplomaturaLessonsData = Array.from({ length: 15 }).map((_, i) => ({
+      title: `Lección ${i + 1} del Módulo 1`,
+      content: `Contenido extenso de la lección ${i + 1}...`,
+      contentType: 'TEXT',
+      order: i + 1,
+      xpReward: 20,
+      moduleId: diplomaturaModules[0].id,
+      isActive: true,
+    }));
+    const diplomaturaLessons = await Lesson.bulkCreate(diplomaturaLessonsData, {
+      returning: true,
+    });
 
     console.log(' Creando Quizzes...');
     const quiz1 = await Quiz.create({
@@ -345,71 +333,117 @@ async function bootstrap() {
       { classroomId: classroom2.id, moduleId: module3.id },
     ]);
 
-    await ClassroomStudent.bulkCreate([
-      { classroomId: classroom1.id, studentId: students[0].id },
-      { classroomId: classroom1.id, studentId: students[1].id },
-      { classroomId: classroom1.id, studentId: students[2].id },
-      { classroomId: classroom1.id, studentId: students[3].id },
-      { classroomId: classroom2.id, studentId: students[4].id },
-      { classroomId: classroom2.id, studentId: students[5].id },
-      { classroomId: classroom2.id, studentId: students[0].id }, // Juan Perez está en ambas
-    ]);
+    const classroomStudentsData = students.map((student) => ({
+      classroomId: classroom1.id,
+      studentId: student.id,
+    }));
+    await ClassroomStudent.bulkCreate(classroomStudentsData);
 
     console.log(' Asignando progreso simulado...');
-    await QuizAttempt.create({
-      userId: students[2].id,
-      quizId: quiz1.id,
-      score: 100,
-      pointsObtained: 100,
-      totalPoints: 100,
-      isPassed: true,
-      attemptNumber: 1,
-      answers: [
-        {
-          questionId: q1.id,
-          selectedOptionId: q1Options[0].id,
-          isCorrect: true,
-        },
-        {
-          questionId: q2.id,
-          selectedOptionId: q2Options[1].id,
-          isCorrect: true,
-        },
-      ],
-    });
+    const lessonProgressData = [];
+    const quizAttemptsData = [];
 
-    await QuizAttempt.create({
-      userId: students[1].id,
-      quizId: quiz1.id,
-      score: 50,
-      pointsObtained: 50,
-      totalPoints: 100,
-      isPassed: false,
-      attemptNumber: 1,
-      answers: [
-        {
-          questionId: q1.id,
-          selectedOptionId: q1Options[1].id,
-          isCorrect: false,
-        },
-        {
-          questionId: q2.id,
-          selectedOptionId: q2Options[1].id,
-          isCorrect: true,
-        },
-      ],
-    });
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      if (student.lessonsCompleted > 0) {
+        // Asignar lecciones de prueba basándose en basicLessons y diplomaturaLessons
+        const lessonsToAssign = basicLessons.slice(
+          0,
+          Math.min(student.lessonsCompleted, basicLessons.length),
+        );
+        for (const lesson of lessonsToAssign) {
+          lessonProgressData.push({
+            userId: student.id,
+            lessonId: lesson.id,
+            isCompleted: true,
+            completedAt: new Date(),
+          });
+        }
 
-    if (firstLessonBadge) {
-      await UserBadge.create({
-        userId: students[2].id,
-        badgeId: firstLessonBadge.id,
-      });
-      await UserBadge.create({
-        userId: students[1].id,
-        badgeId: firstLessonBadge.id,
-      });
+        // Si tiene más lecciones, asignar de la diplomatura
+        const remaining = student.lessonsCompleted - basicLessons.length;
+        if (remaining > 0) {
+          const dipLessons = diplomaturaLessons.slice(
+            0,
+            Math.min(remaining, diplomaturaLessons.length),
+          );
+          for (const lesson of dipLessons) {
+            lessonProgressData.push({
+              userId: student.id,
+              lessonId: lesson.id,
+              isCompleted: true,
+              completedAt: new Date(),
+            });
+          }
+        }
+      }
+
+      if (student.quizzesPassed > 0) {
+        quizAttemptsData.push({
+          userId: student.id,
+          quizId: quiz1.id,
+          score: 100,
+          pointsObtained: 100,
+          totalPoints: 100,
+          isPassed: true,
+          attemptNumber: 1,
+          answers: [
+            {
+              questionId: q1.id,
+              selectedOptionId: q1Options[0].id,
+              isCorrect: true,
+            },
+            {
+              questionId: q2.id,
+              selectedOptionId: q2Options[1].id,
+              isCorrect: true,
+            },
+          ],
+        });
+      } else if (i % 2 === 0) {
+        quizAttemptsData.push({
+          userId: student.id,
+          quizId: quiz1.id,
+          score: 50,
+          pointsObtained: 50,
+          totalPoints: 100,
+          isPassed: false,
+          attemptNumber: 1,
+          answers: [
+            {
+              questionId: q1.id,
+              selectedOptionId: q1Options[1].id,
+              isCorrect: false,
+            },
+            {
+              questionId: q2.id,
+              selectedOptionId: q2Options[1].id,
+              isCorrect: true,
+            },
+          ],
+        });
+      }
     }
+
+    await LessonProgress.bulkCreate(lessonProgressData);
+    await QuizAttempt.bulkCreate(quizAttemptsData);
+
+    console.log(' Asignando medallas...');
+    const userBadges = [];
+    for (const student of students) {
+      if (welcomeBadge)
+        userBadges.push({ userId: student.id, badgeId: welcomeBadge.id });
+      if (firstLessonBadge && student.lessonsCompleted >= 1) {
+        userBadges.push({ userId: student.id, badgeId: firstLessonBadge.id });
+      }
+      if (streak3Badge && student.currentStreak >= 3) {
+        userBadges.push({ userId: student.id, badgeId: streak3Badge.id });
+      }
+      if (ecoHeroBadge && student.totalXp >= 500) {
+        userBadges.push({ userId: student.id, badgeId: ecoHeroBadge.id });
+      }
+    }
+    await UserBadge.bulkCreate(userBadges);
 
     console.log(' Creando Misiones (Missions)...');
     const mission1 = await Mission.create({

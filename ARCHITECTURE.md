@@ -299,142 +299,68 @@ El sistema implementa una capa robusta de seguridad gestionada por el modulo `au
 
 Para evitar respuestas genéricas de Error 500 ante excepciones no controladas de la base de datos, el backend registra un interceptor global (`SequelizeExceptionFilter`). Este filtro captura transgresiones referenciales de PostgreSQL a través de Sequelize (como `SequelizeForeignKeyConstraintError` o `SequelizeUniqueConstraintError`) y los muta a respuestas HTTP semánticas (`400 Bad Request` o `409 Conflict`), informando de forma amigable si una entidad referenciada no existe o si hubo colisiones en llaves únicas (ej. al repetir el valor `order` en módulos y lecciones).
 
-### Endpoints (Auth)
+### Mapa Completo de Endpoints
 
-- **Registro (`POST /auth/register`)**
-  - **DTO (`RegisterDto`)**: Requiere `fullName` (String), `email` (String, formato email valido), y `password` (String, minimo 6 caracteres).
-  - **Respuesta Esperada**: Retorna la entidad del usuario creado, omitiendo por diseño la contraseña hasheada.
+A continuación se detalla la radiografía actualizada de los endpoints expuestos, incluyendo métodos HTTP, roles, guards y formato de consulta. Todos los endpoints (excepto Auth público) utilizan `@UseGuards(JwtAuthGuard)`.
 
-- **Login (`POST /auth/login`)**
-  - **DTO (`LoginDto`)**: Requiere `email` y `password`.
-  - **Respuesta Esperada**: Valida credenciales y retorna un `access_token` (JWT) firmado junto con un resumen basico del perfil del usuario logueado. Retorna HTTP `200 OK` en lugar del `201 Created` por defecto (`@HttpCode(HttpStatus.OK)`).
+#### 1. Módulo Admin (`/admin`) - `@Roles('ADMIN')`
+- **`GET /admin/audit-logs`**: Retorna el registro de auditoría. Permite query params: `page`, `limit`, `userId`, `action`, `resource`.
+- **`GET /admin/users`**: Listado de usuarios. Query params: `page`, `limit`, `search` (nombre/email), `role`, `isActive`.
+- **`PATCH /admin/users/:id/status`**: Activa/desactiva un usuario.
+- **`PATCH /admin/users/:id/role`**: Cambia el rol de un usuario.
+- **`GET /admin/stats/overview`**: Estadísticas globales (usuarios activos, cursos, etc).
 
-- **Solicitud de Reseteo (`POST /auth/forgot-password`)**
-  - **DTO (`ForgotPasswordDto`)**: Requiere el `email` del usuario.
-  - **Comportamiento**: Genera de forma segura e idempotente un token temporal expirables (1 hora de vigencia). Por diseño, la respuesta es siempre exitosa para evitar enumeracion de usuarios validos.
+#### 2. Módulo Auth (`/auth`)
+- **`POST /auth/register`**: Público. Crea un nuevo usuario.
+- **`POST /auth/login`**: Público. Autenticación y generación de JWT.
+- **`POST /auth/forgot-password`**: Público. Genera token de reseteo.
+- **`POST /auth/reset-password`**: Público. Consume token de reseteo.
+- **`GET /auth/admin-test`**: `@Roles('ADMIN')`. Verifica privilegios de administrador.
 
-- **Reseteo de Contraseña (`POST /auth/reset-password`)**
-  - **DTO (`ResetPasswordDto`)**: Requiere `token` y `newPassword`.
-  - **Comportamiento**: Valida la vigencia del token. Si el token es invalido, expirado o fue reutilizado, el sistema responde con `401 Unauthorized`. Si la validacion es correcta, ejecuta el re-hashing usando `bcrypt`, actualiza la contrasena y luego invalida (nullea) el token de la base de datos.
+#### 3. Módulo Users (`/users`)
+- **`GET /users/profile`**: Autenticado. Devuelve el perfil actual.
+- **`PATCH /users/profile`**: Autenticado. Actualiza datos básicos.
+- **`POST /users/change-password`**: Autenticado. Cambia la contraseña.
 
-- **Prueba de Autorizacion (`GET /auth/admin-test`)**
-  - **Proteccion**: Requiere token valido (`JwtAuthGuard`) y privilegios de administrador (`@Roles('ADMIN')` y `RolesGuard`).
-  - **Respuesta Esperada**:
-    - `200 OK`: Acceso concedido (Usuario = ADMIN).
-    - `401 Unauthorized`: No se adjunta token en los headers o este es invalido.
-    - `403 Forbidden`: El token es valido pero el usuario carece de permisos suficientes (ej. STUDENT o TEACHER).
+#### 4. Módulo Classrooms (`/classrooms`)
+- **`POST /classrooms`**: `@Roles('TEACHER', 'ADMIN')`. Crea un aula.
+- **`POST /classrooms/join`**: `@Roles('STUDENT', 'ADMIN')`. Estudiante se une con código.
+- **`GET /classrooms`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`. Query `includeInactive`.
+- **`GET /classrooms/:id`**: `@Roles('TEACHER', 'ADMIN')`. Detalle completo.
+- **`GET /classrooms/:id/metrics`**: `@Roles('TEACHER', 'ADMIN')`. Progreso agrupado del aula.
+- **`PATCH /classrooms/:id`** y **`DELETE /classrooms/:id`**: `@Roles('TEACHER', 'ADMIN')`.
+- **`GET /classrooms/:id/students`** y **`DELETE /classrooms/:id/students/:studentId`**: `@Roles('TEACHER', 'ADMIN')`. Gestión de nómina.
+- **`POST /classrooms/:id/modules`**, **`PATCH /classrooms/:id/modules/:moduleId`**, **`DELETE /classrooms/:id/modules/:moduleId`**: `@Roles('TEACHER', 'ADMIN')`.
+- **`GET /classrooms/:id/modules`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`. Módulos asignados.
 
-### Endpoints (Users)
+#### 5. Módulo Contenido (`/courses`, `/modules`, `/lessons`)
+- **`POST`**, **`PATCH :id`**, **`DELETE :id`** (en `/courses`, `/modules`, `/lessons`): `@Roles('TEACHER', 'ADMIN')`. Mutaciones de jerarquía.
+- **`GET /courses`**, **`GET /modules`**, **`GET /lessons`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`.
+- **`GET /courses/:id`**, **`GET /lessons/:id`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`. Query `includeInactive` (solo docentes).
+- **`GET /modules/:id`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`.  Retorna el módulo con sus lecciones (incluye flag boolean `isCompleted` y timestamp `completedAt` basado en `LessonProgress` del alumno autenticado) y sus evaluaciones (quizzes incluyen metadata y estadísticas de intentos del usuario: `isPassed`, `highestScore`, `attemptsCount`, sin exponer jamás el flag `isCorrect` de las opciones).
+- **`GET /courses/progress/me`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Progreso global.
+- **`GET /courses/progress/:studentId`**: `@Roles('TEACHER', 'ADMIN')`.
+- **`POST /lessons/:id/complete`**: `@Roles('STUDENT')`. Marca lección completada e impacta Gamificación.
 
-Estos endpoints son gestionados por el módulo `users` y están protegidos globalmente por `JwtAuthGuard`, requiriendo un Bearer Token válido en los headers.
+#### 6. Módulo Evaluaciones (`/quizzes`)
+- **`POST /quizzes`**, **`PATCH /quizzes/:id`**, **`DELETE /quizzes/:id`**: `@Roles('TEACHER', 'ADMIN')`.
+- **`GET /quizzes`**, **`GET /quizzes/:id`**: `@Roles('TEACHER', 'ADMIN', 'STUDENT')`. Anti-trampas automático para `STUDENT`.
+- **`POST /quizzes/:id/submit`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Resolución segura en backend.
+- **`GET /quizzes/:id/my-attempts`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`.
 
-- **Consulta de Perfil (`GET /users/profile`)**
-  - **Comportamiento**: Extrae la identidad del token JWT y consulta la información del usuario autenticado junto con su rol. 
-  - **Seguridad**: Excluye explícitamente datos sensibles como la contraseña (`password`), `resetPasswordToken` y `resetPasswordExpires`.
-  - **Excepciones**: `401 Unauthorized` ante la falta de token o token inválido.
+#### 7. Módulo Misiones (`/missions`)
+- **`POST /missions`**, **`PATCH /missions/:id`**, **`DELETE /missions/:id`**: `@Roles('TEACHER', 'ADMIN')`.
+- **`GET /missions`**, **`GET /missions/:id`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`.
+- **`POST /missions/:id/submit`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Entrega de evidencia.
+- **`GET /missions/submissions/my-submissions`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Bandeja personal.
+- **`GET /missions/:id/submissions`**: `@Roles('TEACHER', 'ADMIN')`. Mesa de corrección docente.
+- **`PATCH /missions/submissions/:submissionId/review`**: `@Roles('TEACHER', 'ADMIN')`. Feedback y aprobación.
 
-- **Edición de Perfil (`PATCH /users/profile`)**
-  - **DTO (`UpdateProfileDto`)**: Permite la actualización de campos no sensibles, como `fullName`.
-  - **Comportamiento**: Actualiza la información del usuario en la base de datos y retorna la entidad actualizada sin información sensible.
-  - **Excepciones**: `401 Unauthorized` ante la falta de token.
-
-- **Cambio de Contraseña (`POST /users/change-password`)**
-  - **DTO (`ChangePasswordDto`)**: Requiere `currentPassword` y `newPassword`.
-  - **Comportamiento**: Valida la identidad comprobando la `currentPassword` mediante `bcrypt.compare`. Si coincide, se aplica un hash a la `newPassword` y se actualiza en la base de datos.
-  - **Respuesta Esperada**: Retorna HTTP `200 OK` (mediante `@HttpCode(HttpStatus.OK)`) indicando éxito en la actualización.
-  - **Excepciones**: `401 Unauthorized` ante la falta de token o si la contraseña actual ingresada es incorrecta.
-
-### Endpoints (Classrooms)
-
-Estos endpoints son gestionados por el módulo `classrooms` y permiten a los profesores y administradores la gestión de las aulas virtuales.
-
-- **Creación de Aula (`POST /classrooms`)**
-  - **Autorización**: Requiere token JWT y roles `TEACHER` o `ADMIN` (`RolesGuard`).
-  - **Comportamiento**: Genera automáticamente un código de 6 caracteres alfanuméricos verificando su unicidad, y asigna al usuario autenticado como el profesor (`teacherId`).
-
-- **Inscripción a Aula (`POST /classrooms/join`)**
-  - **Autorización**: Requiere token JWT y roles `STUDENT` o `ADMIN`.
-  - **Comportamiento**: Recibe un código de 6 caracteres. Verifica que exista un aula activa con ese código y que el alumno no esté previamente inscrito. Registra la relación en la tabla intermedia `ClassroomStudent` y retorna los detalles del aula. Lanza `404` si no existe/está inactiva, y `409 Conflict` si ya está inscrito.
-
-- **Listado de Aulas (`GET /classrooms`)**
-  - **Comportamiento**: Retorna el listado de aulas. Soporta el query param `?includeInactive=true`. Por defecto, filtra y retorna únicamente las aulas con `isActive: true`. Si el usuario es `TEACHER`, solo ve las aulas que dicta; si es `STUDENT`, cruza con `ClassroomStudent` para ver únicamente las aulas a las que se ha unido; si es `ADMIN`, ve todas.
-
-- **Gestión Individual (`GET /classrooms/:id`, `PATCH /classrooms/:id`, `DELETE /classrooms/:id`)**
-  - **Consulta (`GET`)**: Retorna el detalle del aula. La consulta anida al profesor creador y el listado completo de estudiantes (`students`) inscritos, incluyendo la fecha de inscripción `joinedAt` proveniente de la tabla pivot.
-  - **Seguridad (`PATCH` / `DELETE`)**: Solo el profesor creador o un usuario con rol `ADMIN` pueden editar o eliminar el aula. Si un docente intenta modificar un aula ajena, se devuelve `403 Forbidden`.
-  - **Edición y Reactivación (`PATCH`)**: Se permite actualizar nombre, descripción y el estado `isActive` (útil para reactivar aulas previamente desactivadas). Las consultas buscan por `id` de forma agnóstica al estado.
-  - **Desactivación Lógica (`DELETE`)**: Establece `isActive: false` manteniendo el registro histórico en base de datos.
-
-- **Gestión de Nómina de Estudiantes (`GET /classrooms/:id/students`, `DELETE /classrooms/:id/students/:studentId`)**
-  - **Listado (`GET`)**: Retorna la lista de alumnos inscriptos en un aula específica, restringido al profesor creador de la misma o a un administrador.
-  - **Desvinculación (`DELETE`)**: Permite la desvinculación/remoción de un estudiante del aula mediante la eliminación de su registro en la tabla `ClassroomStudent`.
-  - **Validaciones de Seguridad**: Exige la misma validación de autoría o rol `ADMIN` (retornando `403 Forbidden` ante un intento de gestión ajeno) y verifica que el estudiante efectivamente esté inscrito antes de removerlo (retornando `404 Not Found` si no pertenece a dicha aula).
-
-- **Gestión de Módulos en Aulas (`POST /classrooms/:id/modules`, `GET`, `PATCH`, `DELETE`)**
-  - **Asignación (`POST`)**: Permite al docente (o ADMIN) vincular un módulo a su aula. Se valida la existencia del módulo y se protege contra duplicaciones de asignación mediante el control de colisión y el filtro de base de datos.
-  - **Listado (`GET`)**: Los usuarios `STUDENT` que están inscriptos en el aula consultada solo reciben los módulos asignados que se encuentren activos y tengan el flag `isVisible: true`. Los docentes y administradores visualizan la nómina completa.
-  - **Alternar Visibilidad (`PATCH`)**: Acepta el flag `isVisible` para ocultar o mostrar contenido temporalmente a los alumnos de un aula específica sin tener que desvincular el módulo entero.
-  - **Desvinculación (`DELETE`)**: Elimina el registro pivot en `ClassroomModule`, cortando la relación entre el aula y el módulo.
-
-- **Métricas Agregadas por Aula (`GET /classrooms/:id/metrics`)**
-  - **Control de Acceso**: Protegido para roles `ADMIN` y `TEACHER`, validando que el usuario autenticado sea el creador del aula (`teacherId === user.id`). Lanza `403 Forbidden` si no se cumplen estas condiciones.
-  - **Lógica de Agregación (`ClassroomsService.getClassroomMetrics`)**: Agrupa y promedia el progreso individual de los alumnos de un aula en específico. Soporta recálculo contextual según `classroom.courseId`: si el aula se ha vinculado a un curso específico en su creación/edición, solo se toma en cuenta el progreso sobre dicho curso; de lo contrario se usa el promedio global.
-  - **Estructura de la Respuesta**: Retorna el contexto general de la métrica (`classroom`), el consolidado grupal (`summary`) detallando métricas como `totalStudents`, `averageProgress`, `averageXp`, `averageLevel` y `completedStudentsCount`, además de la lista analítica del grupo (`students`), previamente ordenada por los alumnos más consistentes (`progressPercentage DESC` seguido de `totalXp DESC`).
-
-### Endpoints (Content: Courses, Modules, Lessons, Quizzes)
-
-Estos endpoints son provistos por `CoursesModule` y `QuizzesModule` para gestionar la estructura jerárquica de contenidos del sistema educativo y sus evaluaciones correspondientes.
-
-- **Jerarquía de Lectura y Árbol Completo (`GET /courses/:id`, `GET /modules`, `GET /lessons`)**
-  - **Árbol Jerárquico Completo**: Al consultar un curso por su ID (`GET /courses/:id`), el servicio inyecta de forma anidada (Eager Loading) toda su estructura: `modules`, junto con sus respectivas `lessons` y `quizzes`.
-  - **Filtrado Condicional y Accesibilidad**: 
-    - Para roles `STUDENT` y público general: se filtra el árbol automáticamente devolviendo solo los elementos `PUBLISHED` y que estén activos (`isActive: true` y `order > 0`).
-    - Para roles `TEACHER` y `ADMIN`: el endpoint filtra por defecto mostrando la misma estructura limpia y ordenada, pero admite el flag opcional `?includeInactive=true` para deshabilitar los filtros y retornar la radiografía cruda (ideal para endpoints administrativos).
-  - **Ordenamiento Estricto**: Las colecciones anidadas de módulos y lecciones se inyectan siempre de forma secuencial (`order ASC`).
-
-- **Gestión de Ciclo de Vida y Orden Centinela (`POST`, `PATCH`, `DELETE`)**
-  - **Seguridad y Autoría**: Las mutaciones de contenido quedan estrictamente confinadas a roles `TEACHER` y `ADMIN` (y solo al autor del contenido).
-  - **Desactivación Lógica (Orden `-1`)**: Al eliminar o desactivar temporalmente un módulo o lección (usando `DELETE` o `PATCH` con `isActive: false`), la entidad muta automáticamente su valor a un orden centinela (`order: -1`). Los índices únicos de la base de datos están configurados paramétricamente (`where: { isActive: true }`), permitiendo la coexistencia masiva e indexada de componentes descartados sin colisionar entre sí.
-  - **Protocolo de Reactivación y Unicidad**: Se autoriza la edición de elementos inactivos vía `PATCH`. No obstante, si se emite una solicitud para resucitarlos (`isActive: true`), el backend exigirá forzosamente que el elemento especifique un orden de destino válido (`order > 0`). Si dicho espacio ya está ocupado por otro elemento activo, la operación es interrumpida mediante un `409 ConflictException`. Si se solicita reactivar pero no se provee un orden válido o se envía un valor `<= 0`, abortará devolviendo `400 BadRequestException`.
-
-- **Progreso Consolidado del Estudiante (`GET /courses/progress/me`, `GET /courses/progress/:studentId`)**
-  - **Recálculo en Tiempo Real (`StudentProgress`)**: Exposición de métricas globales de completitud. Para evitar que el progreso quede desfasado cuando el profesor elimina o agrega contenidos (lecciones o quizzes), el servicio intercepta las consultas y ejecuta sincronizaciones dinámicas de las entidades `Lesson` y `Quiz` asociadas a los módulos activos del curso antes de devolver los porcentajes.
-  - **Estructura del Payload**: Retorna un objeto `global` con el recuento total acumulado de aprendizaje (`enrolledCoursesCount`, `completedCoursesCount`, `totalLessonsCompleted`, `totalQuizzesPassed`, `averagePercentage`), anidando además las mecánicas ludificadas (`gamification`) extraídas en memoria (nivel, xp, racha, insignias) y finalmente desglosando la situación particular de los cursos (`courses`) con contadores de ítems individuales (`completedItemsCount` vs `totalItemsCount`).
-
-- **Progreso y Completitud Modular (`POST /lessons/:id/complete`)**
-  - **Idempotencia y Anti-Farmeo**: Exclusivo para el rol `STUDENT`. Verifica que el estudiante esté inscripto en un aula que tenga acceso al módulo de la lección (validando `ClassroomStudent` contra `ClassroomModule`). Si el usuario accede por primera vez, se genera el registro en `LessonProgress`, se asignan los XP y se incrementa el contador del perfil invocando a `GamificationService`. Las peticiones subsiguientes identifican la lección como ya completada, bloqueando intentos de abuso/grindeo de puntos. Por detrás, se invoca automáticamente la sincronización asíncrona de la entidad `StudentProgress`.
-
-- **Gestión de Evaluaciones (`POST /quizzes`, `GET`, `PATCH`, `DELETE`)**
-  - **Creación Transaccional y Validaciones**: La creación de evaluaciones permite enviar payloads anidados (`Quiz` con array de `questions` y array de `options`). La capa de servicios envuelve la creación en una transacción (`sequelize.transaction`). Adicionalmente, validaciones DTO y reglas de negocio garantizan que cada pregunta disponga de al menos 2 opciones y obligatoriamente contenga al menos una opción correcta (`isCorrect: true`).
-  - **Consultas con Prevención de Trampas (`GET /quizzes/:id`)**: Si el usuario que efectúa la consulta posee el rol `STUDENT`, el backend aplica una política de seguridad que excluye dinámicamente el atributo `isCorrect` de todas las opciones en la respuesta. Esto imposibilita el fraude mediante inspección de tráfico de red.
-  - **Restricciones RBAC**: La mutación de evaluaciones (creación, edición, eliminación) es un privilegio exclusivo para usuarios con roles `TEACHER` o `ADMIN`.
-
-- **Resolución de Evaluaciones (`POST /quizzes/:id/submit`, `GET /quizzes/:id/my-attempts`)**
-  - **Calificación Automática en Servidor**: Al enviar el payload del examen (`SubmitQuizDto`), el backend ignora cualquier puntaje sugerido por el cliente. La evaluación se realiza recuperando desde la base de datos las opciones marcadas con `isCorrect: true`, comparándolas contra las seleccionadas por el alumno y sumando los puntajes de manera segura y determinista. Posteriormente se calcula el porcentaje sobre `100` y se establece el flag `isPassed` comparando con el `passingScore`.
-  - **Control de Reintentos**: Antes de permitir la rendición, el servicio cuenta la cantidad de registros previos del usuario en `quiz_attempts` para esa evaluación. Si el número iguala o supera el `maxAttempts` definido por el docente, la operación es rechazada con `400 Bad Request`.
-
-### Endpoints (Missions)
-
-Este módulo gestiona la creación de retos y misiones ambientales junto con su respectivo circuito de corrección.
-
-- **Gestión de la Consigna (`POST /missions`, `PATCH /missions/:id`, `DELETE /missions/:id`)**
-  - **Seguridad**: Acceso exclusivo para roles `TEACHER` y `ADMIN`. El backend inyecta de forma segura el ID del creador (`createdById`) desde el token JWT en el momento de la creación.
-
-- **Circuito de Entregas y Revisión**
-  - **Envío de Evidencia (`POST /missions/:id/submit`)**: Restringido a `STUDENT`. El backend valida la existencia de la misión y aplica una política anti-duplicación: si el estudiante ya posee una entrega en estado `PENDING` o `APPROVED`, la operación es rechazada con un `409 Conflict`.
-  - **Bandeja del Alumno (`GET /missions/submissions/my-submissions`)**: Restringido a `STUDENT`. Retorna el historial personal de misiones entregadas para consultar sus estados y el `feedback` recibido del docente.
-  - **Mesa de Revisión (`GET /missions/:id/submissions`, `PATCH /missions/submissions/:submissionId/review`)**: Restringido a `TEACHER` y `ADMIN`. Permite visualizar la nómina completa de entregas de una misión específica. Al revisar (aprobar/rechazar) una entrega, el sistema sella de manera inmutable el `reviewedById` (ID del evaluador) y el timestamp `reviewedAt`, adjuntando las observaciones pedagógicas en el campo `feedback`.
-
-### Endpoints (Gamification)
-
-Este módulo expone la interfaz para la mecánica de retención de usuarios.
-- **Motor de Reglas Dinámico**: `GamificationService` opera como un procesador de eventos (`checkAutomaticBadges` y `processActivity`). Los servicios de negocio (Lessons, Quizzes, Missions, Auth) disparan un evento cuando ocurre una acción puntuable. El motor actualiza los contadores de progreso del usuario y coteja su estado contra el catálogo de insignias para entregar los coleccionables cuyas condiciones (`triggerEvent` y `triggerValue`) hayan sido satisfechas.
-- **`GET /gamification/profile`**: Retorna el progreso individual (`totalXp`, `level`, `currentStreak`, `lessonsCompleted`, `quizzesPassed`, `missionsApproved`) y la lista de insignias desbloqueadas.
-- **`GET /gamification/badges`**: Catálogo que contrasta todas las insignias disponibles y flaggea con un booleano dinámico (`isUnlocked`) cuáles posee el usuario consultante.
-- **`GET /gamification/badges/icons`**: Retorna el catálogo oficial de íconos temáticos de la plataforma (14 íconos SVG de Iconify/Lucide) categorizados en ECOLOGY, ACADEMIC, STREAK y SPECIAL. Se diseñó para que el cliente frontend pueda nutrir dinámicamente un componente "Icon Picker" en la interfaz de creación de insignias.
-- **`GET /gamification/leaderboard`**: Retorna la tabla de clasificación global. Aplica ordenamiento jerárquico (`totalXp DESC`, `level DESC`, `currentStreak DESC`), paginación (`page`, `limit`), filtros temporales (`timeframe: ALL_TIME, MONTHLY, WEEKLY`) y calcula dinámicamente el `rank` de cada estudiante (rol `STUDENT` e `isActive: true`), sanitizando los datos expuestos (solo datos públicos). Si recibe el query param `classroomId`, delega la consulta al ranking de aula.
-- **`GET /gamification/leaderboard/classroom/:classroomId`**: Endpoint explícito para el ranking local de un aula específica. Reutiliza los mismos parámetros de paginación y tiempo, pero valida estrictamente la autorización: el usuario consultante debe ser el docente titular, un administrador o un estudiante inscripto (`ClassroomStudent`) en esa misma aula.
-- **`POST /gamification/badges`**: Exclusivo para rol `ADMIN`. Permite la inyección manual de nuevos coleccionables. El campo `iconUrl` admite tanto identificadores del catálogo (`sparkles`, `book-open`) como URLs externas. El objeto cuenta con validaciones estrictas en base a enumerables (`@IsIn`) para asegurar la consistencia entre `category` y `triggerEvent`.
+#### 8. Módulo Gamificación (`/gamification`)
+- **`GET /gamification/profile`**, **`GET /gamification/badges`**, **`GET /gamification/badges/icons`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`.
+- **`GET /gamification/leaderboard`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Ranking global. Admite `page`, `limit`, `timeframe`.
+- **`GET /gamification/leaderboard/classroom/:classroomId`**: `@Roles('STUDENT', 'TEACHER', 'ADMIN')`. Ranking áulico.
+- **`POST /gamification/badges`**: `@Roles('ADMIN')`.
 
 ## Configuración y Entorno
 

@@ -51,11 +51,19 @@ El script genera las siguientes cuentas listas para utilizarse:
 | Rol | Nombre | Email | Contraseña | Detalle / Uso |
 | :--- | :--- | :--- | :--- | :--- |
 | **ADMIN** | Administrador | `admin@ecoaprende.com` | `Admin123!` | Métricas globales, gestión de usuarios, auditoría |
-| **TEACHER** | Profe EcoAprende | `profe@ecoaprende.com` | `Teacher123!` | Creación de aulas, asignación de cursos y módulos |
-| **STUDENT** | Juan Pérez | `juan.perez@student.com` | `Student123!` | 150 XP, Nivel 2, Streak 3, progreso en Aula 1 |
-| **STUDENT** | Ana Gómez | `ana.gomez@student.com` | `Student123!` | 320 XP, Nivel 4, Streak 5, progreso intermedio |
-| **STUDENT** | Carlos López | `carlos.lopez@student.com` | `Student123!` | 500 XP, Nivel 5, Líder en Leaderboard |
-| **STUDENT** | Sofía Castro | `sofia.castro@student.com` | `Student123!` | Usuario nuevo (0 XP, Nivel 1) para pruebas iniciales |
+| **TEACHER** | Profe EcoAprende | `profesora.garcia@ecoaprende.com` | `Teacher123!` | Creación de aulas, asignación de cursos y módulos |
+| **TEACHER** | Profe EcoAprende | `profesor.martinez@ecoaprende.com` | `Teacher123!` | Creación de aulas, asignación de cursos y módulos |
+| **STUDENT** | Student 1 a 3 | `student1@student.com` | `Student123!` | Usuarios avanzados: Nivel 5+, 600+ XP, Streak 10+, medalla ECO_HERO, progreso avanzado |
+| **STUDENT** | Student 4 a 10 | `student4@student.com` | `Student123!` | Usuarios intermedios: Nivel 2, 150+ XP, Streak 3+, progreso intermedio |
+| **STUDENT** | Student 11 a 15| `student11@student.com`| `Student123!` | Usuarios nuevos (0 XP, Nivel 1) para pruebas iniciales, sin lecciones ni misiones completadas |
+
+*(Nota: En total el seeder genera 15 estudiantes para validar correctamente las características de paginación `page=1, limit=10` de la plataforma).*
+
+### Contenido y Cursos
+
+Se han sembrado cursos para simular escenarios reales de paginación y navegación:
+- **"Diplomatura Integral en Sustentabilidad Urbana"**: Curso intensivo que contiene **15 módulos**.
+- El **Módulo 1** de esta Diplomatura contiene a su vez **15 lecciones** completas y ordenadas correlativamente, útil para validar cargas grandes de contenido.
 
 ### Misiones y Entregas (Missions & Submissions)
 
@@ -68,9 +76,9 @@ El script siembra un entorno de misiones listo para validación docente:
   4. "Plantación de Especie Nativa o Huerta Urbana" (100 XP)
 
 - **3 Entregas de Muestra (Submissions):**
-  - **APPROVED:** Alumno Carlos López en Misión 1 (con feedback del docente).
-  - **PENDING:** Alumno Juan Pérez en Misión 2 (evidencia subida, lista para corrección docente en demo).
-  - **REJECTED:** Alumna Ana Gómez en Misión 3 (con observaciones para reenvío).
+  - **APPROVED:** Alumno `Student 3` (reemplaza a Carlos López) en Misión 1 (con feedback del docente).
+  - **PENDING:** Alumno `Student 1` (reemplaza a Juan Pérez) en Misión 2 (evidencia subida, lista para corrección docente en demo).
+  - **REJECTED:** Alumno `Student 2` (reemplaza a Ana Gómez) en Misión 3 (con observaciones para reenvío).
   - *La Misión 4 se encuentra disponible sin entregas para probar envíos en vivo.*
 
 ## Variables de entorno
