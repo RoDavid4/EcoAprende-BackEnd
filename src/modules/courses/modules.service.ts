@@ -9,6 +9,9 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Module } from './module.entity';
 import { Lesson } from './lesson.entity';
 import { Course } from './course.entity';
+import { LessonProgress } from './lesson-progress.entity';
+import { Quiz } from '../quizzes/quiz.entity';
+import { QuizAttempt } from '../quizzes/quiz-attempt.entity';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 
@@ -67,14 +70,16 @@ export class ModulesService {
     });
   }
 
-  async findOne(id: string, user: any) {
+  async findModuleEntity(id: string, user: any) {
     const whereClause: any = { id };
     const lessonWhereClause: any = {};
+    const quizWhereClause: any = {};
 
     if (user.role === 'STUDENT') {
       whereClause.isActive = true;
       whereClause.status = 'PUBLISHED';
       lessonWhereClause.isActive = true;
+      quizWhereClause.isActive = true;
     }
 
     const moduleRecord = await this.moduleModel.findOne({
@@ -85,6 +90,28 @@ export class ModulesService {
           as: 'lessons',
           where: lessonWhereClause,
           required: false,
+          include: [
+            {
+              model: LessonProgress,
+              as: 'progress',
+              where: { userId: user.id },
+              required: false,
+            },
+          ],
+        },
+        {
+          model: Quiz,
+          as: 'quizzes',
+          where: quizWhereClause,
+          required: false,
+          include: [
+            {
+              model: QuizAttempt,
+              as: 'attempts',
+              where: { userId: user.id },
+              required: false,
+            },
+          ],
         },
         {
           model: Course,
@@ -101,8 +128,64 @@ export class ModulesService {
     return moduleRecord;
   }
 
+  async findOne(id: string, user: any) {
+    const moduleRecord = await this.findModuleEntity(id, user);
+    const plainModule = moduleRecord.toJSON();
+
+    return {
+      id: plainModule.id,
+      title: plainModule.title,
+      description: plainModule.description,
+      order: plainModule.order,
+      status: plainModule.status,
+      isActive: plainModule.isActive,
+      courseId: plainModule.courseId,
+      createdAt: plainModule.createdAt,
+      updatedAt: plainModule.updatedAt,
+      course: plainModule.course,
+      lessons:
+        plainModule.lessons?.map((lesson: any) => {
+          const progress = lesson.progress?.[0];
+          return {
+            id: lesson.id,
+            title: lesson.title,
+            order: lesson.order,
+            contentType: lesson.contentType,
+            durationMinutes: lesson.durationMinutes,
+            content: lesson.content,
+            mediaUrl: lesson.mediaUrl,
+            moduleId: lesson.moduleId,
+            isActive: lesson.isActive,
+            isCompleted: progress?.isCompleted ?? false,
+            completedAt: progress?.completedAt ?? null,
+          };
+        }) || [],
+      quizzes:
+        plainModule.quizzes?.map((quiz: any) => {
+          const attempts = quiz.attempts || [];
+          const isPassed = attempts.some((a: any) => a.isPassed);
+          const highestScore =
+            attempts.length > 0
+              ? Math.max(...attempts.map((a: any) => a.score))
+              : 0;
+          return {
+            id: quiz.id,
+            title: quiz.title,
+            description: quiz.description,
+            passingScore: quiz.passingScore,
+            maxAttempts: quiz.maxAttempts,
+            timeLimitMinutes: quiz.timeLimitMinutes,
+            isActive: quiz.isActive,
+            isPassed,
+            attemptsCount: attempts.length,
+            highestScore,
+          };
+        }) || [],
+    };
+  }
+
   async update(id: string, updateModuleDto: UpdateModuleDto, user: any) {
-    const moduleRecord = await this.findOne(id, user);
+    const moduleRecord = await this.findModuleEntity(id, user);
 
     if (user.role !== 'ADMIN' && moduleRecord.course.createdById !== user.id) {
       throw new ForbiddenException(
@@ -147,11 +230,12 @@ export class ModulesService {
       }
     }
 
-    return moduleRecord.update(updateModuleDto);
+    await moduleRecord.update(updateModuleDto);
+    return this.findOne(id, user);
   }
 
   async remove(id: string, user: any) {
-    const moduleRecord = await this.findOne(id, user);
+    const moduleRecord = await this.findModuleEntity(id, user);
 
     if (user.role !== 'ADMIN' && moduleRecord.course.createdById !== user.id) {
       throw new ForbiddenException(
@@ -159,6 +243,7 @@ export class ModulesService {
       );
     }
 
-    return moduleRecord.update({ isActive: false, order: -1 });
+    await moduleRecord.update({ isActive: false, order: -1 });
+    return this.findOne(id, user);
   }
 }

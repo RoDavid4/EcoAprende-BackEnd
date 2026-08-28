@@ -7,8 +7,10 @@ import {
   Default,
   ForeignKey,
   BelongsTo,
+  HasMany,
 } from 'sequelize-typescript';
 import { Module } from './module.entity';
+import { LessonProgress } from './lesson-progress.entity';
 
 @Table({
   tableName: 'lessons',
@@ -83,4 +85,7 @@ export class Lesson extends Model {
 
   @BelongsTo(() => Module, { as: 'module', foreignKey: 'moduleId' })
   declare module: Module;
+
+  @HasMany(() => LessonProgress, { as: 'progress', foreignKey: 'lessonId' })
+  declare progress: LessonProgress[];
 }
