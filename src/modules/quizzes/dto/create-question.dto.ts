@@ -6,11 +6,16 @@ import {
   ValidateNested,
   ArrayMinSize,
   IsArray,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateOptionDto } from './create-option.dto';
 
 export class CreateQuestionDto {
+  @IsOptional()
+  @IsUUID()
+  id?: string;
+
   @IsString()
   @IsNotEmpty()
   statement!: string;
