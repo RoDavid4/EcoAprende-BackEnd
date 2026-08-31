@@ -166,7 +166,155 @@ export class QuizzesService {
       );
     }
 
-    return quiz.update(updateQuizDto);
+    if (updateQuizDto.questions && updateQuizDto.questions.length > 0) {
+      for (const [index, q] of updateQuizDto.questions.entries()) {
+        const hasCorrectOption = q.options.some((opt) => opt.isCorrect);
+        if (!hasCorrectOption) {
+          throw new BadRequestException(
+            `La pregunta en el índice ${index} debe tener al menos una opción correcta`,
+          );
+        }
+      }
+    }
+
+    const transaction = await this.sequelize.transaction();
+    try {
+      await quiz.update(
+        {
+          title: updateQuizDto.title ?? quiz.title,
+          description: updateQuizDto.description ?? quiz.description,
+          passingScore: updateQuizDto.passingScore ?? quiz.passingScore,
+          maxAttempts: updateQuizDto.maxAttempts ?? quiz.maxAttempts,
+          timeLimitMinutes:
+            updateQuizDto.timeLimitMinutes ?? quiz.timeLimitMinutes,
+          isActive: updateQuizDto.isActive ?? quiz.isActive,
+        },
+        { transaction },
+      );
+
+      if (updateQuizDto.questions) {
+        const existingQuestions = await this.questionModel.findAll({
+          where: { quizId: id },
+          transaction,
+        });
+
+        const incomingQIds = updateQuizDto.questions
+          .map((q) => q.id)
+          .filter((qid) => qid != null);
+
+        for (const eq of existingQuestions) {
+          if (!incomingQIds.includes(eq.id)) {
+            await this.optionModel.destroy({
+              where: { questionId: eq.id },
+              transaction,
+            });
+            await eq.destroy({ transaction });
+          }
+        }
+
+        for (const qDto of updateQuizDto.questions) {
+          let questionId = qDto.id;
+
+          if (questionId) {
+            const question = existingQuestions.find((q) => q.id === questionId);
+            if (question) {
+              await question.update(
+                {
+                  statement: qDto.statement,
+                  explanation: qDto.explanation,
+                  order: qDto.order,
+                  points: qDto.points,
+                },
+                { transaction },
+              );
+            } else {
+              const newQ = await this.questionModel.create(
+                {
+                  quizId: id,
+                  statement: qDto.statement,
+                  explanation: qDto.explanation,
+                  order: qDto.order,
+                  points: qDto.points,
+                },
+                { transaction },
+              );
+              questionId = newQ.id;
+            }
+          } else {
+            const newQ = await this.questionModel.create(
+              {
+                quizId: id,
+                statement: qDto.statement,
+                explanation: qDto.explanation,
+                order: qDto.order,
+                points: qDto.points,
+              },
+              { transaction },
+            );
+            questionId = newQ.id;
+          }
+
+          if (qDto.options) {
+            const existingOptions = await this.optionModel.findAll({
+              where: { questionId: questionId },
+              transaction,
+            });
+
+            const incomingOIds = qDto.options
+              .map((o) => o.id)
+              .filter((oid) => oid != null);
+
+            for (const eo of existingOptions) {
+              if (!incomingOIds.includes(eo.id)) {
+                await eo.destroy({ transaction });
+              }
+            }
+
+            for (const [optIndex, oDto] of qDto.options.entries()) {
+              if (oDto.id) {
+                const opt = existingOptions.find((o) => o.id === oDto.id);
+                if (opt) {
+                  await opt.update(
+                    {
+                      text: oDto.text,
+                      isCorrect: oDto.isCorrect,
+                      order: oDto.order ?? optIndex,
+                    },
+                    { transaction },
+                  );
+                } else {
+                  await this.optionModel.create(
+                    {
+                      questionId: questionId,
+                      text: oDto.text,
+                      isCorrect: oDto.isCorrect,
+                      order: oDto.order ?? optIndex,
+                    },
+                    { transaction },
+                  );
+                }
+              } else {
+                await this.optionModel.create(
+                  {
+                    questionId: questionId,
+                    text: oDto.text,
+                    isCorrect: oDto.isCorrect,
+                    order: oDto.order ?? optIndex,
+                  },
+                  { transaction },
+                );
+              }
+            }
+          }
+        }
+      }
+
+      await transaction.commit();
+      return this.findOne(id, user);
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   async remove(id: string, user: any) {
@@ -184,7 +332,19 @@ export class QuizzesService {
       );
     }
 
-    return quiz.update({ isActive: false });
+    const transaction = await this.sequelize.transaction();
+    try {
+      await this.questionModel.update(
+        { isActive: false },
+        { where: { quizId: id }, transaction },
+      );
+      await quiz.update({ isActive: false }, { transaction });
+      await transaction.commit();
+      return quiz;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   async submitQuiz(quizId: string, userId: string, dto: SubmitQuizDto) {
